@@ -1,0 +1,29 @@
+  [-] Architecture of the elements
+  [-] Overall structure of the classes and modules
+  [X] Connect modules
+  [X] Simple commands (start, pause, stop)
+  [X] Parse arguments to commands
+  [X] More commands (previous, next)
+  [X] Playlist basic commands (list of PL, save as, delete)
+  [X] Handle playlists internally (use)
+  [X] Prepare an output module to show results (column objects, displayable entry objects)
+  [X] Develop a clever Printable class usable for diff. types of data (value, retrieval)
+  [X] Test the output module (list songs, current playlist, given playlist)
+  [X] More features in output (selection, counter column, align, zero-count of songs in playlist)
+  [*] Develop pattern representation
+  [ ] Pattern parsing into the representation
+R [ ] Pattern testing with medialib (info, enqueue)
+  [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
+R [ ] Design proper abstraction layer (async events [threads?], current PL, collections)
+  [ ] Develop collection handling and classes
+  [ ] Save collections in a file (apply, save as, delete)
+R [ ] Handle collections internally (enter)
+R [ ] Randomize playlist from a collection (playlist-random)
+  [ ] Command-line arguments are parsed as commands
+
+ADD TO SPECS?
+- other list modifiers than ENQUEUE: REPLACE, INSERT?
+- need to wait for result in all cases?
+
+- ignore and protect playlists starting with '_'
+- When no metadata is present, display Title=filename

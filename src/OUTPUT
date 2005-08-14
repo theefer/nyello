@@ -1,0 +1,109 @@
+$ xmms2 list
+->[0/1] Dismantled - The Swarm (Easy to Swallow) - Clip for XMMS2 (00:28)
+  [1/26] Fischerspooner - Just Let Go (04:12)
+  [2/33] Fischerspooner - Happy (04:00)
+  [3/29] Fischerspooner - A Kick In The Teeth (04:21)
+  [4/1] Dismantled - The Swarm (Easy to Swallow) - Clip for XMMS2 (00:28)
+  [5/2] Dismantled - The Swarm (Easy to Swallow) - Clip for XMMS2 (00:28)
+  [6/1] Dismantled - The Swarm (Easy to Swallow) - Clip for XMMS2 (00:28)
+  [7/26] Fischerspooner - Just Let Go (04:12)
+  [8/33] Fischerspooner - Happy (04:00)
+  [9/29] Fischerspooner - A Kick In The Teeth (04:21)
+
+
+$ xmms2 mlib list_playlist autosaved
+-[Result]-----------------------------------------------------------------------
+Id   | Artist            | Album                     | Title
+1    | Dismantled        | Breed to Death            | The Swarm (Easy to Swallo
+1    | Dismantled        | Breed to Death            | The Swarm (Easy to Swallo
+26   | Fischerspooner    | Odyssey                   | Just Let Go              
+29   | Fischerspooner    | Odyssey                   | A Kick In The Teeth      
+33   | Fischerspooner    | Odyssey                   | Happy                    
+-------------------------------------------------------------[Count:     6]-----
+
+
+
+switch(type) {
+        case UINT:      convert to char*
+        case  INT:      convert to char*
+        case  STR:      return
+}
+
+size_t size = log(abs(value)) + 1;
+char buffer[ size ];
+sprintf(&buffer, "%d", value);
+
+
+
+Commands with output:
+* help
+* help <command>
+
+  ==> See svn help
+
+
+* status
+
+  Cymande - The Soul Of Rasta (1972) - Bra
+  [playing] 17/00439   1:17 (34%)
+  playlist: Funky   volume: 77%
+
+
+* filter
+
+  [AND]
+  |-- Artist: Air
+  |-- Year: 1998
+  |-- Play counter <= 10
+  `-- [OR]
+      |-- Comment: *live*
+      `-- Album: *(Live)
+
+
+* info
+
+  -[Result]-----------------------------------------------------------------------
+    Id    | Artist            | Album                     | Title
+    1/001 | Dismantled        | Breed to Death            | The Swarm (Easy to Sw-
+    2/001 | Dismantled        | Breed to Death            | The Swarm (Easy to Sw-
+    3/026 | Fischerspooner    | Odyssey                   | Just Let Go              
+    4/729 | Fischerspooner    | Odyssey                   | A Kick In The Teeth      
+    5/033 | Fischerspooner    | Odyssey                   | Happy                    
+  -------------------------------------------------------------[Count:     6]-----
+
+
+* list
+
+  -[Result]-----------------------------------------------------------------------
+    Id    | Artist            | Album                     | Title
+    1/001 | Dismantled        | Breed to Death            | The Swarm (Easy to Sw-
+    2/001 | Dismantled        | Breed to Death            | The Swarm (Easy to Sw-
+  * 3/026 | Fischerspooner    | Odyssey                   | Just Let Go              
+    4/729 | Fischerspooner    | Odyssey                   | A Kick In The Teeth      
+    5/033 | Fischerspooner    | Odyssey                   | Happy                    
+  -------------------------------------------------------------[Count:     6]-----
+
+
+* playlist-list
+
+    Rock'n Roll         (37 songs)
+    dungen-list        (124 songs)
+  * Air Live            (12 songs)
+    Pink Floyd shuffle   (2 songs)
+
+
+* collection-list
+
+  Library
+  |-- best electroclash
+  |-- Special
+  |   |-- Latest added
+  |   |   `-- Radiohead live
+  |   |-- Best rated
+  |   `-- Worst rock songs
+  |       |-- U2
+  |       `-- U2 Live
+  |-- Beck Live
+  `-- Parties
+      |-- Bukolik
+      `-- BBQ

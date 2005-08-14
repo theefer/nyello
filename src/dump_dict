@@ -1,0 +1,26 @@
+
+static void dump_dict(const void* key, xmmsc_result_value_type_t type, const void* value, void *userdata) {
+  cout << "  " << (char*)key << ": ";
+  switch(type) {
+  case XMMSC_RESULT_VALUE_TYPE_UINT32:
+    cout << (uint32_t)value;
+    break;
+
+  case XMMSC_RESULT_VALUE_TYPE_INT32:
+    cout << (int32_t)value;
+    break;
+
+  case XMMSC_RESULT_VALUE_TYPE_STRING:
+    cout << ((char*)value);
+    break;
+
+  default:
+  case XMMSC_RESULT_VALUE_TYPE_NONE:
+    cout << "-no value-";
+    break;
+  }
+
+  cout << endl;
+}
+
+

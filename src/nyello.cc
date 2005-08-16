@@ -85,6 +85,8 @@
       · with uppercase equivalent: exact match (case, string)
       · supports comparators (>, >=, etc) for year, track
       · use parentheses to group conditions
+      · can have several fields per flag:
+          -at pink OR -lG Soundtrack
       · whitespace separated tokens, thus:
           -a Air Femme argent <=> -a Air AND -z Femme AND -z argent
 
@@ -107,7 +109,6 @@
 
       -   previous pattern  (equivalent to -1)
       -N  N-th previous pattern, with N >= 1 and N <= arbitrary limit
-      +   equivalent to ("- AND"), meaning that you add a filter to the previous one
 
     Identifiers:
 

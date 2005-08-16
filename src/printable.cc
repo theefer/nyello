@@ -21,7 +21,7 @@ Printable::getDictEntryAsStr(xmmsc_result_t* result, char* key) {
     break;
 
   case XMMS_OBJECT_CMD_ARG_STRING:
-    // FIXME: Overflow?
+    // FIXME: leak? overflow?
     xmmsc_result_get_dict_entry_str(result, key, &bufferStr);
     break;
 

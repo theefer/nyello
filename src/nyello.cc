@@ -85,6 +85,8 @@
       · with uppercase equivalent: exact match (case, string)
       · supports comparators (>, >=, etc) for year, track
       · use parentheses to group conditions
+      · no parsing is done on the match values (replaces escaping):
+          -z AND -z - -a &
       · can have several fields per flag:
           -at pink OR -lG Soundtrack
       · whitespace separated tokens, thus:
@@ -107,8 +109,8 @@
 
     Wildcards:
 
-      -   previous pattern  (equivalent to -1)
-      -N  N-th previous pattern, with N >= 1 and N <= arbitrary limit
+      +   previous pattern  (equivalent to +1)
+      +N  N-th previous pattern, with N >= 1 and N <= arbitrary limit
 
     Identifiers:
 

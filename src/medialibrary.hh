@@ -40,8 +40,8 @@ public:
   const char* getCurrentPlaylistName();
 
   // FIXME: HACK: should be private
-  void catchPlaylistChanged(xmmsc_result_t *res, void *userdata);
-  void catchPlaylistLoaded(xmmsc_result_t *res, void *userdata);
+  void catchPlaylistChanged(xmmsc_result_t *res);
+  void catchPlaylistLoaded(xmmsc_result_t *res);
 
 private:
   xmmsc_connection_t* connection;

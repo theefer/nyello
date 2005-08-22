@@ -7,17 +7,11 @@ using namespace std;
 
 
 /** FIXME: HORRIBLE HACK!  Bitch at it and then help me find a solution! */
-void
-HACK_catchPlaylistChanged(xmmsc_result_t *res, void *hack_data) {
-  MediaLibrary* ml = (MediaLibrary*)hack_data;
-  ml->catchPlaylistChanged(res, NULL);
-  cout << "DONE" << endl;
-}
 
-void
-HACK_catchPlaylistLoaded(xmmsc_result_t *res, void *hack_data) {
-  MediaLibrary* ml = (MediaLibrary*)hack_data;
-  ml->catchPlaylistLoaded(res, NULL);
+template <void (MediaLibrary::*func) (xmmsc_result_t*)>
+void runMediaLibraryMethod(xmmsc_result_t *res, void *mlib_ptr) {
+  MediaLibrary* ml = (MediaLibrary*)mlib_ptr;
+  (ml->*func)(res);
 }
 /** END OF HORRIBLE HACK */
 
@@ -31,15 +25,17 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   usePlaylist("autosaved");
 
   // Setup signal hooks
+  /* FIXME: segfault?
   lastRes = xmmsc_broadcast_playlist_changed(connection);
-  // FIXME: Member function :-(  xmmsc_result_notifier_set(lastRes, &MediaLibrary::catchPlaylistChanged, NULL);
-  //xmmsc_result_notifier_set(lastRes, HACK_catchPlaylistChanged, this);
+  xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistChanged>, this);
   xmmsc_result_unref(lastRes);
+  */
 
+  /* FIXME: segfault?
   lastRes = xmmsc_broadcast_medialib_playlist_loaded(connection);
-  // FIXME: Member function :-(  xmmsc_result_notifier_set(lastRes, &MediaLibrary::catchPlaylistLoaded, NULL);
-  //xmmsc_result_notifier_set(lastRes, HACK_catchPlaylistLoaded, this);
+  xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistLoaded>, this);
   xmmsc_result_unref(lastRes);
+  */
 }
 
 
@@ -267,7 +263,7 @@ MediaLibrary::getEntryVector(xmmsc_result_t* res) {
 
 
 void
-MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res, void *userdata) {
+MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res) {
   if (xmmsc_result_iserror(res)) {
     cerr << "error: " << xmmsc_result_get_error (res) << endl;
   }
@@ -285,16 +281,23 @@ MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res, void *userdata) {
 
 
 void
-MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res, void *userdata) {
+MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res) {
+  char* loadedName;
   if (xmmsc_result_iserror(res)) {
     cerr << "error: " << xmmsc_result_get_error (res) << endl;
   }
 
-  xmmsc_result_get_string(res, &currentPlaylistName);
+  // Copy name of the loaded playlist as the current playlist
+  xmmsc_result_get_string(res, &loadedName);
+  currentPlaylistName = new char[ strlen(loadedName) + 1 ];
+  strcpy(currentPlaylistName, loadedName);
+
+  // FIXME: Leak! delete previous name memory!
+
+  xmmsc_result_unref(res);
 
   // DEBUG:
   cout << "Playlist loaded, new current playlist: "
        << currentPlaylistName << endl;
-  xmmsc_result_unref(res);
 }
 

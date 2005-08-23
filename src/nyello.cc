@@ -88,7 +88,7 @@
       · no parsing is done on the match values (replaces escaping):
           -z AND -z - -a &
       · can have several fields per flag:
-          -at pink OR -lG Soundtrack
+          -at pink AND -lG Soundtrack <=> (-a pink OR -t pink) AND ...
       · whitespace separated tokens, thus:
           -a Air Femme argent <=> -a Air AND -z Femme AND -z argent
 
@@ -105,7 +105,7 @@
         &, AND (default if omitted)
         |, OR
         %, XOR
-        ¬, NOT
+        ^, NOT
 
     Wildcards:
 

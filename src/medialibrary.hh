@@ -10,6 +10,7 @@
 #include "playlistlist.hh"
 #include "playlistsonglist.hh"
 #include "querysonglist.hh"
+#include "patternquery.hh"
 #include "collection.hh"
 
 
@@ -32,6 +33,8 @@ public:
   void removePlaylist(const char* name);
 
   bool hasPlaylist(char* name);
+
+  QuerySongList* searchSongs(PatternQuery* query);
 
   Collection* newCollection();
   Collection* getCollection(char* name);

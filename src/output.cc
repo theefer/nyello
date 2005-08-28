@@ -43,6 +43,7 @@ Output::printSongs(Printable* songs) {
   songCol->printHeadings();
 
   // Display all the songs
+  songs->rewind();
   while(songs->isValid()) {
     songCol->printRow(songs);
     songs->next();

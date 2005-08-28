@@ -8,12 +8,14 @@
 
 class PlaylistSongList : public Printable {
 public:
-  PlaylistSongList(xmmsc_result_t* res, xmmsc_connection_t* conn, int playingPos);
+  PlaylistSongList(xmmsc_result_t* res, xmmsc_connection_t* conn, int playingPos = -1);
   ~PlaylistSongList();
 
+  unsigned int getId();
   char* get(char* key);
   bool  next();
   inline bool  isSelected() { return (currentPos == playingPos); }
+  void  rewind();
   bool  isValid();
 
 

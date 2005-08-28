@@ -27,6 +27,8 @@ public:
   bool isPlaying();
   bool isPaused();
 
+  unsigned int getCurrentId();
+
 private:
   xmmsc_connection_t* connection;
   xmmsc_result_t*     lastRes;

@@ -1,19 +1,16 @@
 #include "medialibrary.hh"
 
+// FIXME: Temp for debug only!
 #include <iostream>
 using namespace std;
 
-// FIXME: Possibly use a function template to get the hack generic...
 
-
-/** FIXME: HORRIBLE HACK!  Bitch at it and then help me find a solution! */
-
+// Generic hack-function to use methods as callback functions
 template <void (MediaLibrary::*func) (xmmsc_result_t*)>
 void runMediaLibraryMethod(xmmsc_result_t *res, void *mlib_ptr) {
   MediaLibrary* ml = (MediaLibrary*)mlib_ptr;
   (ml->*func)(res);
 }
-/** END OF HORRIBLE HACK */
 
 
 MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
@@ -80,7 +77,7 @@ MediaLibrary::getPlaylist(char* name) {
     return NULL;
   }
 
-  return new PlaylistSongList(lastRes, connection, -1);
+  return new PlaylistSongList(lastRes, connection);
 
   // OLD: "SELECT songs.*, substr(playlistentries.entry,8,10) AS id FROM playlistentries, playlist LEFT JOIN songs ON songs.id=substr(playlistentries.entry,8,10) WHERE playlist_id=playlist.id AND playlist.name=\"%s\" ORDER BY pos",
 }
@@ -204,7 +201,7 @@ MediaLibrary::hasPlaylist(char* name) {
     xmmsc_result_list_next(lastRes);
   }
 
-  /** FIXME: Whoops wait until #295 gets committed :-(
+  /* FIXME: Whoops wait until #295 gets committed :-(
   lastRes = xmmsc_medialib_playlists_list(connection);
   xmmsc_result_wait(lastRes);
 
@@ -223,6 +220,28 @@ MediaLibrary::hasPlaylist(char* name) {
 
   xmmsc_result_unref(lastRes);
   return found;
+}
+
+
+/**
+ * Queries the medialib and return the resulting list of songs.
+ */
+QuerySongList*
+MediaLibrary::searchSongs(PatternQuery* query) {
+  QuerySongList* songlist;
+  char* sql = query->getSql();
+  cout << "QUERY: " << query->getSql() << endl;
+  lastRes = xmmsc_medialib_select(connection, sql);
+  xmmsc_result_wait(lastRes);
+
+  if(!xmmsc_result_list_valid(lastRes)) {
+    return NULL;
+  }
+
+  // FIXME: When would we use QuerySongList then?
+  songlist = new QuerySongList(lastRes, connection);
+  query->saveResults(songlist);
+  return songlist;  
 }
 
 

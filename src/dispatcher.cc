@@ -4,6 +4,7 @@
 Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   playback = new Playback(connection);
   medialib = new MediaLibrary(connection);
+  pparser  = new PatternParser(playback);
   output   = new Output();
 
 
@@ -12,7 +13,6 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   commandList["?"]    = &Dispatcher::actionHelp;
   commandList["help"] = &Dispatcher::actionHelp;
 
-  // FIXME: 'p' should play AND pause, as a toggle
   commandList["p"]     = &Dispatcher::actionTogglePlay;
   commandList["play"]  = &Dispatcher::actionPlay;
   commandList["pause"] = &Dispatcher::actionPause;
@@ -24,6 +24,9 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   commandList["next"]     = &Dispatcher::actionNext;
   commandList["r"]        = &Dispatcher::actionPrevious;
   commandList["previous"] = &Dispatcher::actionPrevious;
+
+  commandList["i"]     = &Dispatcher::actionInfo;
+  commandList["info"]  = &Dispatcher::actionInfo;
 
   commandList["l"]     = &Dispatcher::actionList;
   commandList["list"]  = &Dispatcher::actionList;
@@ -54,7 +57,6 @@ void
 Dispatcher::loop() {
   char* prompt;
   char* input = new char[MAX_COMMAND_LENGTH];
-  DispFnPtr fn_ptr;
 
   // Main loop
   do {
@@ -76,21 +78,29 @@ Dispatcher::loop() {
     }
 
     add_history(input);
-
-    // Parse user input and execute action
-    parseInput(input);
-    if(commandList.find(command) != commandList.end()) {
-      fn_ptr = commandList[command];
-      (this->*fn_ptr)();
-    }
-    else if(command != NULL) {
-      // Error: unknown command
-      cerr << "Unknown command '" << command << "'!" << endl;
-    }
+    execute(input);
 
   } while(true);
 
 }
+
+
+/**
+ * Parse the input and execute the action.
+ */
+void
+Dispatcher::execute(char* input) {
+  DispFnPtr fn_ptr;
+  parseInput(input);
+  if(commandList.find(command) != commandList.end()) {
+    fn_ptr = commandList[command];
+    (this->*fn_ptr)();
+  }
+  else if(command != NULL) {
+    cerr << "Unknown command '" << command << "'!" << endl;
+  }
+}
+
 
 int
 Dispatcher::parseInteger(char* ptr) {
@@ -218,10 +228,29 @@ Dispatcher::actionNext() {
 
 void
 Dispatcher::actionInfo() {
+  Printable* songList;
+  PatternQuery* query;
 
+  query = pparser->registerNewPattern(arguments, argNumber);
+  if(query == NULL) {
+    cerr << "Error: failed to parse the pattern!" << endl;
+    return;
+  }
+
+  songList = medialib->searchSongs(query);
+  if(songList == NULL) {
+    cerr << "Error: failed to query the medialibrary!" << endl;
+  }
+  else {
+    output->printSongs(songList);
+  }  
 }
 
 
+/**
+ * Display the content of the current playlist, or the playlist given
+ * in argument if any.
+ */
 void
 Dispatcher::actionList() {
   Printable* songList;
@@ -243,7 +272,6 @@ Dispatcher::actionList() {
   // Error, no such playlist
   if(songList == NULL) {
     cerr << "Error: no such playlist!" << endl;
-    return;
   }
   else {
     output->printSongs(songList);
@@ -263,6 +291,9 @@ Dispatcher::actionRemove() {
 }
 
 
+/**
+ * Display a list of all the playlists present in the medialib.
+ */
 void
 Dispatcher::actionPlaylistList() {
   // We don't want any argument
@@ -273,13 +304,13 @@ Dispatcher::actionPlaylistList() {
 
   PlaylistList* playlists = medialib->getPlaylists();
   if(playlists == NULL) {
-    // FIXME: handle error
-    cerr << "actionPlaylistList: NULL" << endl;
+    cerr << "Error: failed to get the list of playlists!" << endl;
   }
   else {
     output->printPlaylists(playlists);
   }
 }
+
 
 /**
  * Save the current server playlist under the given name.
@@ -299,6 +330,7 @@ Dispatcher::actionPlaylistSaveAs() {
   }
 }
 
+
 /**
  * Change the current playlist.
  */
@@ -317,6 +349,10 @@ Dispatcher::actionPlaylistUse() {
   }
 }
 
+
+/**
+ * Remove the given playlist from the medialibrary.
+ */
 void
 Dispatcher::actionPlaylistRemove() {
   // Remove the given playlist

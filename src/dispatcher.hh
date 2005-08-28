@@ -12,7 +12,11 @@
 
 #include "playback.hh"
 #include "medialibrary.hh"
+#include "patternparser.hh"
 #include "output.hh"
+
+#include "patternquery.hh"
+
 
 #define MAX_PROMPT_LENGTH   24
 #define MAX_COMMAND_LENGTH 256
@@ -44,14 +48,16 @@ public:
   ~Dispatcher();
 
   void loop();
+  void execute(char* input);
 
 
 private:
   static const int MAX_ARGUMENTS = 64;
 
-  Playback*     playback;
-  MediaLibrary* medialib;
-  Output*       output;
+  Playback*      playback;
+  MediaLibrary*  medialib;
+  PatternParser* pparser;
+  Output*        output;
 
   char* command;
   char** arguments;

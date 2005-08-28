@@ -72,6 +72,24 @@ Playback::isPaused() {
 }
 
 unsigned int
+Playback::getCurrentId() {
+  unsigned int id;
+  lastRes = xmmsc_playback_current_id(connection);
+  xmmsc_result_wait(lastRes);
+
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Couldn't read current id: "
+         << xmmsc_result_get_error(lastRes) << endl;
+  }
+  else {
+    xmmsc_result_get_uint(lastRes, &id);
+  }
+  xmmsc_result_unref(lastRes);
+  
+  return id;
+}
+
+unsigned int
 Playback::getStatus() {
   unsigned int status;
   lastRes = xmmsc_playback_status(connection);

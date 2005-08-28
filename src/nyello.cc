@@ -116,15 +116,17 @@
 
       rocklist/7 7-th song of the "rocklist" playlist
       /7         7-th song of the current playlist (equivalent to currentpl/7)
-      #7         7-th song matched by the last pattern
+      N#7        7-th song matched by the N-th previous pattern
       7          song with id 7 in the medialib
 
       · ranges and lists can be provided, too:
         #7-13    7-th to 13-th songs matched by the last pattern
         /7,13    7-th and 13-th song of the current playlist
         #-13     First to 13-th song matched by the last pattern
-        /7-      All songs from the 7th of the current playlist
-                 (note: unbounded ranges are not possible with medialib ids)
+        rock/7-  All songs from the 7th of the rock playlist
+        2#       All songs matched by the pattern before the last
+
+        (note: unbounded ranges are not possible with medialib ids)
 
      Default rules:
 
@@ -145,7 +147,7 @@ using namespace std;
 
 
 
-int main() {
+int main(int argc, char* argv[]) {
   // Main variables
   int retval = 0;
   Dispatcher* disp;
@@ -166,10 +168,15 @@ int main() {
     retval = 1;
   }
 
-  // Everything is fine, we can run the main loop
+  // Everything is fine, we can run the dispatcher
   else {
     disp = new Dispatcher(connection);
-    disp->loop();
+    /* FIXME: need method overloading
+    if(argc > 1)
+      disp->execute(argv + 1, argc - 1);
+    else
+    */
+      disp->loop();
   }
 
 

@@ -1,4 +1,26 @@
-FILES=nyello.cc\
+#-----Macros---------------------------------
+
+BASEDIR=/usr/local/include/xmms2/
+
+INCLUDES = -I. -I$(BASEDIR)
+
+CXX = g++
+CXXFLAGS = -g $(INCLUDES)
+
+#-----Suffix Rules---------------------------
+# set up C++ suffixes and relationship between .cc and .o files
+
+.SUFFIXES: .cc
+
+.cc.o:
+	$(CXX) $(CXXFLAGS) -c $<
+
+.cc :
+	$(CXX) $(CXXFLAGS) -lreadline -lxmmsclient $< -o $@
+
+#-----File Dependencies----------------------
+
+SRC=nyello.cc\
 	dispatcher.cc\
 	playback.cc\
 	medialibrary.cc\
@@ -10,13 +32,21 @@ FILES=nyello.cc\
 	dictlist.cc\
 	querysonglist.cc\
 	playlistlist.cc\
-	playlistsonglist.cc
+	playlistsonglist.cc\
+	patternparser.cc\
+	patternnodes.cc\
+	patternquery.cc\
+	medialibquery.cc\
+	sequence.cc
 
-nyello: 
-	g++ -I/usr/local/include/xmms2/ -lreadline -lxmmsclient -o nyello $(FILES)
+OBJ = $(addsuffix .o, $(basename $(SRC)))
 
-test_columniser:
-	g++ -o test_columniser test_columniser.cc columniser.cc column.cc printable.cc
+nyello: $(OBJ)
+	$(CXX) $(CXXFLAGS) -lreadline -lxmmsclient -o $@ $(OBJ)
+
+#-----Other stuff----------------------------
+depend:
+	makedepend $(CXXFLAGS) -Y $(SRC)
 
 clean:
-	rm -f *~ *.o nyello
+	rm -f $(OBJ)

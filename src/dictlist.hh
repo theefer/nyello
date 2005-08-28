@@ -3,8 +3,6 @@
 
 #include <xmmsclient/xmmsclient.h>
 
-#include <string.h>
-
 #include "printable.hh"
 
 
@@ -17,17 +15,23 @@ public:
   DictList(xmmsc_result_t* res);
   ~DictList();
 
-  char* get(char* key);
-  bool  next();
-  virtual bool  isSelected() = 0;
-  bool  isValid();
+  virtual unsigned int getId();
+  virtual char* get(char* key);
+  virtual bool  next();
+  virtual bool isSelected() = 0;
+  virtual void  rewind();
+  virtual bool  isValid();
 
-
-private:
+protected:
   /**
    * Result referencing the list of ids of songs in the playlist.
    */
   xmmsc_result_t* res;
+
+  /**
+   * Id of the current song.
+   */
+  unsigned int currentId;
 
 };
 

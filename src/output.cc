@@ -64,6 +64,7 @@ Output::printHelp() {
   cout << "   (s)  stop               Stop playback"                                  << endl;
   cout << "   (r)  previous           Jump to previous song"                          << endl;
   cout << "   (n)  next               Jump to next song"                              << endl;
+  cout << "   (i)  info               Find all songs matching a pattern"              << endl;
   cout << "   (l)  list               List the songs from a playlist"                 << endl;
   cout << "   (pl) playlist-list      List all the existing playlists"                << endl;
   cout << "   (pu) playlist-use       Change the active playlist"                     << endl;

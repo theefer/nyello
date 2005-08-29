@@ -1,7 +1,8 @@
 #include "patternparser.hh"
 
 
-PatternParser::PatternParser(Playback* _playback) : playback(_playback) {
+PatternParser::PatternParser(Playback* _playback, MediaLibrary* _medialib)
+  : playback(_playback), medialib(_medialib) {
 }
 
 
@@ -340,10 +341,18 @@ PatternParser::parsePlaylistSequence() {
   char* pos     = strrchr(currArg, '/');
   char* seq_str = pos + 1;
   int name_len  = pos - currArg;
-  char* plname  = new char[name_len + 1];
-  strncpy(plname, currArg, name_len);
-  
-  // FIXME: if plname == "" : use current playlistname!
+  char* plname;
+  if(name_len > 0) {
+    plname = new char[name_len + 1];
+    strncpy(plname, currArg, name_len);
+    plname[name_len] = '\0';
+  }
+  // No playlist name, use current playlist
+  else {
+    const char* buffer = medialib->getCurrentPlaylistName();
+    plname = new char[ strlen(buffer) + 1 ];
+    strcpy(plname, buffer);
+  }
 
   IdSequence* seq = new IdSequence();
   if(!seq->parseAdd(seq_str)) {
@@ -370,7 +379,7 @@ PatternParser::parseHistorySequence() {
   }
 
   // Get id of referenced pattern (history indexes start at 0)
-  n = (strlen(currArg) == 0) ? 0 : charToId(currArg) - 1;
+  n = (currArg == seq_str - 1) ? 0 : charToId(currArg) - 1;
 
   // Get the history sequence node
   if(n >= 0 && n < history.size()) {

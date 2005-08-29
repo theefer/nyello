@@ -4,7 +4,7 @@
 Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   playback = new Playback(connection);
   medialib = new MediaLibrary(connection);
-  pparser  = new PatternParser(playback);
+  pparser  = new PatternParser(playback, medialib);
   output   = new Output();
 
 

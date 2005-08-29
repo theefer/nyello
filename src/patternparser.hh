@@ -3,6 +3,7 @@
 
 
 #include "playback.hh"
+#include "medialibrary.hh"
 #include "patternnodes.hh"
 #include "patternquery.hh"
 #include "sequence.hh"
@@ -25,13 +26,14 @@ public:
   static const int MAX_HISTORY_LEN  = 10;
 
 
-  PatternParser(Playback* playback);
+  PatternParser(Playback* playback, MediaLibrary* medialib);
   ~PatternParser();
 
   PatternQuery* registerNewPattern(char** arguments, int numArgs);
 
 private:
-  Playback* playback;
+  Playback*     playback;
+  MediaLibrary* medialib;
   deque<PatternQuery*> history;
 
   int numArgs;

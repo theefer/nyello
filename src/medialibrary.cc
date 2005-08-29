@@ -234,11 +234,10 @@ MediaLibrary::searchSongs(PatternQuery* query) {
   lastRes = xmmsc_medialib_select(connection, sql);
   xmmsc_result_wait(lastRes);
 
-  if(!xmmsc_result_list_valid(lastRes)) {
+  if(xmmsc_result_iserror(lastRes)) {
     return NULL;
   }
 
-  // FIXME: When would we use QuerySongList then?
   songlist = new QuerySongList(lastRes, connection);
   query->saveResults(songlist);
   return songlist;  

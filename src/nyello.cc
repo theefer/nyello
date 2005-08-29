@@ -30,11 +30,12 @@
   * P   PLAY             Start playback.
   * P   PAUSE            Pause playback.
   * S   STOP [option]    Stop playback (option: now, graceful, end)
-        SEEK     [?]
+    K   SEEK     [?]
   
   * R   PREVIOUS [offset] Play previous song in the current playlist.
   * N   NEXT     [offset] Play next song in the current playlist.
-        JUMP     [?]      (WARNING: pattern? or "location"?)
+-   J   JUMP     [pos|offset] Jump to given position in the current playlist
+                              or to a given offset (if starts by +/-)
   
 +   I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
                          playing song if no pattern.
@@ -46,16 +47,18 @@
   * L   LIST [playlist]  Display the list of songs in the given playlist, or the currently
                          playing playlist if no playlist given.
   
-    E   ENQUEUE <pattern> [IN <playlist>?]
-    R   REMOVE  <pattern>  Remove songs matching the pattern from the current playlist.
-    ?   ???     <id-sequence>  Remove songs of given position from the current playlist.
-    C   CLEAR   [playlist] Clear the playlist (equivalent to REMOVE *)
++   E   ENQUEUE <pattern> [IN <playlist>?]
++   E+  INSERT  <pattern>
++   E-  REPLACE <pattern>
+    X   EXCLUDE <pattern>  Remove songs matching the pattern from the current playlist.
+??? ?   REMOVE  <id-sequence>  Remove songs of given position from the current playlist.
+-   C   CLEAR   [playlist] Clear the playlist (equivalent to REMOVE *)
 
   * PL  PLAYLIST-LIST            List the existing playlists.
   * PS  PLAYLIST-SAVE-AS <name>  Save the current playlist as a new playlist.
   * PU  PLAYLIST-USE     <name>  Use the given playlist as current playlist.
   * PR  PLAYLIST-REMOVE  <name>  Delete the given playlist.
-    PU  PLAYLIST-SHUFFLE [name]
+-   PU  PLAYLIST-SHUFFLE [name]
 
     PF  PLAYLIST-FEED    <collection>  Make the current playlist a dynamic playlist of
                                        the given collection, i.e. insert random songs

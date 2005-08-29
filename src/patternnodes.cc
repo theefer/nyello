@@ -123,7 +123,9 @@ PatternOperatorNot::~PatternOperatorNot() { }
 PatternCondition::~PatternCondition() { }
 PatternMatchCondition::~PatternMatchCondition() { }
 PatternMLibSequence::~PatternMLibSequence() { }
-PatternPlaylistSequence::~PatternPlaylistSequence() { }
+PatternPlaylistSequence::~PatternPlaylistSequence() {
+  delete plname;
+}
 
 
 /*  == APPEND TO QUERY == */
@@ -179,10 +181,12 @@ PatternPlaylistSequence::appendToQuery(MedialibQuery* query) {
                       "SELECT substr(entry, 8, 10) "
                       "FROM PlaylistEntries, Playlist "
                       "WHERE substr(entry, 0, 7)=\"mlib://\" AND "
-                      "      playlist_id=id AND "
-                      "      name=");
+                            "playlist_id=id AND "
+                            "name=");
   query->appendProtectedString(plname);
-  query->appendString(" AND ");
-  query->appendSequence("pos", seq);
+  if(!seq->empty()) {
+    query->appendString(" AND ");
+    query->appendSequence("pos", seq);
+  }
   query->appendString(" ORDER BY pos)");
 }

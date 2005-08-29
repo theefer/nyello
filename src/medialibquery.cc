@@ -89,12 +89,15 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
   if(seq->hasValues()) {
     list<unsigned int>::iterator valIt;
     list<unsigned int> val = seq->getValues();
-    appendString("id IN (");
+    appendString(label);
+    appendString(" IN (");
     for(valIt = val.begin(); valIt != val.end(); ++valIt) {
+      if(!first)
+        appendString(",");
       appendString(*valIt);
+      first = false;
     }
     appendString(")");
-    first = false;
   }
 
   // Append ranges
@@ -106,9 +109,12 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
         appendString(" OR ");
 
       appendStartGroup();
-      appendString("id >= ");
+      appendString(label);
+      appendString(" >= ");
       appendString((*rgIt).first);
-      appendString(" AND id <= ");
+      appendString(" AND ");
+      appendString(label);
+      appendString(" <= ");
       appendString((*rgIt).second);
       appendEndGroup();
       first = false;
@@ -120,7 +126,8 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
     if(!first)
       appendString(" OR ");
 
-    appendString("id <= ");
+    appendString(label);
+    appendString(" <= ");
     appendString(seq->getRangeToMax());
     first = false;
   }
@@ -128,7 +135,8 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
     if(!first)
       appendString(" OR ");
 
-    appendString("id >= ");
+    appendString(label);
+    appendString(" >= ");
     appendString(seq->getRangeFromMin());
     first = false;
   }
@@ -143,12 +151,9 @@ MedialibQuery::getQuery() {
   char* query_ret;
 
   // Append select
-  query << "SELECT DISTINCT m0.id FROM ";
-  for(i = 0; i < aliasCount; ++i) {
-    if(i > 0) {
-      query << ", ";
-    }
-    query << "Media as m" << i;
+  query << "SELECT DISTINCT m0.id FROM Media as m0";
+  for(i = 1; i < aliasCount; ++i) {
+    query << ", Media as m" << i;
   }
 
   // Append conditions

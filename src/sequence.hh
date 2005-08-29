@@ -30,6 +30,8 @@ public:
 
   bool contains(T elem);
 
+  bool empty();
+
   inline bool hasValues() { return !values.empty(); }
   inline list<T> getValues() { return values; }
 
@@ -201,7 +203,8 @@ Sequence<T>::contains(T elem) {
   list<pair<unsigned int,unsigned int> >::iterator rangeIt;
 
   // In semi-bounded ranges?
-  if(elem <= rangeToMax || elem >= rangeFromMin) {
+  if((rangeToMaxIsset && elem <= rangeToMax) ||
+     (rangeFromMinIsset && elem >= rangeFromMin)) {
     return true;
   }
 
@@ -238,6 +241,12 @@ Sequence<T>::contains(T elem) {
   return false;
 }
 
+template <class T>
+bool
+Sequence<T>::empty() {
+  return (!hasRangeToMax() && !hasRangeFromMin()
+          && values.empty() && ranges.empty());
+}
 
 /**
  * A bit of a hack, but allows us to convert a string to type T.

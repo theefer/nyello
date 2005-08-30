@@ -78,7 +78,8 @@ Dispatcher::loop() {
     }
 
     add_history(input);
-    execute(input);
+    parseInput(input);
+    dispatch();
 
   } while(true);
 
@@ -89,9 +90,20 @@ Dispatcher::loop() {
  * Parse the input and execute the action.
  */
 void
-Dispatcher::execute(char* input) {
+Dispatcher::execute(int num_args, char* args[]) {
+  command = *args;
+  argNumber = num_args - 1;
+  arguments = args + 1;
+
+  dispatch();
+}
+
+/**
+ * Execute the current command.
+ */
+void
+Dispatcher::dispatch() {
   DispFnPtr fn_ptr;
-  parseInput(input);
   if(commandList.find(command) != commandList.end()) {
     fn_ptr = commandList[command];
     (this->*fn_ptr)();

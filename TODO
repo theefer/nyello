@@ -11,9 +11,9 @@
   [X] Test the output module (list songs, current playlist, given playlist)
   [X] More features in output (selection, counter column, align, zero-count of songs in playlist)
   [X] Develop pattern representation
-  [+] Pattern parsing into the representation
-  [ ] Command-line arguments to the program parsed as commands
-R [ ] Pattern testing with medialib (info, enqueue)
+  [X] Pattern parsing into the representation
+  [X] Command-line arguments to the program parsed as commands
+R [+] Pattern testing with medialib (info, enqueue)
 R [ ] More commands (remove, status, clear, playlist-shuffle, filter)
   [ ] Make readline use async, redesign main-loop, remove waits
   [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
@@ -30,3 +30,6 @@ Other stuff:
 - When no metadata is present, display Title=filename
 - Free all the allocated memory, i.e. fix the leaks!
 - Correct display, using wcs instead of str?
+
+* Playlist sequence: seq shouldn't have ids starting at 1, but at 0!
+  generalize?

@@ -510,8 +510,8 @@ PatternParser::padHistory() {
 
 
 /**
- * Convert a char* string into the integer number contained in that
- * string.
+ * Convert a char* string into the integer number contained at the
+ * beginning of that string.
  */
 unsigned int
 PatternParser::charToId(char* number) {
@@ -519,8 +519,8 @@ PatternParser::charToId(char* number) {
   int radix = 10;
   unsigned int value = strtol(number, &end, radix);
 
-  // Error: not all characters were parsed
-  if(end != (number + strlen(number))) {
+  // No character was parsed
+  if(end == number) {
     // FIXME: NO! but how to return the error?
     return 0;
   }

@@ -174,11 +174,9 @@ int main(int argc, char* argv[]) {
   // Everything is fine, we can run the dispatcher
   else {
     disp = new Dispatcher(connection);
-    /* FIXME: need method overloading
     if(argc > 1)
-      disp->execute(argv + 1, argc - 1);
+      disp->execute(argc - 1, argv + 1);
     else
-    */
       disp->loop();
   }
 

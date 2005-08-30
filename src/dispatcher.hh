@@ -48,7 +48,8 @@ public:
   ~Dispatcher();
 
   void loop();
-  void execute(char* input);
+  void execute(int num_args, char* args[]);
+  void dispatch();
 
 
 private:

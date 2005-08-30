@@ -228,19 +228,30 @@ MediaLibrary::hasPlaylist(char* name) {
  */
 QuerySongList*
 MediaLibrary::searchSongs(PatternQuery* query) {
-  QuerySongList* songlist;
-  char* sql = query->getSql();
-  cout << "QUERY: " << query->getSql() << endl;
-  lastRes = xmmsc_medialib_select(connection, sql);
-  xmmsc_result_wait(lastRes);
+  return performQuery(query);  
+}
 
-  if(xmmsc_result_iserror(lastRes)) {
-    return NULL;
+/**
+ * Enqueue all songs matching the given query to the current playlist.
+ */
+void
+MediaLibrary::enqueueSongs(PatternQuery* query) {
+  QuerySongList* songlist = performQuery(query);
+  songlist->rewind();
+  while(songlist->isValid()) {
+    xmmsc_playlist_add_id(connection, songlist->getId());
+    songlist->next();
   }
+}
 
-  songlist = new QuerySongList(lastRes, connection);
-  query->saveResults(songlist);
-  return songlist;  
+void
+MediaLibrary::insertSongs(PatternQuery* query) {
+  // FIXME: Foreach song, insert
+}
+
+void
+MediaLibrary::replaceSongs(PatternQuery* query) {
+  // FIXME: Foreach song, replace
 }
 
 
@@ -253,30 +264,21 @@ MediaLibrary::getCurrentPlaylistName() {
 }
 
 
-/**
- * Builds a vector of medialib ids from a result set.
- */
-vector<int>*
-MediaLibrary::getEntryVector(xmmsc_result_t* res) {
-  vector<int>* entries = new vector<int>();
-  char* entry;
+QuerySongList*
+MediaLibrary::performQuery(PatternQuery* query) {
+  QuerySongList* songlist;
+  char* sql = query->getSql();
+  cout << "QUERY: " << query->getSql() << endl;
+  lastRes = xmmsc_medialib_select(connection, sql);
+  xmmsc_result_wait(lastRes);
 
-  while(xmmsc_result_list_valid(res)) {
-    // Get the next playlist entry, error if NULL
-    xmmsc_result_get_dict_entry_str(res, "entry", &entry);
-    if(!entry) {
-      return NULL;
-    }
-
-    // FIXME: Only keep medialib entries?
-    if(strncasecmp(entry, "mlib://", 7) == 0) {
-      entries->push_back(atoi(entry + 7));
-    }
-
-    xmmsc_result_list_next (res);
+  if(xmmsc_result_iserror(lastRes)) {
+    return NULL;
   }
 
-  return entries;
+  songlist = new QuerySongList(lastRes, connection);
+  query->saveResults(songlist);
+  return songlist;
 }
 
 

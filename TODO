@@ -14,7 +14,14 @@
   [X] Pattern parsing into the representation
   [X] Command-line arguments to the program parsed as commands
 R [+] Pattern testing with medialib (info, enqueue)
+  ==> v0.1
+
+  [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
+  [ ] Improve help (command line -h and per-command)
+  [ ] New enqueue methods (replace, insert) when available in clientlib
 R [ ] More commands (remove, status, clear, playlist-shuffle, filter)
+  ==> v0.2
+
   [ ] Make readline use async, redesign main-loop, remove waits
   [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
 R [ ] Design proper abstraction layer (all async events, current PL, collections)
@@ -24,12 +31,12 @@ R [ ] Handle collections internally (enter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
 Other stuff:
-- other list modifiers than ENQUEUE: REPLACE, INSERT?
 - ignore and protect playlists starting with '_'
 - read the XMMS_PATH env var to open the server connection
 - When no metadata is present, display Title=filename
 - Free all the allocated memory, i.e. fix the leaks!
 - Correct display, using wcs instead of str?
 
+Check:
 * Playlist sequence: seq shouldn't have ids starting at 1, but at 0!
   generalize?

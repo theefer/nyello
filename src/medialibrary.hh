@@ -36,6 +36,10 @@ public:
 
   QuerySongList* searchSongs(PatternQuery* query);
 
+  void enqueueSongs(PatternQuery* query);
+  void insertSongs(PatternQuery* query);
+  void replaceSongs(PatternQuery* query);
+
   Collection* newCollection();
   Collection* getCollection(char* name);
   Collection* getCollections();
@@ -52,7 +56,7 @@ private:
 
   char* currentPlaylistName;
 
-  vector<int>* getEntryVector(xmmsc_result_t* res);
+  QuerySongList* performQuery(PatternQuery* query);
 
 };
 

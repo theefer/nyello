@@ -37,12 +37,11 @@
 -   J   JUMP     [pos|offset] Jump to given position in the current playlist
                               or to a given offset (if starts by +/-)
   
-+   I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
+  * I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
                          playing song if no pattern.
 
 -   F   FILTER <pattern> Display the current (i.e. latest) pattern filter used, and set 
-                         it to the given pattern.  If empty, the pattern is emptied, if 
-                         just "-" the pattern is kept.
+                         it to the given pattern.
 
   * L   LIST [playlist]  Display the list of songs in the given playlist, or the currently
                          playing playlist if no playlist given.
@@ -50,9 +49,9 @@
 +   E   ENQUEUE <pattern> [IN <playlist>?]
 +   E+  INSERT  <pattern>
 +   E-  REPLACE <pattern>
-    X   EXCLUDE <pattern>  Remove songs matching the pattern from the current playlist.
-??? ?   REMOVE  <id-sequence>  Remove songs of given position from the current playlist.
--   C   CLEAR   [playlist] Clear the playlist (equivalent to REMOVE *)
+    X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
+??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
+-   C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
 
   * PL  PLAYLIST-LIST            List the existing playlists.
   * PS  PLAYLIST-SAVE-AS <name>  Save the current playlist as a new playlist.

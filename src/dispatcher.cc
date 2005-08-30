@@ -31,6 +31,9 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   commandList["l"]     = &Dispatcher::actionList;
   commandList["list"]  = &Dispatcher::actionList;
 
+  commandList["e"]       = &Dispatcher::actionEnqueue;
+  commandList["enqueue"] = &Dispatcher::actionEnqueue;
+
   commandList["pl"]               = &Dispatcher::actionPlaylistList;
   commandList["playlist-list"]    = &Dispatcher::actionPlaylistList;
   commandList["pu"]               = &Dispatcher::actionPlaylistUse;
@@ -293,7 +296,13 @@ Dispatcher::actionList() {
 
 void
 Dispatcher::actionEnqueue() {
-
+  PatternQuery* query;
+  query = pparser->registerNewPattern(arguments, argNumber);
+  if(query == NULL) {
+    cerr << "Error: failed to parse the pattern!" << endl;
+    return;
+  }
+  medialib->enqueueSongs(query);
 }
 
 

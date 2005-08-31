@@ -43,6 +43,17 @@ Playback::stop() {
   xmmsc_result_unref(lastRes);
 }
 
+
+/**
+ * Trigger the song change.
+ */
+void
+Playback::tickle() {
+  lastRes = xmmsc_playback_tickle(connection);
+  xmmsc_result_wait(lastRes);
+  xmmsc_result_unref(lastRes);
+}
+
 void
 Playback::jump(int offset) {
   lastRes = xmmsc_playlist_set_next_rel(connection, offset);
@@ -55,10 +66,7 @@ Playback::jump(int offset) {
   }
   xmmsc_result_unref(lastRes);
 
-  // Trigger the song change now
-  lastRes = xmmsc_playback_tickle(connection);
-  xmmsc_result_wait(lastRes);
-  xmmsc_result_unref(lastRes);
+  tickle();
 }
 
 void
@@ -99,39 +107,49 @@ Playback::isPaused() {
   return (getStatus() == XMMS_PLAYBACK_STATUS_PAUSE);
 }
 
-unsigned int
+/**
+ * Return the mlib id of the song currently playing, or -1 if there is
+ * no valid entry.
+ */
+int
 Playback::getCurrentId() {
-  unsigned int id;
+  int id;
   lastRes = xmmsc_playback_current_id(connection);
   xmmsc_result_wait(lastRes);
 
   if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Couldn't read current id: "
-         << xmmsc_result_get_error(lastRes) << endl;
+    id = -1;
   }
   else {
-    xmmsc_result_get_uint(lastRes, &id);
+    unsigned int uid;
+    xmmsc_result_get_uint(lastRes, &uid);
+    id = uid;
   }
   xmmsc_result_unref(lastRes);
   
   return id;
 }
 
-unsigned int
+/**
+ * Return the current position in the playlist, or -1 if there is no
+ * valid position.
+ */
+int
 Playback::getCurrentPosition() {
-  unsigned int pos;
+  int pos;
   lastRes = xmmsc_playlist_current_pos(connection);
   xmmsc_result_wait(lastRes);
 
   if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Couldn't read current position: "
-         << xmmsc_result_get_error(lastRes) << endl;
+    pos = -1;
   }
   else {
-    xmmsc_result_get_uint(lastRes, &pos);
+    unsigned int upos;
+    xmmsc_result_get_uint(lastRes, &upos);
+    pos = upos;
   }
   xmmsc_result_unref(lastRes);
-  
+
   return pos;
 }
 

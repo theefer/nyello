@@ -68,6 +68,7 @@ Output::printHelp() {
   cout << "   (l)  list               List the songs from a playlist"                 << endl;
   cout << "   (e)  enqueue            Enqueue all songs matching a pattern"           << endl;
   cout << "   (e+) insert             Insert all songs matching a pattern"            << endl;
+  cout << "   (e-) replace            Replace current song with all songs matching a pattern" << endl;
   cout << "   (pl) playlist-list      List all the existing playlists"                << endl;
   cout << "   (pu) playlist-use       Change the active playlist"                     << endl;
   cout << "   (ps) playlist-save-as   Save current playlist under a new name"         << endl;

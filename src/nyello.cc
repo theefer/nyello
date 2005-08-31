@@ -133,7 +133,7 @@
      Default rules:
 
        · If no pattern is given at all, the result of the pattern is
-         the current song ???
+         the current song
  */
 
 #include <iostream>

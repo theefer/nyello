@@ -22,6 +22,8 @@ public:
   void play();
   void pause();
   void stop();
+
+  void tickle();
   void jump(int offset);
   void seekAbsolute(int position);
   void seekRelative(int offset);
@@ -29,8 +31,8 @@ public:
   bool isPlaying();
   bool isPaused();
 
-  unsigned int getCurrentId();
-  unsigned int getCurrentPosition();
+  int getCurrentId();
+  int getCurrentPosition();
 
 private:
   xmmsc_connection_t* connection;

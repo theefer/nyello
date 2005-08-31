@@ -19,7 +19,11 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
 
   // FIXME: Find current playlist name or start with the autosaved playlist
   //        If no matching playlist, create a new one ("current-$N") and use it?
-  usePlaylist("autosaved");
+
+  // FIXME: Let's not mess with the PL on startup for now
+  //  usePlaylist("autosaved");
+
+  currentPlaylistName = "autosaved";
 
   // Setup signal hooks
   /* FIXME: segfault?
@@ -273,6 +277,22 @@ MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
     songlist->next();
     ++position;
   }
+}
+
+
+/**
+ * Remove the song at the given position from the playlist.
+ */
+void
+MediaLibrary::removeSongAt(unsigned int position) {
+  xmmsc_playlist_remove(connection, position);
+  xmmsc_result_wait(lastRes);
+  if(xmmsc_result_iserror(lastRes)) {
+    cerr << "Error: failed to remove song at position "
+         << position << ", server said: "
+         << xmmsc_result_get_error(lastRes) << endl;
+  }
+  xmmsc_result_unref(lastRes);
 }
 
 

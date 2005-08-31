@@ -14,12 +14,12 @@
   [X] Pattern parsing into the representation
   [X] Command-line arguments to the program parsed as commands
   [X] Pattern testing with medialib (info, enqueue)
-R [+] New enqueue methods (replace, insert) when available in clientlib
+  [X] New enqueue methods (replace, insert) when available in clientlib
   ==> v0.1
 
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [ ] Improve help (command line -h and per-command)
-R [ ] More commands (remove, status, clear, playlist-shuffle, filter)
+  [ ] More commands (remove, status, clear, playlist-shuffle, filter)
   ==> v0.2
 
   [ ] Make readline use async, redesign main-loop, remove waits

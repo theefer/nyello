@@ -35,6 +35,8 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   commandList["enqueue"] = &Dispatcher::actionEnqueue;
   commandList["e+"]      = &Dispatcher::actionInsert;
   commandList["insert"]  = &Dispatcher::actionInsert;
+  commandList["e-"]      = &Dispatcher::actionReplace;
+  commandList["replace"] = &Dispatcher::actionReplace;
 
   commandList["pl"]               = &Dispatcher::actionPlaylistList;
   commandList["playlist-list"]    = &Dispatcher::actionPlaylistList;
@@ -296,6 +298,10 @@ Dispatcher::actionList() {
 }
 
 
+/**
+ * Enqueue the songs matched by the given pattern at the end of the
+ * current playlist.
+ */
 void
 Dispatcher::actionEnqueue() {
   PatternQuery* query;
@@ -308,6 +314,10 @@ Dispatcher::actionEnqueue() {
 }
 
 
+/**
+ * Insert the songs matched by the given pattern in the current
+ * playlist, right after the current song.
+ */
 void
 Dispatcher::actionInsert() {
   PatternQuery* query;
@@ -318,14 +328,36 @@ Dispatcher::actionInsert() {
     return;
   }
   position = playback->getCurrentPosition() + 1;
-  cout << "insert song at " << position << endl;
-  medialib->insertSongs(query, position);
+  if(position > 0) {
+    medialib->insertSongs(query, position);
+  }
+  else {
+    medialib->enqueueSongs(query);
+  }
 }
 
 
+/**
+ * Replace the current song by the songs matched by the given pattern.
+ */
 void
 Dispatcher::actionReplace() {
-  // FIXME: Code it, using insert and then removing the current entry
+  PatternQuery* query;
+  unsigned int position;
+  query = pparser->registerNewPattern(arguments, argNumber);
+  if(query == NULL) {
+    cerr << "Error: failed to parse the pattern!" << endl;
+    return;
+  }
+  position = playback->getCurrentPosition() + 1;
+  if(position > 0) {
+    medialib->insertSongs(query, position);
+    medialib->removeSongAt(position - 1);
+    playback->jump(1);
+  }
+  else {
+    medialib->enqueueSongs(query);
+  }
 }
 
 

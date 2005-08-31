@@ -23,11 +23,14 @@ public:
   void pause();
   void stop();
   void jump(int offset);
+  void seekAbsolute(int position);
+  void seekRelative(int offset);
   
   bool isPlaying();
   bool isPaused();
 
   unsigned int getCurrentId();
+  unsigned int getCurrentPosition();
 
 private:
   xmmsc_connection_t* connection;

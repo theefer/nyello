@@ -61,6 +61,34 @@ Playback::jump(int offset) {
   xmmsc_result_unref(lastRes);
 }
 
+void
+Playback::seekAbsolute(int position) {
+  lastRes = xmmsc_playback_seek_ms(connection, position);
+  xmmsc_result_wait(lastRes);
+
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Couldn't seek in current song: "
+         << xmmsc_result_get_error(lastRes) << endl;
+    return;
+  }
+  xmmsc_result_unref(lastRes);
+}
+
+void
+Playback::seekRelative(int offset) {
+  int position;
+  position = 0;
+  // FIXME: Compute current-time + offset
+  /*
+  position = current() + offset;
+  if(position < 0) {
+    position = 0;
+  }
+  */
+  
+  seekAbsolute(position);
+}
+
 bool
 Playback::isPlaying() {
   return (getStatus() == XMMS_PLAYBACK_STATUS_PLAY);
@@ -87,6 +115,24 @@ Playback::getCurrentId() {
   xmmsc_result_unref(lastRes);
   
   return id;
+}
+
+unsigned int
+Playback::getCurrentPosition() {
+  unsigned int pos;
+  lastRes = xmmsc_playlist_current_pos(connection);
+  xmmsc_result_wait(lastRes);
+
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Couldn't read current position: "
+         << xmmsc_result_get_error(lastRes) << endl;
+  }
+  else {
+    xmmsc_result_get_uint(lastRes, &pos);
+  }
+  xmmsc_result_unref(lastRes);
+  
+  return pos;
 }
 
 unsigned int

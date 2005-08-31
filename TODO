@@ -13,12 +13,12 @@
   [X] Develop pattern representation
   [X] Pattern parsing into the representation
   [X] Command-line arguments to the program parsed as commands
-R [+] Pattern testing with medialib (info, enqueue)
+  [X] Pattern testing with medialib (info, enqueue)
+R [+] New enqueue methods (replace, insert) when available in clientlib
   ==> v0.1
 
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [ ] Improve help (command line -h and per-command)
-  [ ] New enqueue methods (replace, insert) when available in clientlib
 R [ ] More commands (remove, status, clear, playlist-shuffle, filter)
   ==> v0.2
 

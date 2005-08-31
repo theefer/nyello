@@ -239,19 +239,40 @@ MediaLibrary::enqueueSongs(PatternQuery* query) {
   QuerySongList* songlist = performQuery(query);
   songlist->rewind();
   while(songlist->isValid()) {
-    xmmsc_playlist_add_id(connection, songlist->getId());
+    lastRes = xmmsc_playlist_add_id(connection, songlist->getId());
+    xmmsc_result_wait(lastRes);
+    if(xmmsc_result_iserror(lastRes)) {
+      cerr << "Error: couldn't add song #" << songlist->getId()
+           << ", server said: "
+           << xmmsc_result_get_error(lastRes) << endl;
+    }
+    xmmsc_result_unref(lastRes);
+
     songlist->next();
   }
 }
 
+/**
+ * Insert all songs matching the given query in the current playlist
+ * at the given position.
+ */
 void
-MediaLibrary::insertSongs(PatternQuery* query) {
-  // FIXME: Foreach song, insert
-}
+MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
+  QuerySongList* songlist = performQuery(query);
+  songlist->rewind();
+  while(songlist->isValid()) {
+    lastRes = xmmsc_playlist_insert_id(connection, position, songlist->getId());
+    xmmsc_result_wait(lastRes);
+    if(xmmsc_result_iserror(lastRes)) {
+      cerr << "Error: couldn't add song #" << songlist->getId()
+           << " at position " << position << ", server said: "
+           << xmmsc_result_get_error(lastRes) << endl;
+    }
+    xmmsc_result_unref(lastRes);
 
-void
-MediaLibrary::replaceSongs(PatternQuery* query) {
-  // FIXME: Foreach song, replace
+    songlist->next();
+    ++position;
+  }
 }
 
 

@@ -33,6 +33,8 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
 
   commandList["e"]       = &Dispatcher::actionEnqueue;
   commandList["enqueue"] = &Dispatcher::actionEnqueue;
+  commandList["e+"]      = &Dispatcher::actionInsert;
+  commandList["insert"]  = &Dispatcher::actionInsert;
 
   commandList["pl"]               = &Dispatcher::actionPlaylistList;
   commandList["playlist-list"]    = &Dispatcher::actionPlaylistList;
@@ -303,6 +305,27 @@ Dispatcher::actionEnqueue() {
     return;
   }
   medialib->enqueueSongs(query);
+}
+
+
+void
+Dispatcher::actionInsert() {
+  PatternQuery* query;
+  unsigned int position;
+  query = pparser->registerNewPattern(arguments, argNumber);
+  if(query == NULL) {
+    cerr << "Error: failed to parse the pattern!" << endl;
+    return;
+  }
+  position = playback->getCurrentPosition() + 1;
+  cout << "insert song at " << position << endl;
+  medialib->insertSongs(query, position);
+}
+
+
+void
+Dispatcher::actionReplace() {
+  // FIXME: Code it, using insert and then removing the current entry
 }
 
 

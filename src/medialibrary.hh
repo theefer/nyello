@@ -37,8 +37,7 @@ public:
   QuerySongList* searchSongs(PatternQuery* query);
 
   void enqueueSongs(PatternQuery* query);
-  void insertSongs(PatternQuery* query);
-  void replaceSongs(PatternQuery* query);
+  void insertSongs(PatternQuery* query, unsigned int position);
 
   Collection* newCollection();
   Collection* getCollection(char* name);

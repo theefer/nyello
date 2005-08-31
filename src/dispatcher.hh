@@ -92,6 +92,8 @@ private:
   void actionList();
 
   void actionEnqueue();
+  void actionInsert();
+  void actionReplace();
   void actionRemove();
 
   void actionPlaylistList();

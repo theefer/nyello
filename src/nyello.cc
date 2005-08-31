@@ -46,8 +46,8 @@
   * L   LIST [playlist]  Display the list of songs in the given playlist, or the currently
                          playing playlist if no playlist given.
   
-+   E   ENQUEUE <pattern> [IN <playlist>?]
-+   E+  INSERT  <pattern>
+  * E   ENQUEUE <pattern> [IN <playlist>?]
+  * E+  INSERT  <pattern>
 +   E-  REPLACE <pattern>
     X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
 ??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.

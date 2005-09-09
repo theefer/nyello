@@ -13,7 +13,7 @@ CounterColumn::~CounterColumn() { }
 
 void
 CounterColumn::reset() {
-  counter = 0;
+  counter = 1;
 }
 
 char*

@@ -17,8 +17,11 @@
   [X] New enqueue methods (replace, insert) when available in clientlib
   ==> v0.1
 
+  [X] Make result counter start at 0 and adapt sequences to match that
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [ ] Improve help (command line -h and per-command)
+  [+] Improve pattern features (orderby, comparators)
+  [ ] Fix operator bugs (NOT and XOR not working?)
   [ ] More commands (remove, status, clear, playlist-shuffle, filter)
   ==> v0.2
 
@@ -31,12 +34,9 @@ R [ ] Handle collections internally (enter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
 Other stuff:
-- ignore and protect playlists starting with '_'
-- read the XMMS_PATH env var to open the server connection
-- When no metadata is present, display Title=filename
-- Free all the allocated memory, i.e. fix the leaks!
-- Correct display, using wcs instead of str?
+  [ ] Ignore and protect playlists starting with '_'
+  [ ] Read the XMMS_PATH env var to open the server connection
+  [ ] When no metadata is present, display Title=filename
+  [ ] Free all the allocated memory, i.e. fix the leaks!
+  [ ] Correct display, using wcs instead of str?
 
-Check:
-* Playlist sequence: seq shouldn't have ids starting at 1, but at 0!
-  generalize?

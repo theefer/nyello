@@ -41,7 +41,7 @@ PatternQuery::getIdsFromSequence(IdSequence* seq) {
 
   int c;
   vector<unsigned int>::iterator it;
-  for(it = resultCache.begin(), c = 0; it != resultCache.end(); ++it, ++c) {
+  for(it = resultCache.begin(), c = 1; it != resultCache.end(); ++it, ++c) {
     if(seq->contains(c)) {
       res_seq->addValue(*it);
     }

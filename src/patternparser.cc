@@ -13,7 +13,7 @@ PatternParser::~PatternParser() {
 PatternQuery*
 PatternParser::registerNewPattern(char** _arguments, int _numArgs) {
   PatternNode* top;
-  PatternQuery* newQuery;
+  PatternQuery* newQuery = NULL;
   char* use_order;
 
   // Init member vars
@@ -88,11 +88,13 @@ PatternParser::parseGroup() {
 
     // New group: add it to the list
     if(parseGroupStart()) {
+      nextArgument();
       elem = parseGroup();
     }
 
     // Done parsing this group, quit the loop
     else if(parseGroupEnd()) {
+      nextArgument();
       break;
     }
 
@@ -114,6 +116,8 @@ PatternParser::parseGroup() {
     if(elem != NULL) {
       operands->push_back(elem);
     }
+
+    nextArgument();
   }
 
   // Pass operands to the operator
@@ -158,10 +162,6 @@ PatternParser::parseOperator() {
   }
   else if((strcmp(currArg, "NOT") == 0) || (strcmp(currArg, "^") == 0)) {
     op = new PatternOperatorNot();
-  }
-
-  if(op != NULL) {
-    nextArgument();
   }
 
   return op;
@@ -209,11 +209,6 @@ PatternParser::parseCondition() {
     cond = new PatternMatchCondition(currArg);
   }
 
-
-  if(cond != NULL) {
-    nextArgument();
-  }
-
   return cond;
 }
 
@@ -223,10 +218,7 @@ PatternParser::parseCondition() {
  */
 bool
 PatternParser::parseGroupStart() {
-  bool retval = (strcmp(currArg, "(") == 0);
-  if(retval)
-    nextArgument();
-  return retval;
+  return (strcmp(currArg, "(") == 0);
 }
 
 
@@ -235,10 +227,7 @@ PatternParser::parseGroupStart() {
  */
 bool
 PatternParser::parseGroupEnd() {
-  bool retval = (strcmp(currArg, ")") == 0);
-  if(retval)
-    nextArgument();
-  return retval;
+  return (strcmp(currArg, ")") == 0);
 }
 
 

@@ -245,12 +245,12 @@ PatternParser::parseShortMatchFlags() {
   // Get next token as unparsed value
   value = nextArgument();
   if(currIndex >= numArgs) {
-    cerr << "Error: flag '" << flags << "' without value ignored!" << endl;
+    cerr << "Warning: flag '" << flags << "' without value ignored!" << endl;
     return NULL;
   }
 
   if(strlen(flags) == 0) {
-    cerr << "Error: an empty flag '-' and its value were ignored!" << endl;
+    cerr << "Warning: an empty flag '-' and its value were ignored!" << endl;
     return NULL;
   }
 

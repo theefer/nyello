@@ -19,7 +19,7 @@
 
   [X] Make result counter start at 0 and adapt sequences to match that
   [X] Fix bug causing endless loop for "INFO +99"
-  [ ] Avoid invalid queries ("WHERE ()")
+  [X] Avoid invalid queries ("WHERE ()")
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [ ] Improve help (command line -h and per-command)
   [+] Improve pattern features (orderby, comparators)

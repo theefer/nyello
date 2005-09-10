@@ -83,6 +83,14 @@ MedialibQuery::appendApproxMatch(char* field, char* value) {
 void
 MedialibQuery::appendSequence(char* label, IdSequence* seq) {
   bool first = true;
+
+  // Empty sequence: append FALSE
+  if(seq->empty()) {
+    appendString("0");
+    return;
+  }
+
+
   appendStartGroup();
 
   // Append individual values

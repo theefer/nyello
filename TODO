@@ -41,4 +41,5 @@ Other stuff:
   [ ] When no metadata is present, display Title=filename
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] Correct display, using wcs instead of str?
+  [ ] The NOT operator simply doesn't work at all (bad design)
 

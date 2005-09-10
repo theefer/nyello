@@ -134,7 +134,9 @@ PatternParser::parseGroup() {
     delete currOperator;
     delete operands;
   }
-  else if(operands->size() == 1) {
+  // FIXME: Would be better handled *in* setOperands()
+  else if((operands->size() == 1)
+          && (currOperator->getOperatorId() != PatternOperator::OPERATOR_NOT)) {
     group = operands->front();
     delete currOperator;
     delete operands;

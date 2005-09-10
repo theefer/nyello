@@ -151,7 +151,6 @@ PatternOperator::appendToQuery(MedialibQuery* query) {
 
 void
 PatternOperatorNot::appendToQuery(MedialibQuery* query) {
-  PatternNodeList::iterator it;
   query->appendStartGroup();
   query->appendString("NOT ");
   (operands->front())->appendToQuery(query);

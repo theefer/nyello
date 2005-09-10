@@ -103,8 +103,11 @@ PatternParser::parseGroup() {
       if(currOperator == NULL) {
         currOperator = newOperator;
       }
-      else if(currOperator->getOperatorId() != newOperator->getOperatorId()) {
-        cerr << "Error: different operators found in the same group!" << endl;
+      else {
+        if(currOperator->getOperatorId() != newOperator->getOperatorId()) {
+          cerr << "Warning: different operators found in the same group, keeping first!" << endl;
+        }
+        delete newOperator;
       }
     }
 
@@ -120,23 +123,25 @@ PatternParser::parseGroup() {
     nextArgument();
   }
 
+  // No operator in the group, default to AND
+  if(currOperator == NULL) {
+    currOperator = new PatternOperatorAnd();
+  }
+
   // Pass operands to the operator
-  if(currOperator != NULL) {
+  if(operands->size() == 0) {
+    group = NULL;
+    delete currOperator;
+    delete operands;
+  }
+  else if(operands->size() == 1) {
+    group = operands->front();
+    delete currOperator;
+    delete operands;
+  }
+  else {
     currOperator->setOperands(operands);
     group = currOperator;
-  }
-  // No operator in the group
-  else {
-    if(operands->size() == 0)
-      group = NULL;
-    else if(operands->size() == 1)
-      group = operands->front();
-    else {
-      // FIXME: several operands but no operator: AND implied?
-      currOperator = new PatternOperatorAnd();
-      currOperator->setOperands(operands);
-      group = currOperator;
-    }
   }
 
   return group;

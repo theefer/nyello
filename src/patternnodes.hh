@@ -24,6 +24,9 @@ private:
 
 class PatternOperator : public PatternNode {
 public:
+  PatternOperator(int operId);
+  ~PatternOperator();
+
   static const int OPERATOR_AND = 0;
   static const int OPERATOR_OR  = 1;
   static const int OPERATOR_XOR = 2;
@@ -35,9 +38,6 @@ public:
   inline int getOperatorId() { return operatorId; }
 
 protected:
-  PatternOperator(int operId);
-  ~PatternOperator();
-
   PatternNodeList* operands;
 
 private:

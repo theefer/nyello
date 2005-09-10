@@ -49,4 +49,4 @@ depend:
 	makedepend $(CXXFLAGS) -Y $(SRC)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) *~

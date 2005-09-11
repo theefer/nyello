@@ -11,7 +11,6 @@ using namespace std;
 #include <xmmsclient/xmmsclient.h>
 
 
-
 /**
  *
  */
@@ -20,8 +19,6 @@ public:
 
   MedialibQuery();
   ~MedialibQuery();
-
-  inline void setOrderBy(char* order) { orderby = order; }
 
   void appendStartGroup();
   void appendEndGroup();
@@ -37,6 +34,8 @@ public:
 
   void appendSequence(char* label, IdSequence* seq);
 
+  void appendOrderBy(char* field, bool asc);
+
   char* getQuery();
 
 private:
@@ -44,8 +43,12 @@ private:
   char* ANY_FIELDS; // = "('artist','album')";
 
   int aliasCount;
+  int orderCount;
+  stringstream joins;
   string conditions;
-  char* orderby;
+  string orderby;
+
+  void appendThisOrderField(char* field);
 
   void appendAnyField();
   void appendThisField(char* field);
@@ -54,6 +57,7 @@ private:
 
   void appendCurrentKey();
   void appendCurrentValue();
+  void appendCurrentField(char* field);
 };
 
 #endif  // __MEDIALIBQUERY_HH__

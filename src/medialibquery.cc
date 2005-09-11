@@ -2,8 +2,9 @@
 
 
 MedialibQuery::MedialibQuery() {
-  orderby = NULL;
+  orderby = "";
   aliasCount = 0;
+  orderCount = 0;
   conditions = "";
 
   // FIXME: Add all; and can't we do it in a clean way?
@@ -11,9 +12,6 @@ MedialibQuery::MedialibQuery() {
 }
 
 MedialibQuery::~MedialibQuery() {
-  if(orderby != NULL) {
-    delete orderby;
-  }
 }
 
 void
@@ -97,6 +95,7 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
   if(seq->hasValues()) {
     list<unsigned int>::iterator valIt;
     list<unsigned int> val = seq->getValues();
+    //FIXME: ??? appendCurrentField(label);
     appendString(label);
     appendString(" IN (");
     for(valIt = val.begin(); valIt != val.end(); ++valIt) {
@@ -152,6 +151,24 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
   appendEndGroup();
 }
 
+void
+MedialibQuery::appendOrderBy(char* field, bool asc) {
+  stringstream buffer;
+  appendThisOrderField(field);
+
+  if(!orderby.empty()) {
+    buffer << ", ";
+  }
+  buffer << "j" << orderCount << ".value";
+  if(!asc) {
+    buffer << " DESC";
+  }
+  orderby += buffer.str();
+
+  ++orderCount;
+}
+
+
 char*
 MedialibQuery::getQuery() {
   int i;
@@ -163,6 +180,7 @@ MedialibQuery::getQuery() {
   for(i = 1; i < aliasCount; ++i) {
     query << ", Media as m" << i;
   }
+  query << joins.str();
 
   // Append conditions
   if((aliasCount > 0) || !conditions.empty()) {
@@ -179,7 +197,7 @@ MedialibQuery::getQuery() {
   }
 
   // Append ordering
-  if(orderby != NULL) {
+  if(!orderby.empty()) {
     query << " ORDER BY " << orderby;
   }
 
@@ -195,6 +213,14 @@ MedialibQuery::appendAnyField() {
   appendCurrentKey();
   appendString(" IN ");
   appendString(ANY_FIELDS);
+}
+
+void
+MedialibQuery::appendThisOrderField(char* field) {
+  joins << " LEFT JOIN Media as j" << orderCount
+        << " ON m0.id=j" << orderCount << ".id"
+        << " AND j" << orderCount << ".key = "
+        << xmmsc_sqlite_prepare_string(field);
 }
 
 void
@@ -229,16 +255,18 @@ MedialibQuery::appendExactValue(char* value) {
 
 void
 MedialibQuery::appendCurrentKey() {
-  // FIXME: Other way to append int?
-  stringstream buffer;
-  buffer << "m" << aliasCount << ".key";
-  conditions += buffer.str();
+  appendCurrentField("key");
 }
 
 void
 MedialibQuery::appendCurrentValue() {
+  appendCurrentField("value");
+}
+
+void
+MedialibQuery::appendCurrentField(char* field) {
   // FIXME: Other way to append int?
   stringstream buffer;
-  buffer << "m" << aliasCount << ".value";
+  buffer << "m" << aliasCount << "." << field;
   conditions += buffer.str();
 }

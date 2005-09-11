@@ -171,12 +171,12 @@ PatternMatchCondition::appendToQuery(MedialibQuery* query) {
 
 void
 PatternMLibSequence::appendToQuery(MedialibQuery* query) {
-  query->appendSequence("id", seq);
+  query->appendSequence("m0.id", seq);
 }
 
 void
 PatternPlaylistSequence::appendToQuery(MedialibQuery* query) {
-  query->appendString("id IN ("
+  query->appendString("m0.id IN ("
                       "SELECT substr(entry, 8, 10) "
                       "FROM PlaylistEntries, Playlist "
                       "WHERE substr(entry, 0, 7)=\"mlib://\" AND "

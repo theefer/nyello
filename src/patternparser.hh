@@ -42,8 +42,8 @@ private:
   int currIndex;
   char* currArg;
 
-  char* orderby;
-  char* defaultOrderby;
+  OrderByList* orderby;
+  OrderByList* defaultOrderBy;
 
   char* nextArgument();
 
@@ -62,6 +62,8 @@ private:
   PatternNode* parsePlaylistSequence();
   PatternNode* parseHistorySequence();
   PatternNode* parseMLibSequence();
+
+  OrderByList* parseOrderBy(char* orderstr);
 
   PatternCondition* buildMatchCondition(char  flag, char* value);
   PatternCondition* buildMatchCondition(char* flag, char* value);

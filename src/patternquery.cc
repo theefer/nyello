@@ -1,10 +1,14 @@
 #include "patternquery.hh"
 
 
-PatternQuery::PatternQuery(PatternNode* top, char* orderby) : topNode(top) {
+PatternQuery::PatternQuery(PatternNode* top, OrderByList* orderby) : topNode(top) {
+  OrderByList::iterator it;
   queryCache = new MedialibQuery();
-  queryCache->setOrderBy(orderby);
   topNode->appendToQuery(queryCache);
+
+  for(it = orderby->begin(); it != orderby->end(); ++it) {
+    queryCache->appendOrderBy((*it).first, (*it).second);
+  }
 }
 
 PatternQuery::~PatternQuery() {

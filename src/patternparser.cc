@@ -3,6 +3,12 @@
 
 PatternParser::PatternParser(Playback* _playback, MediaLibrary* _medialib)
   : playback(_playback), medialib(_medialib) {
+
+  defaultOrderBy = new OrderByList();
+  defaultOrderBy->push_back(pair<char*,bool>("artist",  true));
+  defaultOrderBy->push_back(pair<char*,bool>("album",   true));
+  defaultOrderBy->push_back(pair<char*,bool>("tracknr", true));
+  defaultOrderBy->push_back(pair<char*,bool>("url",     true));
 }
 
 
@@ -14,16 +20,17 @@ PatternQuery*
 PatternParser::registerNewPattern(char** _arguments, int _numArgs) {
   PatternNode* top;
   PatternQuery* newQuery = NULL;
-  char* use_order;
+  OrderByList* use_order;
 
   // Init member vars
   arguments = _arguments;
   numArgs = _numArgs;
+  orderby = NULL;
 
   // Generate query object and push it in history
   top = parse();
   if(top != NULL) {
-    use_order = (orderby == NULL) ? defaultOrderby : orderby;
+    use_order = (orderby == NULL) ? defaultOrderBy : orderby;
     newQuery = new PatternQuery(top, use_order);
     history.push_front(newQuery);
     padHistory();
@@ -81,10 +88,6 @@ PatternParser::parseGroup() {
   while(currIndex < numArgs) {
     elem = NULL;
     newOperator = NULL;
-
-    // FIXME: Parse "ORDERBY" (-o or --orderby) BEFORE match flags! or together?
-    //        THINK! Operator? place in group? in tree? elsewhere?
-
 
     // New group: add it to the list
     if(parseGroupStart()) {
@@ -411,11 +414,60 @@ PatternParser::parseMLibSequence() {
 }
 
 
+OrderByList*
+PatternParser::parseOrderBy(char* _orderstr) {
+  OrderByList* orderlist = new OrderByList();
+  string orderstr = _orderstr;
+  int offset, len, pos;
+  string token;
+
+  for(pos = 0, offset = 0; pos != string::npos; pos = orderstr.find(',', pos + 1), offset = pos + 1) {
+    len = orderstr.find(',', offset);
+    // FIXME: Substr with string::npos as arg2 ok?
+    token = orderstr.substr(offset, len - offset);
+
+    // FIXME: there must be a nicer way to do that switching?
+    if(token.compare("a") == 0 || token.compare("artist") == 0)
+      orderlist->push_back(pair<char*,bool>("artist", true));
+    else if(token.compare("l") == 0 || token.compare("album") == 0)
+      orderlist->push_back(pair<char*,bool>("album", true));
+    else if(token.compare("t") == 0 || token.compare("title") == 0)
+      orderlist->push_back(pair<char*,bool>("title", true));
+    else if(token.compare("n") == 0 || token.compare("tracknr") == 0)
+      orderlist->push_back(pair<char*,bool>("tracknr", true));
+    else if(token.compare("g") == 0 || token.compare("genre") == 0)
+      orderlist->push_back(pair<char*,bool>("genre", true));
+    else if(token.compare("y") == 0 || token.compare("year") == 0)
+      orderlist->push_back(pair<char*,bool>("year", true));
+
+    if(token.compare("A") == 0
+       || token.compare("Artist") == 0 || token.compare("ARTIST") == 0)
+      orderlist->push_back(pair<char*,bool>("artist", false));
+    else if(token.compare("L") == 0
+            || token.compare("Album") == 0 || token.compare("ALBUM") == 0)
+      orderlist->push_back(pair<char*,bool>("album", false));
+    else if(token.compare("T") == 0
+            || token.compare("Title") == 0 || token.compare("TITLE") == 0)
+      orderlist->push_back(pair<char*,bool>("title", false));
+    else if(token.compare("N") == 0
+            || token.compare("Tracknr") == 0 || token.compare("TRACKNR") == 0)
+      orderlist->push_back(pair<char*,bool>("tracknr", false));
+    else if(token.compare("G") == 0
+            || token.compare("Genre") == 0 || token.compare("GENRE") == 0)
+      orderlist->push_back(pair<char*,bool>("genre", false));
+    else if(token.compare("Y") == 0
+            || token.compare("Year") == 0 || token.compare("YEAR") == 0)
+      orderlist->push_back(pair<char*,bool>("year", false));
+  }
+
+  return orderlist;
+}
+
+
 PatternCondition*
 PatternParser::buildMatchCondition(char flag, char* value) {
   PatternCondition* cond;
 
-  // FIXME: Code this by choosing class hierarchy
   switch(flag) {
   case 'a':  cond = new PatternMatchCondition("artist", value);        break;
   case 'A':  cond = new PatternMatchCondition("artist", value, true);  break;
@@ -435,8 +487,11 @@ PatternParser::buildMatchCondition(char flag, char* value) {
   case 'z':  cond = new PatternMatchCondition(value);        break;
   case 'Z':  cond = new PatternMatchCondition(value, true);  break;
 
-  // FIXME: Special handling for orderby, save in member var!
-  case 'o':  break;
+  // Special handling for orderby, save in member var!
+  case 'o':
+    orderby = parseOrderBy(value);
+    cond = NULL;
+    break;
 
   default:
     cerr << "Error: invalid short flag '" << flag << "' ignored!" << endl;
@@ -477,9 +532,11 @@ PatternParser::buildMatchCondition(char* flag, char* value) {
   else if(strcmp(flag, "Any") == 0 || strcmp(flag, "ANY") == 0)
     cond = new PatternMatchCondition(value, true);
 
-  // FIXME: Special handling for orderby, save in member var!
-  else if(strcmp(flag, "orderby") == 0)
+  // Special handling for orderby, save in member var!
+  else if(strcmp(flag, "orderby") == 0) {
+    orderby = parseOrderBy(value);
     cond = NULL;
+  }
 
   else {
     cerr << "Error: invalid long flag '" << flag << "' ignored!" << endl;

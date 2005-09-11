@@ -6,6 +6,7 @@
 
 #include <list>
 #include <vector>
+#include <iostream>
 
 #include "playlistlist.hh"
 #include "playlistsonglist.hh"
@@ -28,9 +29,9 @@ public:
   PlaylistSongList* getPlaylist(char* name);
   PlaylistList* getPlaylists();
 
-  void saveCurrentPlaylistAs(const char* name);
+  void saveCurrentPlaylistAs(char* name);
   void usePlaylist(char* name);
-  void removePlaylist(const char* name);
+  void removePlaylist(char* name);
 
   bool hasPlaylist(char* name);
 
@@ -57,6 +58,8 @@ private:
   char* currentPlaylistName;
 
   QuerySongList* performQuery(PatternQuery* query);
+
+  bool validPlaylistName(char* name);
 
 };
 

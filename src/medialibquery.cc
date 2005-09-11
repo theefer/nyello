@@ -95,7 +95,6 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
   if(seq->hasValues()) {
     list<unsigned int>::iterator valIt;
     list<unsigned int> val = seq->getValues();
-    //FIXME: ??? appendCurrentField(label);
     appendString(label);
     appendString(" IN (");
     for(valIt = val.begin(); valIt != val.end(); ++valIt) {

@@ -1,9 +1,5 @@
 #include "medialibrary.hh"
 
-// FIXME: Temp for debug only!
-#include <iostream>
-using namespace std;
-
 
 // Generic hack-function to use methods as callback functions
 template <void (MediaLibrary::*func) (xmmsc_result_t*)>
@@ -68,6 +64,12 @@ MediaLibrary::getCurrentPlaylist() {
  */
 PlaylistSongList*
 MediaLibrary::getPlaylist(char* name) {
+  // Invalid playlist name
+  if(!validPlaylistName(name)) {
+    cerr << "Error: invalid playlist name!" << endl;
+    return NULL;
+  }
+
   // Use the other method for current playlist (shows position)
   if(strcmp(name, currentPlaylistName) == 0) {
     return getCurrentPlaylist();
@@ -89,7 +91,7 @@ MediaLibrary::getPlaylist(char* name) {
 
 /**
  * Get the list of all the Playlist objects in the medialib.
- * FIXME: Hide playlists starting with a '_' prefix.
+ * Playlists starting with a '_' prefix are hidden.
  */
 PlaylistList*
 MediaLibrary::getPlaylists() {
@@ -105,7 +107,8 @@ MediaLibrary::getPlaylists() {
                                   "        SELECT playlist_id, "
                                   "               count(entry) AS cnt "
                                   "        FROM playlistentries) "
-                                  "WHERE id=playlist_id "
+                                  "WHERE id=playlist_id AND"
+                                  "      substr(name, 0, 1) <> \"_\""
                                   "GROUP BY playlist_id");
   xmmsc_result_wait(lastRes);
 
@@ -123,7 +126,13 @@ MediaLibrary::getPlaylists() {
  * name.
  */
 void
-MediaLibrary::saveCurrentPlaylistAs(const char* name) {
+MediaLibrary::saveCurrentPlaylistAs(char* name) {
+  // Invalid playlist name
+  if(!validPlaylistName(name)) {
+    cerr << "Error: invalid playlist name!" << endl;
+    return;
+  }
+
   lastRes = xmmsc_medialib_playlist_save_current(connection, name);
   xmmsc_result_wait(lastRes);
   if (xmmsc_result_iserror(lastRes)) {
@@ -137,6 +146,12 @@ MediaLibrary::saveCurrentPlaylistAs(const char* name) {
 
 void
 MediaLibrary::usePlaylist(char* name) {
+  // Invalid playlist name
+  if(!validPlaylistName(name)) {
+    cerr << "Error: invalid playlist name!" << endl;
+    return;
+  }
+
   // Check that we can load that playlist
   if(!hasPlaylist(name)) {
     cerr << "Error: the playlist '" << name << "' does not exist!" << endl;
@@ -170,7 +185,13 @@ MediaLibrary::usePlaylist(char* name) {
  * Remove the given playlist from the medialib.
  */
 void
-MediaLibrary::removePlaylist(const char* name) {
+MediaLibrary::removePlaylist(char* name) {
+  // Invalid playlist name
+  if(!validPlaylistName(name)) {
+    cerr << "Error: invalid playlist name!" << endl;
+    return;
+  }
+
   lastRes = xmmsc_medialib_playlist_remove(connection, name);
   xmmsc_result_wait(lastRes);
   if (xmmsc_result_iserror(lastRes)) {
@@ -323,6 +344,16 @@ MediaLibrary::performQuery(PatternQuery* query) {
 }
 
 
+bool
+MediaLibrary::validPlaylistName(char* name) {
+  // Playlists starting with '_' are hidden
+  if(*name == '_')
+    return false;
+
+  return true;
+}
+
+
 void
 MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res) {
   if (xmmsc_result_iserror(res)) {
@@ -361,4 +392,3 @@ MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res) {
   cout << "Playlist loaded, new current playlist: "
        << currentPlaylistName << endl;
 }
-

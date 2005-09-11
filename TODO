@@ -23,7 +23,7 @@
   [X] Fix sequence hack (problem with templates)
   [ ] Improve help (command line -h and per-command)
   [X] Improve pattern features (orderby)
-  [ ] Ignore and protect playlists starting with '_'
+  [X] Ignore and protect playlists starting with '_'
   ==> v0.2
 
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
@@ -46,3 +46,7 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Should '#' match '1#0-' ?
   [ ] When no metadata is present, display Title=filename
   [ ] Fix operator bugs (NOT and XOR not working at all)
+
+Known bugs
+  [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY?)
+  [ ] "info -o title" should display the current track, not an error

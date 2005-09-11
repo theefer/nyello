@@ -56,20 +56,20 @@ PatternParser::nextArgument() {
  */
 PatternNode*
 PatternParser::parse() {
+  PatternNode* top;
+
   // Reset current position
   currIndex = 0;
   currArg = arguments[0];
 
-  // No pattern: select currently playing song
-  if(numArgs == 0) {
+  top = parseGroup();
+  if((numArgs == 0) || (top == NULL && orderby != NULL)) {
     IdSequence* seq = new IdSequence();
     seq->addValue(playback->getCurrentId());
-    return new PatternMLibSequence(seq);
+    top = new PatternMLibSequence(seq);
   }
-  // Parse the arguments
-  else {
-    return parseGroup();
-  }
+
+  return top;
 }
 
 

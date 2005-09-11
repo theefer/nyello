@@ -20,6 +20,7 @@
   [X] Make result counter start at 0 and adapt sequences to match that
   [X] Fix bug causing endless loop for "INFO +99"
   [X] Avoid invalid queries ("WHERE ()")
+  [X] Fix sequence hack (problem with templates)
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [ ] Improve help (command line -h and per-command)
   [+] Improve pattern features (orderby, comparators)
@@ -41,3 +42,4 @@ Other stuff:
   [ ] When no metadata is present, display Title=filename
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] Correct display, using wcs instead of str?
+  [ ] Should '#' match '1#0-' ?

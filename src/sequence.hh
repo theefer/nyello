@@ -194,13 +194,8 @@ Sequence<T>::parseAdd(char* char_seq) {
 template <class T>
 bool
 Sequence<T>::contains(T elem) {
-  /* FIXME: Do not compile for some reason, grr!!
-  list<T> values;
-  list<pair<T,T> > ranges;
-  */
-  // FIXME: OMG THIS IS TERRIBLE! should really be T, but weird compile error!
-  list<unsigned int>::iterator valIt;
-  list<pair<unsigned int,unsigned int> >::iterator rangeIt;
+  typename list<T>::iterator valIt;
+  typename list<pair<T,T> >::iterator rangeIt;
 
   // In semi-bounded ranges?
   if((rangeToMaxIsset && elem <= rangeToMax) ||

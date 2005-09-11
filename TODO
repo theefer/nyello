@@ -49,4 +49,4 @@ Unscheduled fixes (by order of importance, most important first)
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY?)
-  [ ] "info -o title" should display the current track, not an error
+  [ ] listing a playlist with just twice the same entry returns it only once

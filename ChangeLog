@@ -1,0 +1,19 @@
+Version 0.2.0
+(13 September 2005)
+
+	New features:
+	- Result counter now starts at 0
+	- New pattern feature: --orderby <fieldlist>
+	- Help now describes every command (try 'help info')
+
+	Bug fixes:
+	- Endless loop with 'INFO +99' and others
+	- Avoid invalid queries ("WHERE ()")
+	- Small corrections to NOT operator, but it DOESN'T work at all right now.
+	- Hide playlists starting with an underscore
+	- More parsing errors fixed
+
+Version 0.1.0
+(31 August 2005)
+
+	Initial release.

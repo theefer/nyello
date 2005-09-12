@@ -55,24 +55,25 @@ Output::printSongs(Printable* songs) {
   songCol->printFooter(counterDisplay);
 }
 
+
 void
-Output::printHelp() {
-  // TODO: Display help from command objects  
-  cout << "Available commands:"                                                       << endl;
-  cout << "   (p)  play               Start playback"                                 << endl;
-  cout << "   (p)  pause              Pause playback"                                 << endl;
-  cout << "   (s)  stop               Stop playback"                                  << endl;
-  cout << "   (r)  previous           Jump to previous song"                          << endl;
-  cout << "   (n)  next               Jump to next song"                              << endl;
-  cout << "   (i)  info               Find all songs matching a pattern"              << endl;
-  cout << "   (l)  list               List the songs from a playlist"                 << endl;
-  cout << "   (e)  enqueue            Enqueue all songs matching a pattern"           << endl;
-  cout << "   (e+) insert             Insert all songs matching a pattern"            << endl;
-  cout << "   (e-) replace            Replace current song with all songs matching a pattern" << endl;
-  cout << "   (pl) playlist-list      List all the existing playlists"                << endl;
-  cout << "   (pu) playlist-use       Change the active playlist"                     << endl;
-  cout << "   (ps) playlist-save-as   Save current playlist under a new name"         << endl;
-  cout << "   (pr) playlist-remove    Remove a playlist"                              << endl;
-  cout << "   (h)  help               Display the help for all or a specific command" << endl;
-  cout << "   (q)  quit               Exit nyello"                                    << endl;
+Output::printCommandSummary(list<Command*> commands) {
+  list<Command*>::iterator it;
+  cout.flags(ios_base::left);
+  cout << "Available commands:" << endl;
+  for(it = commands.begin(); it != commands.end(); ++it) {
+    cout << "  ";
+    cout.width(2);
+    cout << (*it)->getShortName() << "   ";
+    cout.width(19);
+    cout << (*it)->getName();
+    cout << (*it)->getDescription()
+         << endl;
+  }
+}
+
+void
+Output::printCommandHelp(Command* cmd) {
+  cout << "Usage: " << cmd->getUsage() << endl << endl;
+  cout << cmd->getHelp() << endl;
 }

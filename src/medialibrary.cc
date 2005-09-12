@@ -192,6 +192,8 @@ MediaLibrary::removePlaylist(char* name) {
     return;
   }
 
+  // FIXME: Forbid to remove current playlist!
+
   lastRes = xmmsc_medialib_playlist_remove(connection, name);
   xmmsc_result_wait(lastRes);
   if (xmmsc_result_iserror(lastRes)) {

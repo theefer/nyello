@@ -1,17 +1,19 @@
 #ifndef __OUTPUT_HH__
 #define __OUTPUT_HH__
 
+#define MAX_COUNTER_DISPLAY_LEN 20
+
+class Output;
 
 #include "printable.hh"
 #include "playlistlist.hh"
 #include "collection.hh"
 #include "columniser.hh"
 #include "countercolumn.hh"
+#include "command.hh"
 
 #include <iostream>
 #include <vector>
-
-#define MAX_COUNTER_DISPLAY_LEN 20
 
 using namespace std;
 
@@ -30,7 +32,9 @@ public:
   void printCollections(Collection* collections);
   void printStatus();
   void printFilter();
-  void printHelp();
+
+  void printCommandSummary(list<Command*> commands);
+  void printCommandHelp(Command* cmd);
 
 private:
   Columniser* songCol;

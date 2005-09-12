@@ -23,7 +23,7 @@
 
   * Commands
 
-    H   HELP [command]   Get general help or help on a specific command.
+  * H   HELP [command]   Get general help or help on a specific command.
 
     S   STATUS           Status of the server.
   
@@ -48,7 +48,7 @@
   
   * E   ENQUEUE <pattern> [IN <playlist>?]
   * E+  INSERT  <pattern>
-+   E-  REPLACE <pattern>
+  * E-  REPLACE <pattern>
     X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
 ??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
 -   C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
@@ -98,7 +98,7 @@
 
       · fieldlist a comma-separated list of fields to order by, either
         in short or long form
-      · reverse ordering is done by using the '-' suffix or uppercase:
+      · reverse ordering is done by using uppercase:
           -o a,-year,L,track
 
     Combinators:

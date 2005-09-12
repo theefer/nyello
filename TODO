@@ -21,11 +21,12 @@
   [X] Fix bug causing endless loop for "INFO +99"
   [X] Avoid invalid queries ("WHERE ()")
   [X] Fix sequence hack (problem with templates)
-  [ ] Improve help (command line -h and per-command)
+  [X] Improve help (summary and per-command)
   [X] Improve pattern features (orderby)
   [X] Ignore and protect playlists starting with '_'
   ==> v0.2
 
+  [ ] Allow escaped spaces and quoted string to be a single token
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [ ] Read the XMMS_PATH env var to open the server connection
   [ ] Improve pattern features (order by rand(), comparators)
@@ -50,3 +51,5 @@ Unscheduled fixes (by order of importance, most important first)
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY?)
   [ ] listing a playlist with just twice the same entry returns it only once
+  [ ] incorrect number of songs with PLAYLIST-LIST
+  [ ] "info -7" should really work

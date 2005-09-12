@@ -37,7 +37,8 @@ SRC=nyello.cc\
 	patternnodes.cc\
 	patternquery.cc\
 	medialibquery.cc\
-	sequence.cc
+	sequence.cc\
+	command.cc
 
 OBJ = $(addsuffix .o, $(basename $(SRC)))
 

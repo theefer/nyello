@@ -7,49 +7,16 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   pparser  = new PatternParser(playback, medialib);
   output   = new Output();
 
-
-  // TODO: Cleaner way to define this?
-  commandList["h"]    = &Dispatcher::actionHelp;
-  commandList["?"]    = &Dispatcher::actionHelp;
-  commandList["help"] = &Dispatcher::actionHelp;
-
-  commandList["p"]     = &Dispatcher::actionTogglePlay;
-  commandList["play"]  = &Dispatcher::actionPlay;
-  commandList["pause"] = &Dispatcher::actionPause;
-
-  commandList["s"]     = &Dispatcher::actionStop;
-  commandList["stop"]  = &Dispatcher::actionStop;
-
-  commandList["n"   ]     = &Dispatcher::actionNext;
-  commandList["next"]     = &Dispatcher::actionNext;
-  commandList["r"]        = &Dispatcher::actionPrevious;
-  commandList["previous"] = &Dispatcher::actionPrevious;
-
-  commandList["i"]     = &Dispatcher::actionInfo;
-  commandList["info"]  = &Dispatcher::actionInfo;
-
-  commandList["l"]     = &Dispatcher::actionList;
-  commandList["list"]  = &Dispatcher::actionList;
-
-  commandList["e"]       = &Dispatcher::actionEnqueue;
-  commandList["enqueue"] = &Dispatcher::actionEnqueue;
-  commandList["e+"]      = &Dispatcher::actionInsert;
-  commandList["insert"]  = &Dispatcher::actionInsert;
-  commandList["e-"]      = &Dispatcher::actionReplace;
-  commandList["replace"] = &Dispatcher::actionReplace;
-
-  commandList["pl"]               = &Dispatcher::actionPlaylistList;
-  commandList["playlist-list"]    = &Dispatcher::actionPlaylistList;
-  commandList["pu"]               = &Dispatcher::actionPlaylistUse;
-  commandList["playlist-use"]     = &Dispatcher::actionPlaylistUse;
-  commandList["ps"]               = &Dispatcher::actionPlaylistSaveAs;
-  commandList["playlist-save-as"] = &Dispatcher::actionPlaylistSaveAs;
-  commandList["pr"]               = &Dispatcher::actionPlaylistRemove;
-  commandList["playlist-remove"]  = &Dispatcher::actionPlaylistRemove;
-
-  commandList["q"]     = &Dispatcher::actionExit;
-  commandList["exit"]  = &Dispatcher::actionExit;
-  commandList["quit"]  = &Dispatcher::actionExit;
+  // Use an {alias=>command} hashlist to speed up command matching
+  commands = Command::listAll();
+  list<Command*>::iterator cmdIt;
+  for(cmdIt = commands.begin(); cmdIt != commands.end(); ++cmdIt) {
+    vector<char*> aliases = (*cmdIt)->getAliases();
+    vector<char*>::iterator aliasIt;
+    for(aliasIt = aliases.begin(); aliasIt != aliases.end(); ++aliasIt) {
+      commandList[*aliasIt] = *cmdIt;
+    }
+  }
 }
 
 
@@ -112,7 +79,7 @@ void
 Dispatcher::dispatch() {
   DispFnPtr fn_ptr;
   if(commandList.find(command) != commandList.end()) {
-    fn_ptr = commandList[command];
+    fn_ptr = commandList[command]->getAction();
     (this->*fn_ptr)();
   }
   else if(command != NULL) {
@@ -174,10 +141,27 @@ Dispatcher::actionExit() {
   exit(0);
 }
 
+/**
+ * Display the list of commands (if no argument) or the help of a
+ * given command.
+ */
 void
 Dispatcher::actionHelp() {
-  // FIXME: Pass command objects containing help
-  output->printHelp();
+  if(argNumber == 0) {
+    output->printCommandSummary(commands);
+  }
+  else if(argNumber == 1) {
+    if(commandList.find(arguments[0]) != commandList.end()) {
+      output->printCommandHelp(commandList[arguments[0]]);
+    }
+    else {
+      cerr << "Error: cannot display help for unknown command '"
+           << arguments[0] << "'!" << endl;
+    }
+  }
+  else {
+    cerr << "Error: too many arguments!" << endl;
+  }
 }
 
 void

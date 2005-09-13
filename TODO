@@ -28,7 +28,7 @@
 
   [X] Allow escaped spaces and quoted string to be a single token
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
-  [ ] Read the XMMS_PATH env var to open the server connection
+  [X] Read the XMMS_PATH env var to open the server connection
   [ ] Improve pattern features (order by rand(), comparators)
   [ ] More commands (jump, remove, status, clear, playlist-shuffle, filter)
   ==> v0.3

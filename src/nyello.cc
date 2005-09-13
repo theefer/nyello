@@ -156,6 +156,8 @@ int main(int argc, char* argv[]) {
 
   // TODO: Init with CL options and config
 
+  char* path = getenv("XMMS_PATH");
+
   // Init xmms2 connection
   xmmsc_connection_t* connection;
   connection = xmmsc_init("nyello");
@@ -164,7 +166,7 @@ int main(int argc, char* argv[]) {
     retval = 1;
   }
 
-  else if(!xmmsc_connect(connection, NULL)) {
+  else if(!xmmsc_connect(connection, path)) {
     cerr << "Could not connect to server: "
          << xmmsc_get_last_error(connection) << endl;
     retval = 1;

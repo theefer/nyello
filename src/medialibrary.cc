@@ -19,7 +19,10 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   //        If no matching playlist, create a new one ("current-$N") and use it?
 
   // FIXME: Let's not mess with the PL on startup for now
-  usePlaylist("autosaved");
+  //usePlaylist("autosaved");
+
+  currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
+  strncpy(currentPlaylistName, "autosaved", MAX_PLAYLIST_NAME_LEN);
 
   // Setup signal hooks
   /* FIXME: segfault?

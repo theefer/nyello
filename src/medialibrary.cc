@@ -223,6 +223,21 @@ MediaLibrary::clearCurrentPlaylist() {
   xmmsc_result_unref(lastRes);
 }
 
+/**
+ * Shuffle the current playlist.
+ */
+void
+MediaLibrary::shuffleCurrentPlaylist() {
+  lastRes = xmmsc_playlist_shuffle(connection);
+  xmmsc_result_wait(lastRes);
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Error: failed to shuffle the playlist, server said:" << endl
+         << xmmsc_result_get_error(lastRes) << endl;
+  }
+
+  xmmsc_result_unref(lastRes);
+}
+
 
 /**
  * Checks whether there is a playlist with the given name in the

@@ -250,6 +250,12 @@ Command::listAll() {
                         "Clear the current playlist.\n");
   cmds.push_back(current);
 
+  current = new Command("shuffle", "u", &Dispatcher::actionShuffle,
+                        "shuffle",
+                        "Shuffle the current playlist.",
+                        "Shuffle the current playlist.\n");
+  cmds.push_back(current);
+
   // Playlists
   current = new Command("playlist-list", "pl", &Dispatcher::actionPlaylistList,
                         "playlist-list",

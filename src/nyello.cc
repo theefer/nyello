@@ -52,12 +52,12 @@
     X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
 ??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
+-   U   SHUFFLE [playlist]    Shuffle the playlist.
 
   * PL  PLAYLIST-LIST            List the existing playlists.
   * PS  PLAYLIST-SAVE-AS <name>  Save the current playlist as a new playlist.
   * PU  PLAYLIST-USE     <name>  Use the given playlist as current playlist.
   * PR  PLAYLIST-REMOVE  <name>  Delete the given playlist.
--   PU  PLAYLIST-SHUFFLE [name]
 
     PF  PLAYLIST-FEED    <collection>  Make the current playlist a dynamic playlist of
                                        the given collection, i.e. insert random songs

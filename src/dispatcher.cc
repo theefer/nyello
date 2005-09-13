@@ -389,11 +389,28 @@ Dispatcher::actionRemove() {
 
 }
 
-
+/**
+ * Clear the current playlist.
+ * FIXME: Should allow to clear other playlists.
+ */
 void
 Dispatcher::actionClear() {
   if(argNumber == 0) {
     medialib->clearCurrentPlaylist();
+  }
+  else {
+    cerr << "Error: this command doesn't take any argument!" << endl;
+  }
+}
+
+/**
+ * Shuffle the current playlist.
+ * FIXME: Should allow to shuffle other playlists.
+ */
+void
+Dispatcher::actionShuffle() {
+  if(argNumber == 0) {
+    medialib->shuffleCurrentPlaylist();
   }
   else {
     cerr << "Error: this command doesn't take any argument!" << endl;

@@ -35,6 +35,7 @@ public:
   void removePlaylist(char* name);
 
   void clearCurrentPlaylist();
+  void shuffleCurrentPlaylist();
 
   bool hasPlaylist(char* name);
 

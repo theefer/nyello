@@ -30,7 +30,8 @@
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [X] Read the XMMS_PATH env var to open the server connection
   [ ] Improve pattern features (order by rand(), comparators)
-  [ ] More commands (jump, remove, status, clear, playlist-shuffle, filter)
+  [ ] More commands (clear, shuffle, jump, status, remove, filter)
+  [ ] Load 'autosaved' more gracefully
   ==> v0.3
 
   [ ] Make readline use async, redesign main-loop, remove waits

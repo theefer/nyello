@@ -73,6 +73,7 @@ public:
   void actionReplace();
   void actionRemove();
   void actionClear();
+  void actionShuffle();
 
   void actionPlaylistList();
   void actionPlaylistSaveAs();

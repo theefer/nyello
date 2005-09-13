@@ -244,6 +244,12 @@ Command::listAll() {
                         "See 'help info' for the syntax of patterns.\n");
   cmds.push_back(current);
 
+  current = new Command("clear", "c", &Dispatcher::actionClear,
+                        "clear",
+                        "Clear the current playlist.",
+                        "Clear the current playlist.\n");
+  cmds.push_back(current);
+
   // Playlists
   current = new Command("playlist-list", "pl", &Dispatcher::actionPlaylistList,
                         "playlist-list",

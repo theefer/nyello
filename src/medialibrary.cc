@@ -12,14 +12,14 @@ void runMediaLibraryMethod(xmmsc_result_t *res, void *mlib_ptr) {
 MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   connection = _connection;
   lastRes    = NULL;
+  currentPlaylistName = NULL;
+
 
   // FIXME: Find current playlist name or start with the autosaved playlist
   //        If no matching playlist, create a new one ("current-$N") and use it?
 
   // FIXME: Let's not mess with the PL on startup for now
-  //  usePlaylist("autosaved");
-
-  currentPlaylistName = "autosaved";
+  usePlaylist("autosaved");
 
   // Setup signal hooks
   /* FIXME: segfault?
@@ -173,7 +173,10 @@ MediaLibrary::usePlaylist(char* name) {
            << xmmsc_result_get_error(lastRes) << endl;
     }
     else {
-      currentPlaylistName = name;
+      if(currentPlaylistName != NULL)
+        delete currentPlaylistName;
+      currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
+      strncpy(currentPlaylistName, name, MAX_PLAYLIST_NAME_LEN);
     }
   }
 
@@ -198,6 +201,22 @@ MediaLibrary::removePlaylist(char* name) {
   xmmsc_result_wait(lastRes);
   if (xmmsc_result_iserror(lastRes)) {
     cerr << "Error: failed to remove the playlist, server said:" << endl
+         << xmmsc_result_get_error(lastRes) << endl;
+  }
+
+  xmmsc_result_unref(lastRes);
+}
+
+
+/**
+ * Empty the current playlist.
+ */
+void
+MediaLibrary::clearCurrentPlaylist() {
+  lastRes = xmmsc_playlist_clear(connection);
+  xmmsc_result_wait(lastRes);
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Error: failed to clear the playlist, server said:" << endl
          << xmmsc_result_get_error(lastRes) << endl;
   }
 

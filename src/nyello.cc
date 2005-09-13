@@ -51,7 +51,7 @@
   * E-  REPLACE <pattern>
     X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
 ??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
--   C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
+  * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
 
   * PL  PLAYLIST-LIST            List the existing playlists.
   * PS  PLAYLIST-SAVE-AS <name>  Save the current playlist as a new playlist.

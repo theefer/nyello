@@ -1,6 +1,7 @@
 #ifndef __MEDIALIBRARY_HH__
 #define __MEDIALIBRARY_HH__
 
+#define MAX_PLAYLIST_NAME_LEN 64
 
 #include <xmmsclient/xmmsclient.h>
 
@@ -32,6 +33,8 @@ public:
   void saveCurrentPlaylistAs(char* name);
   void usePlaylist(char* name);
   void removePlaylist(char* name);
+
+  void clearCurrentPlaylist();
 
   bool hasPlaylist(char* name);
 

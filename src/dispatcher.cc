@@ -31,16 +31,14 @@ Dispatcher::~Dispatcher() {
 
 void
 Dispatcher::loop() {
-  char* prompt;
+  char* prompt = new char[MAX_PROMPT_LENGTH + 1];
   char* input = new char[MAX_COMMAND_LENGTH];
 
   // Main loop
   do {
     // Build prompt and get input
-    prompt = new char[MAX_PROMPT_LENGTH + 1];
     snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
     input = readline(prompt);
-    delete prompt;
 
     // End of stream, quit
     if(input == NULL) {
@@ -387,6 +385,17 @@ Dispatcher::actionReplace() {
 void
 Dispatcher::actionRemove() {
 
+}
+
+
+void
+Dispatcher::actionClear() {
+  if(argNumber == 0) {
+    medialib->clearCurrentPlaylist();
+  }
+  else {
+    cerr << "Error: this command doesn't take any argument!" << endl;
+  }
 }
 
 

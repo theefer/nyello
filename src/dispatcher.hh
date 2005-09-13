@@ -72,6 +72,7 @@ public:
   void actionInsert();
   void actionReplace();
   void actionRemove();
+  void actionClear();
 
   void actionPlaylistList();
   void actionPlaylistSaveAs();

@@ -24,7 +24,8 @@ public:
   void stop();
 
   void tickle();
-  void jump(int offset);
+  void jumpAbsolute(int pos);
+  void jumpRelative(int offset);
   void seekAbsolute(int position);
   void seekRelative(int offset);
   

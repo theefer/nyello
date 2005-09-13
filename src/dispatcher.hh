@@ -64,6 +64,7 @@ public:
   
   void actionPrevious();
   void actionNext();
+  void actionJump();
 
   void actionInfo();
   void actionList();

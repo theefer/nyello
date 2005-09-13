@@ -59,6 +59,15 @@ Command::listAll() {
                         "If OFFSET is omitted, it defaults to 1 (previous song).\n");
   cmds.push_back(current);
 
+  current = new Command("jump", "j", &Dispatcher::actionJump,
+                        "jump POSITION|OFFSET",
+                        "Jump to some position in the playlist or from a relative offset.",
+                        "Jump to some position in the playlist or from a relative offset.\n"
+                        "\n"
+                        "If the argument is a simple number, jump to that position.  If it is\n"
+                        "a number prefixed by + or -, jump of that offset from the current position.\n");
+  cmds.push_back(current);
+
   // Search
   current = new Command("info", "i", &Dispatcher::actionInfo,
                         "info PATTERN",

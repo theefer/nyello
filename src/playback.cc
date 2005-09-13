@@ -55,7 +55,22 @@ Playback::tickle() {
 }
 
 void
-Playback::jump(int offset) {
+Playback::jumpAbsolute(int pos) {
+  lastRes = xmmsc_playlist_set_next(connection, pos);
+  xmmsc_result_wait(lastRes);
+
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Couldn't advance in playlist: "
+         << xmmsc_result_get_error(lastRes) << endl;
+    return;
+  }
+  xmmsc_result_unref(lastRes);
+
+  tickle();
+}
+
+void
+Playback::jumpRelative(int offset) {
   lastRes = xmmsc_playlist_set_next_rel(connection, offset);
   xmmsc_result_wait(lastRes);
 

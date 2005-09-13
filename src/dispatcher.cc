@@ -92,6 +92,7 @@ Dispatcher::dispatch() {
 
 int
 Dispatcher::parseInteger(char* ptr) {
+  // FIXME: Validate the number before, throw an exception if needed
   return (int)strtol(ptr, NULL, 10);
 }
 
@@ -247,7 +248,7 @@ Dispatcher::actionPrevious() {
     return;
   }
 
-  playback->jump(offset);
+  playback->jumpRelative(offset);
 }
 
 void
@@ -264,7 +265,24 @@ Dispatcher::actionNext() {
     return;
   }
 
-  playback->jump(offset);
+  playback->jumpRelative(offset);
+}
+
+void
+Dispatcher::actionJump() {
+  int offset;
+  if(argNumber == 1) {
+    if(*arguments[0] == '+')
+      playback->jumpRelative(parseInteger(arguments[0]));
+    else if(*arguments[0] == '-')
+      playback->jumpRelative(-parseInteger(arguments[0]));
+    else
+      playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
+  }
+  else {
+    cerr << "Error: jump requires one argument!" << endl;
+    return;
+  }
 }
 
 
@@ -376,7 +394,7 @@ Dispatcher::actionReplace() {
   if(position > 0) {
     medialib->insertSongs(query, position);
     medialib->removeSongAt(position - 1);
-    playback->jump(1);
+    playback->jumpRelative(1);
   }
   else {
     medialib->enqueueSongs(query);

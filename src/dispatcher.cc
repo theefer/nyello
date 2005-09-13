@@ -6,6 +6,8 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   medialib = new MediaLibrary(connection);
   pparser  = new PatternParser(playback, medialib);
   output   = new Output();
+
+  command   = NULL;
   arguments = new char*[MAX_ARGUMENTS];
   argNumber = 0;
 

@@ -87,7 +87,8 @@ public:
 
 
 private:
-  static const int MAX_ARGUMENTS = 64;
+  static const int MAX_ARGUMENTS  = 64;
+  static const int MAX_TOKEN_SIZE = 64;
 
   Playback*      playback;
   MediaLibrary*  medialib;
@@ -108,7 +109,7 @@ private:
   int parseInteger(char* ptr);
 
   bool parseInput(char* input);
-
+  char* parseToken(char** str);
 };
 
 

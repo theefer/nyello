@@ -6,6 +6,8 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   medialib = new MediaLibrary(connection);
   pparser  = new PatternParser(playback, medialib);
   output   = new Output();
+  arguments = new char*[MAX_ARGUMENTS];
+  argNumber = 0;
 
   // Use an {alias=>command} hashlist to speed up command matching
   commands = Command::listAll();
@@ -99,33 +101,22 @@ Dispatcher::parseInteger(char* ptr) {
  */
 bool
 Dispatcher::parseInput(char* input) {
-  // We will need some temp vars
-  const char* delimiters  = " ";
   char* buffer;
 
-  // Free old vars
-  //  if(command != NULL)
-  //    delete command;
+  // Reset previous variables
+  if(command != NULL)
+    delete command;
 
-  if(arguments != NULL)
-    delete[] arguments;
-
-  arguments = new char*[MAX_ARGUMENTS];
+  for(int i = 0; i < argNumber; ++i) {
+    delete arguments[i];
+  }
   argNumber = 0;
 
-  // Skip heading spaces, read command
-  while(*input == ' ') ++input;
-  command = strtok(input, delimiters);  // FIXME: Do not use strtok!
-
-  // Woops, we didn't get any command
+  // Get the command (error if none)
+  command = parseToken(&input);
   if(command == NULL) return false;
 
-  // Now save the arguments
-  while(true) {
-    buffer = strtok(NULL, delimiters);
-    if(buffer == NULL) {
-      break;
-    }
+  while((buffer = parseToken(&input)) != NULL) {
     arguments[argNumber] = buffer;
     ++argNumber;
   }  
@@ -134,7 +125,55 @@ Dispatcher::parseInput(char* input) {
 }
 
 
+/**
+ * Parse and return the first token in the given string.  Memory is
+ * allocated for the returned token and the passed reference is
+ * updated to point after the parsed token.
+ */
+char*
+Dispatcher::parseToken(char** strref) {
+  int i = 0, len = 0;
+  char* str = *strref;
+  char* token = NULL;
+  char escape;
+  bool escaping = false;
 
+  // Skip heading spaces
+  while(*str == ' ') ++str;
+
+  // Determine string escape character
+  switch(*str) {
+  case '\0': return NULL; break;
+
+  case '"':  escape = '"';  ++str; break;
+  case '\'': escape = '\''; ++str; break;
+  default:   escape = ' ';         break;
+  }
+
+  // Save the token
+  token = new char[MAX_TOKEN_SIZE + 1];
+  while(*str != '\0' && (escaping || *str != escape) && i < MAX_TOKEN_SIZE) {
+    if(!escaping && *str == '\\') {
+      escaping = true;
+    }
+    else {
+      escaping = false;
+      token[i++] = *str;
+    }
+    ++str;
+  }
+  token[i] = '\0';
+
+  if(*str == escape) ++str;
+  *strref = str;
+
+  return token;
+}
+
+
+/**
+ * Terminate the execution.
+ */
 void
 Dispatcher::actionExit() {
   cout << "Exiting nyello..." << endl;

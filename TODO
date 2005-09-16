@@ -26,6 +26,7 @@
   [X] Ignore and protect playlists starting with '_'
   ==> v0.2
 
+  [X] Configure script, using autoconf/automake
   [X] Allow escaped spaces and quoted string to be a single token
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [X] Read the XMMS_PATH env var to open the server connection

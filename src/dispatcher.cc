@@ -293,10 +293,8 @@ void
 Dispatcher::actionJump() {
   int offset;
   if(argNumber == 1) {
-    if(*arguments[0] == '+')
+    if((*arguments[0] == '+') || (*arguments[0] == '-'))
       playback->jumpRelative(parseInteger(arguments[0]));
-    else if(*arguments[0] == '-')
-      playback->jumpRelative(-parseInteger(arguments[0]));
     else
       playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
   }

@@ -25,16 +25,16 @@
 
   * H   HELP [command]   Get general help or help on a specific command.
 
-    T   STATUS           Status of the server.
+  * T   STATUS           Status of the server.
   
   * P   PLAY             Start playback.
   * P   PAUSE            Pause playback.
   * S   STOP [option]    Stop playback (option: now, graceful, end)
-    K   SEEK     [?]
+    K   SEEK [pos|offset] Seek to absolute position or relative offset (if +/-), in seconds.
   
   * R   PREVIOUS [offset] Play previous song in the current playlist.
   * N   NEXT     [offset] Play next song in the current playlist.
--   J   JUMP     [pos|offset] Jump to given position in the current playlist
+  * J   JUMP     [pos|offset] Jump to given position in the current playlist
                               or to a given offset (if starts by +/-)
   
   * I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
@@ -52,7 +52,7 @@
     X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
 ??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
--   U   SHUFFLE [playlist]    Shuffle the playlist.
+  * U   SHUFFLE [playlist]    Shuffle the playlist.
 
   * PL  PLAYLIST-LIST            List the existing playlists.
   * PS  PLAYLIST-SAVE-AS <name>  Save the current playlist as a new playlist.

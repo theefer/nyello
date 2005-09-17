@@ -204,9 +204,30 @@ Dispatcher::actionHelp() {
   }
 }
 
+/**
+ * Display informations about the song currently being played, or
+ * general informations if no song is selected.
+ */
 void
 Dispatcher::actionStatus() {
-  // TODO: Display status
+  if(argNumber == 0) {
+    Printable* song;
+    int curr_id = playback->getCurrentId();
+    if(curr_id > 0 && (song = medialib->getSongById(curr_id)) != NULL) {
+      output->printStatus(song,
+                          playback->getStatus(),
+                          playback->getCurrentPlaytime(),
+                          playback->getCurrentPosition(),
+                          medialib->getCurrentPlaylistName());
+    }
+    else {
+      output->printEmptyStatus(playback->getStatus(),
+                               medialib->getCurrentPlaylistName());
+    }
+  }
+  else {
+    cerr << "Error: this command doesn't take any argument!" << endl;
+  }
 }
 
 

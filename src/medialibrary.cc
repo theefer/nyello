@@ -288,6 +288,23 @@ MediaLibrary::hasPlaylist(char* name) {
 
 
 /**
+ * Return an object containing the informations about the song with
+ * the given id.  NULL is returned if an error occurs.
+ */
+QuerySongList*
+MediaLibrary::getSongById(unsigned int id) {
+  lastRes = xmmsc_medialib_get_info(connection, id);
+  xmmsc_result_wait(lastRes);
+
+  if(xmmsc_result_iserror(lastRes)) {
+    return NULL;
+  }
+
+  return new QuerySongList(lastRes, connection);
+}
+
+
+/**
  * Queries the medialib and return the resulting list of songs.
  */
 QuerySongList*

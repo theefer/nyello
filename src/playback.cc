@@ -141,7 +141,7 @@ Playback::getCurrentId() {
     id = uid;
   }
   xmmsc_result_unref(lastRes);
-  
+
   return id;
 }
 
@@ -166,6 +166,26 @@ Playback::getCurrentPosition() {
   xmmsc_result_unref(lastRes);
 
   return pos;
+}
+
+unsigned int
+Playback::getCurrentPlaytime() {
+  unsigned int playtime;
+  lastRes = xmmsc_playback_playtime(connection);
+  xmmsc_result_wait(lastRes);
+  if(xmmsc_result_iserror(lastRes)) {
+    cerr << "Could not get playtime: "
+         << xmmsc_result_get_error(lastRes) << endl;
+
+    // FIXME: Err, not really
+    playtime = 0;
+  }
+  else {
+    xmmsc_result_get_uint(lastRes, &playtime);
+  }
+  xmmsc_result_unref(lastRes);
+
+  return playtime;
 }
 
 unsigned int

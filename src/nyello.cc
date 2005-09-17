@@ -25,7 +25,7 @@
 
   * H   HELP [command]   Get general help or help on a specific command.
 
-    S   STATUS           Status of the server.
+    T   STATUS           Status of the server.
   
   * P   PLAY             Start playback.
   * P   PAUSE            Pause playback.

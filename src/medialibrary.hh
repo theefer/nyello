@@ -39,6 +39,7 @@ public:
 
   bool hasPlaylist(char* name);
 
+  QuerySongList* getSongById(unsigned int id);
   QuerySongList* searchSongs(PatternQuery* query);
 
   void enqueueSongs(PatternQuery* query);

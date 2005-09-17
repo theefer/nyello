@@ -34,12 +34,14 @@ public:
 
   int getCurrentId();
   int getCurrentPosition();
+  unsigned int getCurrentPlaytime();
+
+  unsigned int getStatus();
 
 private:
   xmmsc_connection_t* connection;
   xmmsc_result_t*     lastRes;
 
-  unsigned int getStatus();
 };
 
 

@@ -18,6 +18,13 @@ Command::listAll() {
   list<Command*> cmds;
   Command* current;
 
+  // Infos
+  current = new Command("status", "t", &Dispatcher::actionStatus,
+                        "status",
+                        "Display current playback status.",
+                        "Display current playback status.\n");
+  cmds.push_back(current);
+
   // Playback
   current = new Command("play", "p+", &Dispatcher::actionPlay,
                         "play",

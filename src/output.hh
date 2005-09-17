@@ -30,7 +30,9 @@ public:
 
   void printPlaylists(PlaylistList* playlists);
   void printCollections(Collection* collections);
-  void printStatus();
+  void printStatus(Printable* song, unsigned int status,
+                   unsigned int playtime, int pos, const char* plname);
+  void printEmptyStatus(unsigned int status, const char* plname);
   void printFilter();
 
   void printCommandSummary(list<Command*> commands);
@@ -39,6 +41,9 @@ public:
 private:
   Columniser* songCol;
   Columniser* playlistCol;
+
+  char* getStatusString(unsigned int status);
+  char* getPlaytimeString(unsigned int playtime);
 };
 
 

@@ -56,6 +56,47 @@ Output::printSongs(Printable* songs) {
 }
 
 
+/**
+ * Display the current status of playback.
+ */
+void
+Output::printStatus(Printable* song, unsigned int status,
+                    unsigned int playtime, int pos, const char* plname) {
+  // FIXME: All this output should be customizable!
+
+  // FIXME: Why can't we rewind here?
+  // song->rewind();
+  char* playtime_str = getPlaytimeString(playtime);
+
+  // FIXME: We need to be able to get int duration here
+  // int portion = (playtime / 10) / song->get("duration");
+  int portion = 0;
+
+  cout << song->get("artist") << " - " << song->get("album");
+
+  if(strlen(song->get("year")) > 0)
+    cout << " (" << song->get("year") << ")";
+
+  cout << " - " << song->get("title") << endl
+       << "[" << getStatusString(status) << "] "
+       << pos << "/" << song->get("id") << "  "
+       << playtime_str << " (" << portion << "%)" << endl
+       << "playlist: " << plname << endl;
+
+  delete playtime_str;
+}
+
+/**
+ * Short version of status, only displaying the playback status and
+ * informations not needing song or position informations.
+ */
+void
+Output::printEmptyStatus(unsigned int status, const char* plname) {
+  cout << "[" << getStatusString(status)
+       << "] no entry currently selected" << endl
+       << "playlist: " << plname << endl;
+}
+
 void
 Output::printCommandSummary(list<Command*> commands) {
   list<Command*>::iterator it;
@@ -76,4 +117,32 @@ void
 Output::printCommandHelp(Command* cmd) {
   cout << "Usage: " << cmd->getUsage() << endl << endl;
   cout << cmd->getHelp() << endl;
+}
+
+/**
+ * Return a textual version of a status id.
+ */
+char*
+Output::getStatusString(unsigned int status) {
+  char* status_str;
+  switch(status) {
+  case XMMS_PLAYBACK_STATUS_PLAY:   status_str = "playing";  break;
+  case XMMS_PLAYBACK_STATUS_PAUSE:  status_str = "paused";   break;
+  case XMMS_PLAYBACK_STATUS_STOP:   status_str = "stopped";  break;
+  default:                          status_str = "unknown";  break;
+  }
+  return status_str;
+}
+
+/**
+ * Formats the millisecond playtime into a "MM:SS" string.
+ * The returned string must be manually freed after usage!
+ */
+char*
+Output::getPlaytimeString(unsigned int playtime) {
+  char* buffer = new char[10];
+  playtime /= 1000;
+  snprintf(buffer, 9, "%02d:%02d", 
+           playtime / 60, playtime % 60);
+  return buffer;
 }

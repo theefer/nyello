@@ -49,6 +49,9 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Should '#' match '1#0-' ?
   [ ] When no metadata is present, display Title=filename
   [ ] Fix operator bugs (NOT and XOR not working at all)
+  [ ] Generalize the #argument check in the dispatcher
+  [ ] TODO should show the played percentage
+  [ ] Templatize the STATUS output
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY?)

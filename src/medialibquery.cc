@@ -37,7 +37,9 @@ MedialibQuery::appendString(unsigned int i) {
 }
 void
 MedialibQuery::appendProtectedString(char* str) {
-  conditions += xmmsc_sqlite_prepare_string(str);
+  char* prep_str = xmmsc_sqlite_prepare_string(str);
+  conditions += prep_str;
+  delete prep_str;
 }
 
 void
@@ -216,10 +218,11 @@ MedialibQuery::appendAnyField() {
 
 void
 MedialibQuery::appendThisOrderField(char* field) {
+  char* prep_field = xmmsc_sqlite_prepare_string(field);
   joins << " LEFT JOIN Media as j" << orderCount
         << " ON m0.id=j" << orderCount << ".id"
-        << " AND j" << orderCount << ".key = "
-        << xmmsc_sqlite_prepare_string(field);
+        << " AND j" << orderCount << ".key = " << prep_field;
+  delete prep_field;
 }
 
 void

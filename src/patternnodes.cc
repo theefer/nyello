@@ -4,6 +4,7 @@
 /*  == CONSTRUCTORS == */
 
 PatternOperator::PatternOperator(int operId) : operatorId(operId) {
+  operands = NULL;
 }
 
 PatternOperatorAnd::PatternOperatorAnd() : PatternOperator(OPERATOR_AND) {
@@ -42,7 +43,13 @@ PatternPlaylistSequence::PatternPlaylistSequence(char* _plname, IdSequence* _seq
 /*  == DESTRUCTORS == */
 
 PatternOperator::~PatternOperator() {
-  // FIXME: Delete operands
+  // Delete operands
+  if(operands != NULL) {
+    PatternNodeList::iterator it;
+    for(it = operands->begin(); it != operands->end(); ++it) {
+      delete (*it);
+    }
+  }
 }
 
 PatternOperatorAnd::~PatternOperatorAnd() { }
@@ -70,7 +77,7 @@ PatternOperator::appendToQuery(MedialibQuery* query) {
       case OPERATOR_AND: query->appendString(" AND "); break;
       case OPERATOR_OR:  query->appendString(" OR ");  break;
       case OPERATOR_XOR: query->appendString(" XOR "); break;
-      default: /* FIXME: shouldn't happen! */ break;
+      default:  /* shouldn't ever happen! */  break;
       }
     }
 

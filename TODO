@@ -30,9 +30,8 @@
   [X] Allow escaped spaces and quoted string to be a single token
   [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
   [X] Read the XMMS_PATH env var to open the server connection
-  [ ] Improve pattern features (order by rand(), comparators)
-  [ ] More commands (clear, shuffle, jump, status, remove, filter)
-  [ ] Load 'autosaved' more gracefully
+  [ ] Improve pattern features (order by rand())
+  [X] More commands (clear, shuffle, jump, status, remove)
   ==> v0.3
 
   [ ] Make readline use async, redesign main-loop, remove waits
@@ -44,6 +43,8 @@ R [ ] Handle collections internally (enter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
 Unscheduled fixes (by order of importance, most important first)
+  [ ] Improve pattern features (comparators, limit)
+  [ ] More commands (seek, exclude, filter)
   [ ] Correct display, using wcs instead of str?
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] Should '#' match '1#0-' ?
@@ -58,3 +59,4 @@ Known bugs
   [ ] listing a playlist with just twice the same entry returns it only once
   [ ] incorrect number of songs with PLAYLIST-LIST
   [ ] "info -7" should really work
+  [ ] REMOVE can behave wrong if the active playlist and the matching saved playlist differ

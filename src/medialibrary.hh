@@ -30,6 +30,9 @@ public:
   PlaylistSongList* getPlaylist(char* name);
   PlaylistList* getPlaylists();
 
+  int getPlaylistSize(char* name);
+  int getCurrentPlaylistSize();
+
   void saveCurrentPlaylistAs(char* name);
   void usePlaylist(char* name);
   void removePlaylist(char* name);
@@ -44,6 +47,7 @@ public:
 
   void enqueueSongs(PatternQuery* query);
   void insertSongs(PatternQuery* query, unsigned int position);
+
   void removeSongAt(unsigned int position);
 
   Collection* newCollection();

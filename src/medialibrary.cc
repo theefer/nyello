@@ -125,6 +125,47 @@ MediaLibrary::getPlaylists() {
 
 
 /**
+ * Get the size of the given playlist.
+ * If an error occured (e.g. invalid playlist name), return -1.
+ */
+int
+MediaLibrary::getPlaylistSize(char* name) {
+  int size = -1;
+  char* curr_name = xmmsc_sqlite_prepare_string(name);
+  string query = "SELECT count(entry) AS size "
+                 "FROM Playlist, PlaylistEntries "
+                 "WHERE id=playlist_id AND "
+                 "      name=";
+  query += curr_name;
+
+  lastRes = xmmsc_medialib_select(connection, query.c_str());
+  xmmsc_result_wait(lastRes);
+
+  if (xmmsc_result_iserror(lastRes)) {
+    cerr << "Error: failed to get size of playlist '" << name 
+         << "', server said:" << endl
+         << xmmsc_result_get_error(lastRes) << endl;
+  }
+
+  xmmsc_result_get_dict_entry_int32(lastRes, "size", &size);
+
+  xmmsc_result_unref(lastRes);
+  delete curr_name;
+
+  return size;
+}
+
+
+/**
+ * Get the size of the current playlist.
+ */
+int
+MediaLibrary::getCurrentPlaylistSize() {
+  return getPlaylistSize(currentPlaylistName);
+}
+
+
+/**
  * Save the current server playlist in the medialib under the given
  * name.
  */
@@ -362,7 +403,7 @@ MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
  */
 void
 MediaLibrary::removeSongAt(unsigned int position) {
-  xmmsc_playlist_remove(connection, position);
+  lastRes = xmmsc_playlist_remove(connection, position);
   xmmsc_result_wait(lastRes);
   if(xmmsc_result_iserror(lastRes)) {
     cerr << "Error: failed to remove song at position "

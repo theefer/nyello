@@ -420,10 +420,28 @@ Dispatcher::actionReplace() {
   }
 }
 
-
+/**
+ * Remove all songs with a position matched by the sequences given in
+ * argument from the current playlist.
+ */
 void
 Dispatcher::actionRemove() {
-
+  if(argNumber > 0) {
+    int playlist_len = medialib->getCurrentPlaylistSize();
+    PositionSequence* positions = new PositionSequence();
+    for(int i = 0; i < argNumber; ++i) {
+      positions->parseAdd(arguments[i]);
+    }
+    for(int pos = 1, diff = 0; pos <= playlist_len; ++pos) {
+      if(positions->contains(pos)) {
+        medialib->removeSongAt(pos - diff - 1);
+        ++diff;
+      }
+    }
+  }
+  else {
+    cerr << "Error: this command requires arguments!" << endl;    
+  }
 }
 
 /**

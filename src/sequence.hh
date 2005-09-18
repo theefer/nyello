@@ -12,6 +12,7 @@ using namespace std;
 template <class T> class Sequence;
 
 typedef Sequence<unsigned int> IdSequence;
+typedef Sequence<unsigned int> PositionSequence;
 
 
 template <class T>

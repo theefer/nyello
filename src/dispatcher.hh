@@ -24,6 +24,7 @@ typedef void (Dispatcher::*DispFnPtr)();
 #include "patternparser.hh"
 #include "command.hh"
 #include "output.hh"
+#include "sequence.hh"
 
 #include "patternquery.hh"
 

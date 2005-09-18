@@ -30,7 +30,7 @@
   * P   PLAY             Start playback.
   * P   PAUSE            Pause playback.
   * S   STOP [option]    Stop playback (option: now, graceful, end)
-    K   SEEK [pos|offset] Seek to absolute position or relative offset (if +/-), in seconds.
+-   K   SEEK [pos|offset] Seek to absolute position or relative offset (if +/-), in seconds.
   
   * R   PREVIOUS [offset] Play previous song in the current playlist.
   * N   NEXT     [offset] Play next song in the current playlist.
@@ -49,8 +49,8 @@
   * E   ENQUEUE <pattern> [IN <playlist>?]
   * E+  INSERT  <pattern>
   * E-  REPLACE <pattern>
-    X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
-??? ?   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
+-   X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
+  * O   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
   * U   SHUFFLE [playlist]    Shuffle the playlist.
 

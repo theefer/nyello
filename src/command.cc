@@ -252,6 +252,15 @@ Command::listAll() {
                         "See 'help info' for the syntax of patterns.\n");
   cmds.push_back(current);
 
+  current = new Command("remove", "o", &Dispatcher::actionRemove,
+                        "remove POSITIONS",
+                        "Remove songs with given positions from the current playlist.",
+                        "Remove songs with given positions from the current playlist.\n"
+                        "\n"
+                        "The arguments are position sequences (see 'help info' for a description\n"
+                        "of the syntax of sequences).\n");
+  cmds.push_back(current);
+
   current = new Command("replace", "e-", &Dispatcher::actionReplace,
                         "replace PATTERN",
                         "Replace the current song with all songs matching a pattern.",

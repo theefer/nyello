@@ -92,6 +92,8 @@ Command::listAll() {
                         "results, etc).  Operators let you combine groups of songs to form new\n"
                         "groups.\n"
                         "\n"
+                        "An empty pattern only matches the currently playing song (if any).\n"
+                        "\n"
                         "The following documentation describes the different types of\n"
                         "conditions as well as the operators used to combine them.\n"
                         "\n"
@@ -220,9 +222,13 @@ Command::listAll() {
                         "\n"
                         "    -o, --orderby  <fieldlist>\n"
                         "\n"
+                        "  Examples:  -o album,r      Order by album, but randomize track order.\n"
+                        "             -o y,a,l,n      Order by year, artist, album and track number.\n"
+                        "\n"
                         "  where fieldlist is a comma-separated list of fields (see the flags)\n"
                         "  to order by, either in short or long form.  Reverse ordering is done\n"
-                        "  by specifying the field in uppercase.  When no ordering flag is\n"
+                        "  by specifying the field in uppercase.  Using 'random' (short form: 'r')\n"
+                        "  as an ordering field activates random ordering. When no ordering flag is\n"
                         "  specified, the default order sequence of nyello is used.\n");
 
 

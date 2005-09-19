@@ -330,7 +330,7 @@ MediaLibrary::getSongById(unsigned int id) {
     return NULL;
   }
 
-  return new SongResult(lastRes, connection);
+  return new RichResult(lastRes);
 }
 
 

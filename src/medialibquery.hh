@@ -34,7 +34,8 @@ public:
 
   void appendSequence(char* label, IdSequence* seq);
 
-  void appendOrderBy(char* field, bool asc);
+  void appendOrderField(char* field, bool asc);
+  void appendOrderFunction(char* function);
 
   char* getQuery();
 
@@ -48,6 +49,7 @@ private:
   string conditions;
   string orderby;
 
+  void appendOrderBy(char* field, bool asc = true);
   void appendThisOrderField(char* field);
 
   void appendAnyField();

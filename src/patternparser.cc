@@ -4,11 +4,12 @@
 PatternParser::PatternParser(Playback* _playback, MediaLibrary* _medialib)
   : playback(_playback), medialib(_medialib) {
 
-  defaultOrderBy = new OrderByList();
-  defaultOrderBy->push_back(pair<char*,bool>("artist",  true));
-  defaultOrderBy->push_back(pair<char*,bool>("album",   true));
-  defaultOrderBy->push_back(pair<char*,bool>("tracknr", true));
-  defaultOrderBy->push_back(pair<char*,bool>("url",     true));
+  // FIXME: Default ordering shouldn't be hardcoded
+  defaultOrderBy = new PatternOrderBy();
+  defaultOrderBy->addOrder(new PatternOrderField("artist",  true));
+  defaultOrderBy->addOrder(new PatternOrderField("album",   true));
+  defaultOrderBy->addOrder(new PatternOrderField("tracknr", true));
+  defaultOrderBy->addOrder(new PatternOrderField("url",     true));
 }
 
 
@@ -20,7 +21,7 @@ PatternQuery*
 PatternParser::registerNewPattern(char** _arguments, int _numArgs) {
   PatternNode* top;
   PatternQuery* newQuery = NULL;
-  OrderByList* use_order;
+  PatternOrderBy* use_order;
 
   // Init member vars
   arguments = _arguments;
@@ -414,9 +415,9 @@ PatternParser::parseMLibSequence() {
 }
 
 
-OrderByList*
+PatternOrderBy*
 PatternParser::parseOrderBy(char* _orderstr) {
-  OrderByList* orderlist = new OrderByList();
+  PatternOrderBy* orderby = new PatternOrderBy();
   string orderstr = _orderstr;
   int offset, len, pos;
   string token;
@@ -428,39 +429,43 @@ PatternParser::parseOrderBy(char* _orderstr) {
 
     // FIXME: there must be a nicer way to do that switching?
     if(token.compare("a") == 0 || token.compare("artist") == 0)
-      orderlist->push_back(pair<char*,bool>("artist", true));
+      orderby->addOrder(new PatternOrderField("artist", true));
     else if(token.compare("l") == 0 || token.compare("album") == 0)
-      orderlist->push_back(pair<char*,bool>("album", true));
+      orderby->addOrder(new PatternOrderField("album", true));
     else if(token.compare("t") == 0 || token.compare("title") == 0)
-      orderlist->push_back(pair<char*,bool>("title", true));
+      orderby->addOrder(new PatternOrderField("title", true));
     else if(token.compare("n") == 0 || token.compare("tracknr") == 0)
-      orderlist->push_back(pair<char*,bool>("tracknr", true));
+      orderby->addOrder(new PatternOrderField("tracknr", true));
     else if(token.compare("g") == 0 || token.compare("genre") == 0)
-      orderlist->push_back(pair<char*,bool>("genre", true));
+      orderby->addOrder(new PatternOrderField("genre", true));
     else if(token.compare("y") == 0 || token.compare("year") == 0)
-      orderlist->push_back(pair<char*,bool>("year", true));
+      orderby->addOrder(new PatternOrderField("year", true));
+
+    // Special value: random
+    else if(token.compare("r") == 0 || token.compare("random") == 0)
+      orderby->addOrder(new PatternOrderFunction("RANDOM()"));
 
     if(token.compare("A") == 0
        || token.compare("Artist") == 0 || token.compare("ARTIST") == 0)
-      orderlist->push_back(pair<char*,bool>("artist", false));
+      orderby->addOrder(new PatternOrderField("artist", false));
     else if(token.compare("L") == 0
             || token.compare("Album") == 0 || token.compare("ALBUM") == 0)
-      orderlist->push_back(pair<char*,bool>("album", false));
+      orderby->addOrder(new PatternOrderField("album", false));
     else if(token.compare("T") == 0
             || token.compare("Title") == 0 || token.compare("TITLE") == 0)
-      orderlist->push_back(pair<char*,bool>("title", false));
+      orderby->addOrder(new PatternOrderField("title", false));
     else if(token.compare("N") == 0
             || token.compare("Tracknr") == 0 || token.compare("TRACKNR") == 0)
-      orderlist->push_back(pair<char*,bool>("tracknr", false));
+      orderby->addOrder(new PatternOrderField("tracknr", false));
     else if(token.compare("G") == 0
             || token.compare("Genre") == 0 || token.compare("GENRE") == 0)
-      orderlist->push_back(pair<char*,bool>("genre", false));
+      orderby->addOrder(new PatternOrderField("genre", false));
     else if(token.compare("Y") == 0
             || token.compare("Year") == 0 || token.compare("YEAR") == 0)
-      orderlist->push_back(pair<char*,bool>("year", false));
+      orderby->addOrder(new PatternOrderField("year", false));
   }
 
-  return orderlist;
+  return orderby;
 }
 
 

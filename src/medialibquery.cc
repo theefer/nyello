@@ -152,21 +152,47 @@ MedialibQuery::appendSequence(char* label, IdSequence* seq) {
   appendEndGroup();
 }
 
+
+/**
+ * Append an ordering field to the query.
+ */
+void
+MedialibQuery::appendOrderField(char* field, bool asc) {
+  appendThisOrderField(field);
+  appendOrderBy(NULL, asc);
+  ++orderCount;
+}
+
+/**
+ * Append an ordering function to the query.
+ */
+void
+MedialibQuery::appendOrderFunction(char* function) {
+  appendOrderBy(function);  
+}
+
+/**
+ * Append a field to the ORDER BY clause of the query.
+ */
 void
 MedialibQuery::appendOrderBy(char* field, bool asc) {
-  stringstream buffer;
-  appendThisOrderField(field);
-
   if(!orderby.empty()) {
-    buffer << ", ";
+    orderby += ", ";
   }
-  buffer << "j" << orderCount << ".value";
-  if(!asc) {
-    buffer << " DESC";
-  }
-  orderby += buffer.str();
 
-  ++orderCount;
+  // FIXME: Find a cleaner way to do this
+  if(field != NULL) {
+    orderby += field;
+  }
+  else {
+    stringstream buffer;
+    buffer << "j" << orderCount << ".value";
+    orderby += buffer.str();
+  }
+
+  if(!asc) {
+    orderby += " DESC";
+  }
 }
 
 

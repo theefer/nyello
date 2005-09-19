@@ -3,19 +3,12 @@
 
 #include <vector>
 #include <list>
-#include <utility>
 #include <string>
 using namespace std;
 
 #include "patternnodes.hh"
 #include "playlistsonglist.hh"
 #include "sequence.hh"
-
-/**
- * First element: name of the field to order by (artist, album, etc)
- * Second element: whether we order ascendingly
- */
-typedef list<pair<char*,bool> > OrderByList;
 
 
 /**
@@ -24,7 +17,7 @@ typedef list<pair<char*,bool> > OrderByList;
 class PatternQuery {
 public:
 
-  PatternQuery(PatternNode* top, OrderByList* order);
+  PatternQuery(PatternNode* top, PatternOrderBy* order);
   ~PatternQuery();
 
   void saveResults(Printable* songlist);
@@ -36,6 +29,7 @@ public:
 
 private:
   PatternNode* topNode;
+  PatternOrderBy* orderNode;
 
   MedialibQuery* queryCache;
   vector<unsigned int> resultCache;

@@ -1,19 +1,17 @@
 #include "patternquery.hh"
 
 
-PatternQuery::PatternQuery(PatternNode* top, OrderByList* orderby) : topNode(top) {
-  OrderByList::iterator it;
+PatternQuery::PatternQuery(PatternNode* top, PatternOrderBy* orderby)
+  : topNode(top), orderNode(orderby) {
   queryCache = new MedialibQuery();
   topNode->appendToQuery(queryCache);
-
-  for(it = orderby->begin(); it != orderby->end(); ++it) {
-    queryCache->appendOrderBy((*it).first, (*it).second);
-  }
+  orderNode->appendToQuery(queryCache);
 }
 
 PatternQuery::~PatternQuery() {
   // FIXME: Or unref until it's actually freed?
   delete topNode;
+  delete orderNode;
 
   if(queryCache != NULL) {
     delete queryCache;

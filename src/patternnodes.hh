@@ -10,7 +10,9 @@ using namespace std;
 
 
 class PatternNode;
+class PatternOrder;
 typedef list<PatternNode*> PatternNodeList;
+typedef list<PatternOrder*> PatternOrderList;
 
 
 class PatternNode {
@@ -120,5 +122,53 @@ private:
   char* plname;
   IdSequence* seq;
 };
+
+
+
+class PatternOrderBy : public PatternNode {
+public:
+  PatternOrderBy();
+  ~PatternOrderBy();
+
+  virtual void appendToQuery(MedialibQuery* query);
+
+  inline void addOrder(PatternOrder* order) { orderlist->push_back(order); }
+
+protected:
+  PatternOrderList* orderlist;
+
+};
+
+
+class PatternOrder : public PatternNode {
+public:
+  PatternOrder(char* field);
+  ~PatternOrder();
+
+  virtual void appendToQuery(MedialibQuery* query) = 0;
+
+protected:
+  char* field;
+};
+
+class PatternOrderField : public PatternOrder {
+public:
+  PatternOrderField(char* field, bool asc);
+  ~PatternOrderField();
+
+  virtual void appendToQuery(MedialibQuery* query);
+
+protected:
+  bool asc;
+};
+
+class PatternOrderFunction : public PatternOrder {
+public:
+  PatternOrderFunction(char* function);
+  ~PatternOrderFunction();
+
+  virtual void appendToQuery(MedialibQuery* query);
+};
+
 
 #endif  // __PATTERNNODES_HH__

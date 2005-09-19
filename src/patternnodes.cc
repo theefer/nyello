@@ -39,6 +39,22 @@ PatternPlaylistSequence::PatternPlaylistSequence(char* _plname, IdSequence* _seq
 }
 
 
+PatternOrderBy::PatternOrderBy() {
+  orderlist = new PatternOrderList();
+}
+
+PatternOrder::PatternOrder(char* _field) : field(_field) {
+}
+
+PatternOrderField::PatternOrderField(char* _field, bool _asc)
+  : PatternOrder(_field), asc(_asc) {
+}
+
+PatternOrderFunction::PatternOrderFunction(char* _function)
+  : PatternOrder(_function) {
+}
+
+
 
 /*  == DESTRUCTORS == */
 
@@ -63,6 +79,21 @@ PatternMLibSequence::~PatternMLibSequence() { }
 PatternPlaylistSequence::~PatternPlaylistSequence() {
   delete plname;
 }
+
+
+PatternOrderBy::~PatternOrderBy() {
+  // Delete orderlist
+  if(orderlist != NULL) {
+    PatternOrderList::iterator it;
+    for(it = orderlist->begin(); it != orderlist->end(); ++it) {
+      delete (*it);
+    }
+  }
+}
+
+PatternOrder::~PatternOrder() { }
+PatternOrderField::~PatternOrderField() { }
+PatternOrderFunction::~PatternOrderFunction() { }
 
 
 /*  == APPEND TO QUERY == */
@@ -125,4 +156,23 @@ PatternPlaylistSequence::appendToQuery(MedialibQuery* query) {
     query->appendSequence("pos", seq);
   }
   query->appendString(" ORDER BY pos)");
+}
+
+
+void
+PatternOrderBy::appendToQuery(MedialibQuery* query) {
+  PatternOrderList::iterator it;
+  for(it = orderlist->begin(); it != orderlist->end(); ++it) {
+    (*it)->appendToQuery(query);
+  }
+}
+
+void
+PatternOrderField::appendToQuery(MedialibQuery* query) {
+  query->appendOrderField(field, asc);
+}
+
+void
+PatternOrderFunction::appendToQuery(MedialibQuery* query) {
+  query->appendOrderFunction(field);
 }

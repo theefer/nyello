@@ -40,8 +40,7 @@ public:
   char* getQuery();
 
 private:
-  // FIXME: Add all
-  char* ANY_FIELDS; // = "('artist','album')";
+  char* ANY_FIELDS;
 
   int aliasCount;
   int orderCount;

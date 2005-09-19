@@ -55,7 +55,6 @@ PatternOrderFunction::PatternOrderFunction(char* _function)
 }
 
 
-
 /*  == DESTRUCTORS == */
 
 PatternOperator::~PatternOperator() {
@@ -74,10 +73,15 @@ PatternOperatorXor::~PatternOperatorXor() { }
 PatternOperatorNot::~PatternOperatorNot() { }
 
 PatternCondition::~PatternCondition() { }
-PatternMatchCondition::~PatternMatchCondition() { }
-PatternMLibSequence::~PatternMLibSequence() { }
+PatternMatchCondition::~PatternMatchCondition() {
+  delete value;
+}
+PatternMLibSequence::~PatternMLibSequence() {
+  delete seq;
+}
 PatternPlaylistSequence::~PatternPlaylistSequence() {
   delete plname;
+  delete seq;
 }
 
 

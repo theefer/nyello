@@ -21,7 +21,6 @@ PatternQuery*
 PatternParser::registerNewPattern(char** _arguments, int _numArgs) {
   PatternNode* top;
   PatternQuery* newQuery = NULL;
-  PatternOrderBy* use_order;
 
   // Init member vars
   arguments = _arguments;
@@ -31,8 +30,7 @@ PatternParser::registerNewPattern(char** _arguments, int _numArgs) {
   // Generate query object and push it in history
   top = parse();
   if(top != NULL) {
-    use_order = (orderby == NULL) ? defaultOrderBy : orderby;
-    newQuery = new PatternQuery(top, use_order);
+    newQuery = new PatternQuery(top, getOrder());
     history.push_front(newQuery);
     padHistory();
   }
@@ -51,6 +49,19 @@ PatternParser::nextArgument() {
   return currArg;
 }
 
+
+PatternOrderBy*
+PatternParser::getOrder() {
+  PatternOrderBy* use_order;
+
+  // FIXME: Use a copy of the default order, so we can free it!
+  if(orderby == NULL)
+    use_order = defaultOrderBy;
+  else
+    use_order = orderby;
+
+  return use_order;
+}
 
 /**
  * Start the parsing of the arguments and return the built tree.
@@ -217,7 +228,7 @@ PatternParser::parseCondition() {
 
   // Unrecognized token, use it as an "any flag" value
   else {
-    cond = new PatternMatchCondition(currArg);
+    cond = new PatternMatchCondition(makeCopy(currArg));
   }
 
   return cond;
@@ -343,12 +354,11 @@ PatternParser::parsePlaylistSequence() {
   int name_len  = pos - currArg;
   char* plname;
   if(name_len > 0) {
-    plname = new char[name_len + 1];
-    strncpy(plname, currArg, name_len);
-    plname[name_len] = '\0';
+    plname = makeCopy(currArg);
   }
   // No playlist name, use current playlist
   else {
+    // FIXME: Use makeCopy() despite the const ?
     const char* buffer = medialib->getCurrentPlaylistName();
     plname = new char[ strlen(buffer) + 1 ];
     strcpy(plname, buffer);
@@ -390,6 +400,8 @@ PatternParser::parseHistorySequence() {
     cerr << "Error: invalid history reference '" << currArg << "'!" << endl;
     historySeq = NULL;
   }
+
+  delete seq;
 
   return historySeq;
 }
@@ -474,14 +486,14 @@ PatternParser::buildMatchCondition(char flag, char* value) {
   PatternCondition* cond;
 
   switch(flag) {
-  case 'a':  cond = new PatternMatchCondition("artist", value);        break;
-  case 'A':  cond = new PatternMatchCondition("artist", value, true);  break;
+  case 'a':  cond = new PatternMatchCondition("artist", makeCopy(value));        break;
+  case 'A':  cond = new PatternMatchCondition("artist", makeCopy(value), true);  break;
 
-  case 'l':  cond = new PatternMatchCondition("album", value);         break;
-  case 'L':  cond = new PatternMatchCondition("album", value, true);   break;
+  case 'l':  cond = new PatternMatchCondition("album", makeCopy(value));         break;
+  case 'L':  cond = new PatternMatchCondition("album", makeCopy(value), true);   break;
 
-  case 't':  cond = new PatternMatchCondition("title", value);         break;
-  case 'T':  cond = new PatternMatchCondition("title", value, true);   break;
+  case 't':  cond = new PatternMatchCondition("title", makeCopy(value));         break;
+  case 'T':  cond = new PatternMatchCondition("title", makeCopy(value), true);   break;
 
     /* FIXME: Special attributes
   case 'g':
@@ -489,8 +501,8 @@ PatternParser::buildMatchCondition(char flag, char* value) {
   case 'n':
     */
 
-  case 'z':  cond = new PatternMatchCondition(value);        break;
-  case 'Z':  cond = new PatternMatchCondition(value, true);  break;
+  case 'z':  cond = new PatternMatchCondition(makeCopy(value));        break;
+  case 'Z':  cond = new PatternMatchCondition(makeCopy(value), true);  break;
 
   // Special handling for orderby, save in member var!
   case 'o':
@@ -514,28 +526,28 @@ PatternParser::buildMatchCondition(char* flag, char* value) {
   // FIXME: comparing tolower(string) would be nicer
 
   if(strcmp(flag, "artist") == 0)
-    cond = new PatternMatchCondition("artist", value);
+    cond = new PatternMatchCondition("artist", makeCopy(value));
   else if(strcmp(flag, "Artist") == 0 || strcmp(flag, "ARTIST") == 0)
-    cond = new PatternMatchCondition("artist", value, true);
+    cond = new PatternMatchCondition("artist", makeCopy(value), true);
 
   else if(strcmp(flag, "album") == 0)
-    cond = new PatternMatchCondition("album", value);
+    cond = new PatternMatchCondition("album", makeCopy(value));
   else if(strcmp(flag, "Album") == 0 || strcmp(flag, "ALBUM") == 0)
-    cond = new PatternMatchCondition("album", value, true);
+    cond = new PatternMatchCondition("album", makeCopy(value), true);
 
   else if(strcmp(flag, "title") == 0)
-    cond = new PatternMatchCondition("title", value);
+    cond = new PatternMatchCondition("title", makeCopy(value));
   else if(strcmp(flag, "Title") == 0 || strcmp(flag, "TITLE") == 0)
-    cond = new PatternMatchCondition("title", value, true);
+    cond = new PatternMatchCondition("title", makeCopy(value), true);
 
   /* FIXME: special attributes
      genre, year, track
   */
 
   else if(strcmp(flag, "any") == 0)
-    cond = new PatternMatchCondition(value);
+    cond = new PatternMatchCondition(makeCopy(value));
   else if(strcmp(flag, "Any") == 0 || strcmp(flag, "ANY") == 0)
-    cond = new PatternMatchCondition(value, true);
+    cond = new PatternMatchCondition(makeCopy(value), true);
 
   // Special handling for orderby, save in member var!
   else if(strcmp(flag, "orderby") == 0) {
@@ -584,4 +596,11 @@ PatternParser::charToId(char* number) {
   }
 
   return value;
+}
+
+char*
+PatternParser::makeCopy(char* orig) {
+  char* copy = new char[ strlen(orig) + 1 ];
+  strcpy(copy, orig);
+  return copy;
 }

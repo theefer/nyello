@@ -20,7 +20,6 @@ public:
 
   virtual void appendToQuery(MedialibQuery* query) = 0;
 
-private:
 };
 
 
@@ -79,8 +78,6 @@ class PatternCondition : public PatternNode {
 public:
   PatternCondition();
   ~PatternCondition();
-
-private:
 };
 
 

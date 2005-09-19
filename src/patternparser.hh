@@ -47,6 +47,8 @@ private:
 
   char* nextArgument();
 
+  PatternOrderBy* getOrder();
+
   PatternNode* parse();
   PatternNode* parseGroup();
   PatternOperator* parseOperator();
@@ -71,6 +73,7 @@ private:
   // Utility methods
   void padHistory();
   unsigned int charToId(char* number);
+  char* makeCopy(char* orig);
 };
 
 #endif  // __PATTERNPARSER_HH__

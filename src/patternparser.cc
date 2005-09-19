@@ -192,6 +192,11 @@ PatternParser::parseCondition() {
     cond = parsePatternReference();
   }
 
+  // If only composed of [\d,-]: medialib id sequence
+  else if(strspn(currArg, "0123456789-,") == strlen(currArg)) {
+    cond = parseMLibSequence();
+  }
+
   // If starting by '-': short or long match flag
   else if(*currArg == CHAR_MATCHFLAGS) {
     if(*(currArg+1) == CHAR_MATCHFLAGS)
@@ -208,11 +213,6 @@ PatternParser::parseCondition() {
   // If contains a '#': pattern history sequence
   else if(strrchr(currArg, '#') != NULL) {
     cond = parseHistorySequence();
-  }
-
-  // If only composed of [\d,-]: medialib id sequence
-  else if(strspn(currArg, "0123456789-,") == strlen(currArg)) {
-    cond = parseMLibSequence();
   }
 
   // Unrecognized token, use it as an "any flag" value

@@ -32,6 +32,7 @@
   [X] Read the XMMS_PATH env var to open the server connection
   [X] Improve pattern features (order by rand())
   [X] More commands (clear, shuffle, jump, status, remove)
+  [X] Fixed parsing order bug (fixes "info -7")
   ==> v0.3
 
   [ ] Make readline use async, redesign main-loop, remove waits
@@ -58,5 +59,4 @@ Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY?)
   [ ] listing a playlist with just twice the same entry returns it only once
   [ ] incorrect number of songs with PLAYLIST-LIST
-  [ ] "info -7" should really work
   [ ] REMOVE can behave wrong if the active playlist and the matching saved playlist differ

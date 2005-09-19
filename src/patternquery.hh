@@ -23,6 +23,7 @@ public:
   void saveResults(AbstractResult* songlist);
 
   char* getSql();
+  IdSequence* getIds();
   IdSequence* getIdsFromSequence(IdSequence* seq);
 
   inline PatternNode* getTopNode() { return topNode; }

@@ -39,6 +39,25 @@ PatternQuery::getSql() {
 }
 
 
+/**
+ * Get the ids of all songs matched by the query, as a sequence.
+ */
+IdSequence*
+PatternQuery::getIds() {
+  IdSequence* res_seq = new IdSequence();
+
+  vector<unsigned int>::iterator it;
+  for(it = resultCache.begin(); it != resultCache.end(); ++it) {
+    res_seq->addValue(*it);
+  }
+
+  return res_seq;
+}
+
+/**
+ * Get the ids of all songs matched by the query and with position
+ * within the given sequence, as a sequence.
+ */
 IdSequence*
 PatternQuery::getIdsFromSequence(IdSequence* seq) {
   IdSequence* res_seq = new IdSequence();

@@ -393,7 +393,13 @@ PatternParser::parseHistorySequence() {
 
   // Get the history sequence node
   if(n >= 0 && n < history.size()) {
-    IdSequence* resSeq = history[n]->getIdsFromSequence(seq);
+    IdSequence* resSeq;
+    if(!seq->empty()) {
+      resSeq = history[n]->getIdsFromSequence(seq);
+    }
+    else {
+      resSeq = history[n]->getIds();
+    }
     historySeq = new PatternMLibSequence(resSeq);
   }
   else {

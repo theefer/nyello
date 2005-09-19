@@ -28,13 +28,14 @@
 
   [X] Configure script, using autoconf/automake
   [X] Allow escaped spaces and quoted string to be a single token
-  [ ] Code cleanup, bugs, FIXME's
+  [X] Code cleanup, bugs, FIXME's
   [X] Read the XMMS_PATH env var to open the server connection
   [X] Improve pattern features (order by rand())
   [X] More commands (clear, shuffle, jump, status, remove)
   [X] Important refactoring of the Printable tree, now using AbstractResult
   [X] Fixed parsing order bug (fixes "info -7")
   [X] Fixed the playlist-list command that returned incorrect results
+  [X] Fixed pattern syntax bug (now '#' matches '1#0-' indeed)
   ==> v0.3
 
   [ ] Make readline use async, redesign main-loop, remove waits
@@ -51,10 +52,8 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Correct display, using wcs instead of str?
   [ ] Reference counter for the reused PatternNodes
   [ ] Free all the allocated memory, i.e. fix the leaks!
-  [ ] Should '#' match '1#0-' ?
   [ ] When no metadata is present, display Title=filename
   [ ] Generalize the #argument check in the dispatcher
-  [ ] TODO should show the played percentage
   [ ] Templatize the STATUS output
 
 Known bugs

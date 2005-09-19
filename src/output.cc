@@ -67,10 +67,7 @@ Output::printStatus(Printable* song, unsigned int status,
   // FIXME: Why can't we rewind here?
   // song->rewind();
   char* playtime_str = getPlaytimeString(playtime);
-
-  // FIXME: We need to be able to get int duration here
-  // int portion = (playtime / 10) / song->get("duration");
-  int portion = 0;
+  int portion = (playtime * 100) / song->getInt("duration");
 
   cout << song->get("artist") << " - " << song->get("album");
 

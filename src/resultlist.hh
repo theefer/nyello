@@ -15,6 +15,7 @@ public:
 
   virtual unsigned int getId()  { return result->getId(); }
   virtual char* get(char* key)  { return result->get(key); }
+  virtual int getInt(char* key) { return result->getInt(key); }
   virtual bool  next()          { return result->next(); }
   virtual bool  isSelected()    { return false; }
   virtual void  rewind()        {        result->rewind(); }

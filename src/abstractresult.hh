@@ -13,6 +13,8 @@ public:
   virtual unsigned int getCounter() { return counter; }
 
   virtual char* get(char* key) = 0;
+  virtual int getInt(char* key) = 0;
+
   virtual bool  next() = 0;
   virtual void  rewind();
   virtual bool  isValid();

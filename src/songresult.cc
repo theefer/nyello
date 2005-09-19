@@ -18,14 +18,23 @@ SongResult::getId() {
 
 char*
 SongResult::get(char* key) {
-  // Setup the internal cache
   if(cache == NULL) {
-    cache = xmmsc_medialib_get_info(conn, getId());
-    xmmsc_result_wait(cache);
+    fetchCache();
   }
 
-  // Retrieve the value
   return getDictEntryAsStr(cache, key);
+}
+
+int
+SongResult::getInt(char* key) {
+  int32_t bufferInt;
+
+  if(cache == NULL) {
+    fetchCache();
+  }
+
+  xmmsc_result_get_dict_entry_int32(cache, key, &bufferInt);
+  return bufferInt;
 }
 
 bool
@@ -39,4 +48,10 @@ SongResult::next() {
 
   // Try to move forward in the list
   return xmmsc_result_list_next(res);
+}
+
+void
+SongResult::fetchCache() {
+  cache = xmmsc_medialib_get_info(conn, getId());
+  xmmsc_result_wait(cache);
 }

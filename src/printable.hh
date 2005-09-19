@@ -9,6 +9,7 @@ public:
 
   virtual unsigned int getId() = 0;
   virtual char* get(char* key) = 0;
+  virtual int getInt(char* key) = 0;
   virtual bool  next() = 0;
   virtual bool  isSelected() = 0;
   virtual void  rewind() = 0;

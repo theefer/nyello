@@ -14,6 +14,8 @@ public:
   virtual unsigned int getId();
 
   virtual char* get(char* key);
+  virtual int getInt(char* key);
+
   virtual bool  next();
 
 };

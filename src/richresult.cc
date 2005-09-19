@@ -9,14 +9,19 @@ RichResult::~RichResult() {
 
 unsigned int
 RichResult::getId() {
-  unsigned int currentId;
-  xmmsc_result_get_dict_entry_uint32(res, "id", &currentId);
-  return currentId;
+  return getInt("id");
 }
 
 char*
 RichResult::get(char* key) {
   return getDictEntryAsStr(res, key);
+}
+
+int
+RichResult::getInt(char* key) {
+  int32_t bufferInt;
+  xmmsc_result_get_dict_entry_int32(res, key, &bufferInt);
+  return bufferInt;
 }
 
 bool

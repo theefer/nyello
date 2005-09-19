@@ -51,12 +51,11 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] Should '#' match '1#0-' ?
   [ ] When no metadata is present, display Title=filename
-  [ ] Fix operator bugs (NOT and XOR not working at all)
   [ ] Generalize the #argument check in the dispatcher
   [ ] TODO should show the played percentage
   [ ] Templatize the STATUS output
 
 Known bugs
-  [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY?)
-  [ ] listing a playlist with just twice the same entry returns it only once
+  [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)
   [ ] REMOVE can behave wrong if the active playlist and the matching saved playlist differ
+  [ ] NOT and XOR not working at all

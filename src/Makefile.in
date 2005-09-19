@@ -50,8 +50,10 @@ PROGRAMS = $(bin_PROGRAMS)
 am_nyello_OBJECTS = nyello.$(OBJEXT) dispatcher.$(OBJEXT) \
 	playback.$(OBJEXT) medialibrary.$(OBJEXT) output.$(OBJEXT) \
 	columniser.$(OBJEXT) column.$(OBJEXT) countercolumn.$(OBJEXT) \
-	printable.$(OBJEXT) dictlist.$(OBJEXT) querysonglist.$(OBJEXT) \
-	playlistlist.$(OBJEXT) playlistsonglist.$(OBJEXT) \
+	printable.$(OBJEXT) resultlist.$(OBJEXT) \
+	playlistresultlist.$(OBJEXT) selectionresultlist.$(OBJEXT) \
+	abstractresult.$(OBJEXT) songresult.$(OBJEXT) \
+	selectresult.$(OBJEXT) richresult.$(OBJEXT) \
 	patternparser.$(OBJEXT) patternnodes.$(OBJEXT) \
 	patternquery.$(OBJEXT) medialibquery.$(OBJEXT) \
 	sequence.$(OBJEXT) command.$(OBJEXT)
@@ -163,10 +165,13 @@ nyello_SOURCES = nyello.cc\
 		column.cc\
 		countercolumn.cc\
 		printable.cc\
-		dictlist.cc\
-		querysonglist.cc\
-		playlistlist.cc\
-		playlistsonglist.cc\
+		resultlist.cc\
+		playlistresultlist.cc\
+		selectionresultlist.cc\
+		abstractresult.cc\
+		songresult.cc\
+		selectresult.cc\
+		richresult.cc\
 		patternparser.cc\
 		patternnodes.cc\
 		patternquery.cc\
@@ -240,11 +245,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/abstractresult.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/column.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/columniser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/countercolumn.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dictlist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dispatcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/medialibquery.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/medialibrary.Po@am__quote@
@@ -254,11 +259,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/patternparser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/patternquery.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playback.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playlistlist.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playlistsonglist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playlistresultlist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printable.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/querysonglist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/resultlist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/richresult.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/selectionresultlist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/selectresult.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sequence.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/songresult.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

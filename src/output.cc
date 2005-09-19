@@ -24,7 +24,7 @@ Output::~Output() {
 
 
 void
-Output::printPlaylists(PlaylistList* playlists) {
+Output::printPlaylists(Printable* playlists) {
   playlistCol->reset();
   while(playlists->isValid()) {
     playlistCol->printRow(playlists);

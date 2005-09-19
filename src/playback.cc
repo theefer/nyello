@@ -168,6 +168,11 @@ Playback::getCurrentPosition() {
   return pos;
 }
 
+
+/**
+ * Return the current playtime of the playing song, or 0 if there is
+ * no playing song.
+ */
 unsigned int
 Playback::getCurrentPlaytime() {
   unsigned int playtime;
@@ -188,6 +193,10 @@ Playback::getCurrentPlaytime() {
   return playtime;
 }
 
+/**
+ * Return the current status of the player (playing, paused, stopped,
+ * etc), or STOPPED if an error occured.
+ */
 unsigned int
 Playback::getStatus() {
   unsigned int status;

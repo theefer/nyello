@@ -28,10 +28,11 @@
 
   [X] Configure script, using autoconf/automake
   [X] Allow escaped spaces and quoted string to be a single token
-  [ ] Code cleanup, bugs, FIXME's (Printable class tree, playlist-list, etc)
+  [ ] Code cleanup, bugs, FIXME's
   [X] Read the XMMS_PATH env var to open the server connection
   [X] Improve pattern features (order by rand())
   [X] More commands (clear, shuffle, jump, status, remove)
+  [X] Important refactoring of the Printable tree, now using AbstractResult
   [X] Fixed parsing order bug (fixes "info -7")
   [X] Fixed the playlist-list command that returned incorrect results
   ==> v0.3

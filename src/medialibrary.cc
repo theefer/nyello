@@ -39,17 +39,8 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
 }
 
 
-PlaylistSongList*
+AbstractResult*
 MediaLibrary::getCurrentPlaylist() {
-  unsigned int curPos;
-
-  // Retrieve position of current playing song
-  lastRes = xmmsc_playlist_current_pos(connection);
-  xmmsc_result_wait(lastRes);
-  xmmsc_result_get_uint(lastRes, &curPos);
-  xmmsc_result_unref(lastRes);
-
-  // Get list of songs in the current playlist
   lastRes = xmmsc_playlist_list(connection);
   xmmsc_result_wait(lastRes);
 
@@ -57,7 +48,7 @@ MediaLibrary::getCurrentPlaylist() {
     return NULL;
   }
 
-  return new PlaylistSongList(lastRes, connection, curPos);
+  return new SongResult(lastRes, connection);
 }
 
 
@@ -65,7 +56,7 @@ MediaLibrary::getCurrentPlaylist() {
  * Get the Playlist object of the playlist with the given name in
  * the medialib.
  */
-PlaylistSongList*
+AbstractResult*
 MediaLibrary::getPlaylist(char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
@@ -86,7 +77,7 @@ MediaLibrary::getPlaylist(char* name) {
     return NULL;
   }
 
-  return new PlaylistSongList(lastRes, connection);
+  return new SongResult(lastRes, connection);
 
   // OLD: "SELECT songs.*, substr(playlistentries.entry,8,10) AS id FROM playlistentries, playlist LEFT JOIN songs ON songs.id=substr(playlistentries.entry,8,10) WHERE playlist_id=playlist.id AND playlist.name=\"%s\" ORDER BY pos",
 }
@@ -96,10 +87,8 @@ MediaLibrary::getPlaylist(char* name) {
  * Get the list of all the Playlist objects in the medialib.
  * Playlists starting with a '_' prefix are hidden.
  */
-PlaylistList*
+AbstractResult*
 MediaLibrary::getPlaylists() {
-  PlaylistList* plist;
-
   // Retrieve all the playlists
   lastRes = xmmsc_medialib_select(connection, 
                                   "SELECT name, COUNT(entry) AS size "
@@ -114,7 +103,7 @@ MediaLibrary::getPlaylists() {
     return NULL;
   }
 
-  return new PlaylistList(lastRes, currentPlaylistName);
+  return new RichResult(lastRes);
 }
 
 
@@ -233,7 +222,11 @@ MediaLibrary::removePlaylist(char* name) {
     return;
   }
 
-  // FIXME: Forbid to remove current playlist!
+  // Forbid to remove current playlist!
+  if(strcmp(name, currentPlaylistName) == 0) {
+    cerr << "Error: you cannot remove the current playlist!" << endl;
+    return;
+  }
 
   lastRes = xmmsc_medialib_playlist_remove(connection, name);
   xmmsc_result_wait(lastRes);
@@ -286,6 +279,8 @@ MediaLibrary::hasPlaylist(char* name) {
   char* entry_name;
   bool found = false;
 
+  // FIXME: Or SELECT ... WHERE name=$name ?
+
   lastRes = xmmsc_medialib_select(connection,
                                   "SELECT name FROM Playlist");
   xmmsc_result_wait(lastRes);
@@ -326,7 +321,7 @@ MediaLibrary::hasPlaylist(char* name) {
  * Return an object containing the informations about the song with
  * the given id.  NULL is returned if an error occurs.
  */
-QuerySongList*
+AbstractResult*
 MediaLibrary::getSongById(unsigned int id) {
   lastRes = xmmsc_medialib_get_info(connection, id);
   xmmsc_result_wait(lastRes);
@@ -335,14 +330,14 @@ MediaLibrary::getSongById(unsigned int id) {
     return NULL;
   }
 
-  return new QuerySongList(lastRes, connection);
+  return new SongResult(lastRes, connection);
 }
 
 
 /**
  * Queries the medialib and return the resulting list of songs.
  */
-QuerySongList*
+AbstractResult*
 MediaLibrary::searchSongs(PatternQuery* query) {
   return performQuery(query);  
 }
@@ -352,7 +347,7 @@ MediaLibrary::searchSongs(PatternQuery* query) {
  */
 void
 MediaLibrary::enqueueSongs(PatternQuery* query) {
-  QuerySongList* songlist = performQuery(query);
+  AbstractResult* songlist = performQuery(query);
   songlist->rewind();
   while(songlist->isValid()) {
     lastRes = xmmsc_playlist_add_id(connection, songlist->getId());
@@ -374,7 +369,7 @@ MediaLibrary::enqueueSongs(PatternQuery* query) {
  */
 void
 MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
-  QuerySongList* songlist = performQuery(query);
+  AbstractResult* songlist = performQuery(query);
   songlist->rewind();
   while(songlist->isValid()) {
     lastRes = xmmsc_playlist_insert_id(connection, position, songlist->getId());
@@ -417,9 +412,9 @@ MediaLibrary::getCurrentPlaylistName() {
 }
 
 
-QuerySongList*
+AbstractResult*
 MediaLibrary::performQuery(PatternQuery* query) {
-  QuerySongList* songlist;
+  AbstractResult* songlist;
   char* sql = query->getSql();
   cout << "QUERY: " << query->getSql() << endl;
   lastRes = xmmsc_medialib_select(connection, sql);
@@ -429,7 +424,7 @@ MediaLibrary::performQuery(PatternQuery* query) {
     return NULL;
   }
 
-  songlist = new QuerySongList(lastRes, connection);
+  songlist = new SelectResult(lastRes, connection);
   query->saveResults(songlist);
   return songlist;
 }

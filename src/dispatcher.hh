@@ -1,10 +1,7 @@
 #ifndef __DISPATCHER_HH__
 #define __DISPATCHER_HH__
 
-
-#define MAX_PROMPT_LENGTH   24
-#define MAX_COMMAND_LENGTH 256
-
+// FIXME: Should be dynamic and customizable
 #define PROMPT "nyello:%s $ "
 
 class Dispatcher;
@@ -27,6 +24,10 @@ typedef void (Dispatcher::*DispFnPtr)();
 #include "sequence.hh"
 
 #include "patternquery.hh"
+#include "abstractresult.hh"
+#include "resultlist.hh"
+#include "selectionresultlist.hh"
+#include "playlistresultlist.hh"
 
 
 using namespace std;
@@ -93,6 +94,8 @@ public:
 private:
   static const int MAX_ARGUMENTS  = 64;
   static const int MAX_TOKEN_SIZE = 64;
+  static const int MAX_PROMPT_LENGTH = 24;
+  static const int MAX_COMMAND_LENGTH = 256;
 
   Playback*      playback;
   MediaLibrary*  medialib;

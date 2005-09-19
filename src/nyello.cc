@@ -150,12 +150,7 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
-  // Main variables
   int retval = 0;
-  Dispatcher* disp;
-
-  // TODO: Init with CL options and config
-
   char* path = getenv("XMMS_PATH");
 
   // Init xmms2 connection
@@ -174,7 +169,7 @@ int main(int argc, char* argv[]) {
 
   // Everything is fine, we can run the dispatcher
   else {
-    disp = new Dispatcher(connection);
+    Dispatcher* disp = new Dispatcher(connection);
     if(argc > 1)
       disp->execute(argc - 1, argv + 1);
     else

@@ -10,10 +10,13 @@ nyello_SOURCES = nyello.cc\
 		column.cc\
 		countercolumn.cc\
 		printable.cc\
-		dictlist.cc\
-		querysonglist.cc\
-		playlistlist.cc\
-		playlistsonglist.cc\
+		resultlist.cc\
+		playlistresultlist.cc\
+		selectionresultlist.cc\
+		abstractresult.cc\
+		songresult.cc\
+		selectresult.cc\
+		richresult.cc\
 		patternparser.cc\
 		patternnodes.cc\
 		patternquery.cc\

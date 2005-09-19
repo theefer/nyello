@@ -28,7 +28,7 @@ public:
 
   void printSongs(Printable* songs);
 
-  void printPlaylists(PlaylistList* playlists);
+  void printPlaylists(Printable* playlists);
   void printCollections(Collection* collections);
   void printStatus(Printable* song, unsigned int status,
                    unsigned int playtime, int pos, const char* plname);

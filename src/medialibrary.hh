@@ -9,9 +9,10 @@
 #include <vector>
 #include <iostream>
 
-#include "playlistlist.hh"
-#include "playlistsonglist.hh"
-#include "querysonglist.hh"
+#include "abstractresult.hh"
+#include "richresult.hh"
+#include "songresult.hh"
+#include "selectresult.hh"
 #include "patternquery.hh"
 #include "collection.hh"
 
@@ -26,9 +27,9 @@ public:
 
   MediaLibrary(xmmsc_connection_t* connection);
 
-  PlaylistSongList* getCurrentPlaylist();
-  PlaylistSongList* getPlaylist(char* name);
-  PlaylistList* getPlaylists();
+  AbstractResult* getCurrentPlaylist();
+  AbstractResult* getPlaylist(char* name);
+  AbstractResult* getPlaylists();
 
   int getPlaylistSize(char* name);
   int getCurrentPlaylistSize();
@@ -42,8 +43,8 @@ public:
 
   bool hasPlaylist(char* name);
 
-  QuerySongList* getSongById(unsigned int id);
-  QuerySongList* searchSongs(PatternQuery* query);
+  AbstractResult* getSongById(unsigned int id);
+  AbstractResult* searchSongs(PatternQuery* query);
 
   void enqueueSongs(PatternQuery* query);
   void insertSongs(PatternQuery* query, unsigned int position);
@@ -66,7 +67,7 @@ private:
 
   char* currentPlaylistName;
 
-  QuerySongList* performQuery(PatternQuery* query);
+  AbstractResult* performQuery(PatternQuery* query);
 
   bool validPlaylistName(char* name);
 

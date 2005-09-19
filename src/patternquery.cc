@@ -20,7 +20,7 @@ PatternQuery::~PatternQuery() {
 
 
 void
-PatternQuery::saveResults(Printable* songlist) {
+PatternQuery::saveResults(AbstractResult* songlist) {
   resultCache.erase(resultCache.begin(), resultCache.end());
   // FIXME: causes a segfault?
   songlist->rewind();

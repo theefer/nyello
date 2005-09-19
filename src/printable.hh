@@ -3,9 +3,6 @@
 
 #include <xmmsclient/xmmsclient.h>
 
-// FIXME: I'd rather not...
-#define MAX_DICT_STRING_LEN 255
-
 
 class Printable {
 public:
@@ -16,8 +13,6 @@ public:
   virtual bool  isSelected() = 0;
   virtual void  rewind() = 0;
   virtual bool  isValid() = 0;
-
-  char* getDictEntryAsStr(xmmsc_result_t* result, char* key);
 
 };
 

@@ -31,6 +31,9 @@ Dispatcher::~Dispatcher() {
 }
 
 
+/**
+ * Main loop, reading commands from the user and running them.
+ */
 void
 Dispatcher::loop() {
   char* prompt = new char[MAX_PROMPT_LENGTH + 1];
@@ -211,10 +214,11 @@ Dispatcher::actionHelp() {
 void
 Dispatcher::actionStatus() {
   if(argNumber == 0) {
-    Printable* song;
+    AbstractResult* song;
     int curr_id = playback->getCurrentId();
     if(curr_id > 0 && (song = medialib->getSongById(curr_id)) != NULL) {
-      output->printStatus(song,
+      ResultList* rlist = new ResultList(song);
+      output->printStatus(rlist,
                           playback->getStatus(),
                           playback->getCurrentPlaytime(),
                           playback->getCurrentPosition(),
@@ -231,16 +235,25 @@ Dispatcher::actionStatus() {
 }
 
 
+/**
+ * Start playback.
+ */
 void
 Dispatcher::actionPlay() {
   playback->play();
 }
 
+/**
+ * Pause playback.
+ */
 void
 Dispatcher::actionPause() {
   playback->pause();
 }
 
+/**
+ * Toggle playback between play/pause.
+ */
 void
 Dispatcher::actionTogglePlay() {
   if(playback->isPlaying())
@@ -249,12 +262,18 @@ Dispatcher::actionTogglePlay() {
     actionPlay();
 }
 
+/**
+ * Stop playback.
+ */
 void
 Dispatcher::actionStop() {
   playback->stop();
 }
 
   
+/**
+ * Jump backward in the playlist.
+ */
 void
 Dispatcher::actionPrevious() {
   int offset;
@@ -272,6 +291,9 @@ Dispatcher::actionPrevious() {
   playback->jumpRelative(offset);
 }
 
+/**
+ * Jump forward in the playlist.
+ */
 void
 Dispatcher::actionNext() {
   int offset;
@@ -289,6 +311,9 @@ Dispatcher::actionNext() {
   playback->jumpRelative(offset);
 }
 
+/**
+ * Jump in the playlist.
+ */
 void
 Dispatcher::actionJump() {
   int offset;
@@ -305,9 +330,12 @@ Dispatcher::actionJump() {
 }
 
 
+/**
+ * Display the songs matching the given pattern.
+ */
 void
 Dispatcher::actionInfo() {
-  Printable* songList;
+  AbstractResult* songList;
   PatternQuery* query;
 
   query = pparser->registerNewPattern(arguments, argNumber);
@@ -321,7 +349,8 @@ Dispatcher::actionInfo() {
     cerr << "Error: failed to query the medialibrary!" << endl;
   }
   else {
-    output->printSongs(songList);
+    ResultList* rlist = new ResultList(songList);
+    output->printSongs(rlist);
   }  
 }
 
@@ -332,15 +361,18 @@ Dispatcher::actionInfo() {
  */
 void
 Dispatcher::actionList() {
-  Printable* songList;
+  Printable* songList = NULL;
 
   // No playlist name, list current
   if(argNumber == 0) {
-    songList = medialib->getCurrentPlaylist();
+    // FIXME: Handle case if playlist is NULL
+    songList = new SelectionResultList(medialib->getCurrentPlaylist(),
+                                       playback->getCurrentPosition());
   }
   // List playlist with the given name
   else if(argNumber == 1) {
-    songList = medialib->getPlaylist(arguments[0]);
+    // FIXME: Handle case if playlist is NULL
+    songList = new ResultList(medialib->getPlaylist(arguments[0]));
   }
   // Error, too many arguments
   else {
@@ -484,12 +516,14 @@ Dispatcher::actionPlaylistList() {
     return;
   }
 
-  PlaylistList* playlists = medialib->getPlaylists();
+  AbstractResult* playlists = medialib->getPlaylists();
   if(playlists == NULL) {
     cerr << "Error: failed to get the list of playlists!" << endl;
   }
   else {
-    output->printPlaylists(playlists);
+    const char* curr_playlist = medialib->getCurrentPlaylistName();
+    PlaylistResultList* plist = new PlaylistResultList(playlists, curr_playlist);
+    output->printPlaylists(plist);
   }
 }
 

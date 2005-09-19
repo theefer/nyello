@@ -49,6 +49,7 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Improve pattern features (comparators, limit)
   [ ] More commands (seek, exclude, filter)
   [ ] Correct display, using wcs instead of str?
+  [ ] Reference counter for the reused PatternNodes
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] Should '#' match '1#0-' ?
   [ ] When no metadata is present, display Title=filename

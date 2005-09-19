@@ -11,7 +11,9 @@ PatternQuery::PatternQuery(PatternNode* top, PatternOrderBy* orderby)
 PatternQuery::~PatternQuery() {
   // FIXME: Or unref until it's actually freed?
   delete topNode;
-  delete orderNode;
+
+  // FIXME: buggy if we delete the default orderby
+  // delete orderNode;
 
   if(queryCache != NULL) {
     delete queryCache;

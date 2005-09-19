@@ -97,7 +97,7 @@ Sequence<T>::addRange(T from, T to) {
 
   // Already contained in unbounded range
   if(rangeToMaxIsset && rangeFromMinIsset &&
-     (to <= rangeToMax) || (from >= rangeFromMin)) {
+     ((to <= rangeToMax) || (from >= rangeFromMin))) {
     return;
   }
 

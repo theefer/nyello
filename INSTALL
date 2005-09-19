@@ -1,0 +1,15 @@
+To install nyello, simply run the usual sequence:
+
+  $ ./configure
+  $ make
+  # make install
+
+The last command is only required if you want to install nyello
+globally.  Otherwise, you can simply run nyello from the src/
+directory:
+
+  $ cd src/
+  $ ./nyello
+
+
+Enjoy the software!

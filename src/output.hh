@@ -6,7 +6,6 @@
 class Output;
 
 #include "printable.hh"
-#include "playlistlist.hh"
 #include "collection.hh"
 #include "columniser.hh"
 #include "countercolumn.hh"

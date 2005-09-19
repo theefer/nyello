@@ -12,7 +12,7 @@ public:
   SelectionResultList(AbstractResult* result, unsigned int selectedPos);
   ~SelectionResultList();
 
-  virtual bool isSelected() { return (result->getId() == selectedPos); }
+  virtual bool isSelected() { return (result->getCounter() == selectedPos); }
 
 private:
   unsigned int selectedPos;

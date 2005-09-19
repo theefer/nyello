@@ -223,6 +223,7 @@ Dispatcher::actionStatus() {
                           playback->getCurrentPlaytime(),
                           playback->getCurrentPosition(),
                           medialib->getCurrentPlaylistName());
+      delete rlist;
     }
     else {
       output->printEmptyStatus(playback->getStatus(),
@@ -351,6 +352,7 @@ Dispatcher::actionInfo() {
   else {
     ResultList* rlist = new ResultList(songList);
     output->printSongs(rlist);
+    delete rlist;
   }  
 }
 
@@ -362,17 +364,28 @@ Dispatcher::actionInfo() {
 void
 Dispatcher::actionList() {
   Printable* songList = NULL;
+  AbstractResult* playlist = NULL;
 
   // No playlist name, list current
   if(argNumber == 0) {
-    // FIXME: Handle case if playlist is NULL
-    songList = new SelectionResultList(medialib->getCurrentPlaylist(),
-                                       playback->getCurrentPosition());
+    playlist = medialib->getCurrentPlaylist();
+    if(playlist != NULL) {
+      songList = new SelectionResultList(playlist,
+                                         playback->getCurrentPosition());
+    }
+    else {
+      cerr << "Error: problem while listing the playlist!" << endl;
+    }
   }
   // List playlist with the given name
   else if(argNumber == 1) {
-    // FIXME: Handle case if playlist is NULL
-    songList = new ResultList(medialib->getPlaylist(arguments[0]));
+    playlist = medialib->getPlaylist(arguments[0]);
+    if(playlist != NULL) {
+      songList = new ResultList(playlist);
+    }
+    else {
+      cerr << "Error: problem while listing the playlist!" << endl;
+    }
   }
   // Error, too many arguments
   else {
@@ -386,6 +399,7 @@ Dispatcher::actionList() {
   }
   else {
     output->printSongs(songList);
+    delete songList;
   }
 }
 
@@ -524,6 +538,7 @@ Dispatcher::actionPlaylistList() {
     const char* curr_playlist = medialib->getCurrentPlaylistName();
     PlaylistResultList* plist = new PlaylistResultList(playlists, curr_playlist);
     output->printPlaylists(plist);
+    delete plist;
   }
 }
 

@@ -102,16 +102,10 @@ MediaLibrary::getPlaylists() {
 
   // Retrieve all the playlists
   lastRes = xmmsc_medialib_select(connection, 
-                                  "SELECT name, MAX(cnt) AS size "
-                                  "FROM Playlist, "
-                                  "     (  SELECT id, 0 "
-                                  "        FROM playlist "
-                                  "      UNION "
-                                  "        SELECT playlist_id, "
-                                  "               count(entry) AS cnt "
-                                  "        FROM playlistentries) "
-                                  "WHERE id=playlist_id AND"
-                                  "      substr(name, 0, 1) <> \"_\""
+                                  "SELECT name, COUNT(entry) AS size "
+                                  "FROM Playlist "
+                                  "LEFT JOIN PlaylistEntries ON id=playlist_id "
+                                  "WHERE substr(name, 0, 1) <> \"_\" "
                                   "GROUP BY playlist_id");
   xmmsc_result_wait(lastRes);
 

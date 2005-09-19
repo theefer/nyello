@@ -40,7 +40,9 @@
 
   [ ] Make readline use async, redesign main-loop, remove waits
   [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
-R [ ] Design proper abstraction layer (all async events, current PL, collections)
+  [ ] Design proper abstraction layer (all async events, current PL, collections)
+  ==> v0.4
+
   [ ] Develop collection handling and classes
   [ ] Save collections in a file (apply, save as, delete)
 R [ ] Handle collections internally (enter)

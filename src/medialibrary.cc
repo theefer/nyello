@@ -120,6 +120,7 @@ MediaLibrary::getPlaylistSize(char* name) {
                  "WHERE id=playlist_id AND "
                  "      name=";
   query += curr_name;
+  delete curr_name;
 
   lastRes = xmmsc_medialib_select(connection, query.c_str());
   xmmsc_result_wait(lastRes);
@@ -129,11 +130,11 @@ MediaLibrary::getPlaylistSize(char* name) {
          << "', server said:" << endl
          << xmmsc_result_get_error(lastRes) << endl;
   }
-
-  xmmsc_result_get_dict_entry_int32(lastRes, "size", &size);
+  else {
+    xmmsc_result_get_dict_entry_int32(lastRes, "size", &size);
+  }
 
   xmmsc_result_unref(lastRes);
-  delete curr_name;
 
   return size;
 }

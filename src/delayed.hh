@@ -1,16 +1,37 @@
 #ifndef __DELAYED_HH__
 #define __DELAYED_HH__
 
+#include <list>
+#include <time.h>
 
-// Generic hack-function to use methods as callback functions
-template <class T> class Delayed;
-template <void (Delayed::*func) (xmmsc_result_t*)>
-void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
-  Delayed* d = (Delayed*)del_ptr;
-  (d->*func)(res);
-}
+using namespace std;
+
+#include <xmmsclient/xmmsclient.h>
 
 
+class Handler { };
+class Receiver { };
+
+
+/**
+ * Wrapper for delayed objects.
+ *
+ * This generic class is bound to a result pointer.  All registered
+ * handlers functions will be passed the result when it is ready,
+ * returning a object of type T.  Each of these objects will be passed
+ * to each of the registered receivers functions.
+ *
+ * Handler functions must be methods of a class inheriting from the
+ * Handler class.
+ * Receiver functions must be methods of a class inheriting from the
+ * Receiver class.
+ *
+ * This class allows abstraction from the xmmsc_result_t type, while
+ * allowing underlining asynchroneous handling to be viewed as sync
+ * (using wait and getProducts) or async (using only receiver
+ * functions).  Abstraction is performed in a more object-oriented
+ * way, focusing on data rather than on callback functions.
+ */
 template <class T>
 class Delayed {
 
@@ -27,9 +48,16 @@ public:
   inline void addHandler(HandleFnPtr fn)   { handlers.push_back(fn); }
   inline void addReceiver(ReceiveFnPtr fn) { receivers.push_back(fn); }
 
-private:
+  T getLastProduct();
+  list<T> getProducts();
+
+protected:
+  bool ready;
+
   list<HandleFnPtr>  handlers;
   list<ReceiveFnPtr> receivers;
+
+  list<T> products;
 
   void unblock();
 };
@@ -39,9 +67,20 @@ private:
 /*  == And here comes the implementation, in the header file due to
        boring GCC limitations...  == */
 
+
+// Generic hack-function to use methods as callback functions
+template <class T, void (Delayed<T>::*func) (xmmsc_result_t*)>
+void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
+  Delayed<T>* d = (Delayed<T>*)del_ptr;
+  (d->*func)(res);
+}
+
+
 template <class T>
 Delayed<T>::Delayed(xmmsc_result_t* res) {
-  xmmsc_result_notifier_set(res, runDelayedMethod<&Delayed::callback>, this);
+  ready = false;
+
+  xmmsc_result_notifier_set(res, runDelayedMethod<T, &Delayed::callback>, this);
   xmmsc_result_unref(res);
 }
 
@@ -49,35 +88,58 @@ Delayed<T>::Delayed(xmmsc_result_t* res) {
 template <class T>
 Delayed<T>::~Delayed() {
   // FIXME: unref?
+  // FIXME: Delete handlers and receivers?
 }
 
 
 template <class T>
 void
 Delayed<T>::callback(xmmsc_result_t* res) {
-  // Check for error
   if(xmmsc_result_iserror(res)) {
-    // Handle
+    // FIXME: Handle error?
   }
   else {
-    list<ReceiveFnPtr>::iterator receive;
-    list<HandleFnPtr>::iterator  handle;
+    typename list<ReceiveFnPtr>::iterator receive;
+    typename list<HandleFnPtr>::iterator  handle;
     for(handle = handlers.begin(); handle != handlers.end(); ++handle) {
       T product = (*handle)(res);
       for(receive = receivers.begin(); receive != receivers.end(); ++ receivers) {
         (*receive)(product);
       }
+      products.push_back(product);
     }
   }
   
   // Unblock waiting
+  unblock();
+}
+
+
+template <class T>
+T
+Delayed<T>::getLastProduct() {
+  return products.back();
+}
+
+
+template <class T>
+list<T>
+Delayed<T>::getProducts() {
+  return products;
 }
 
 
 template <class T>
 void
 Delayed<T>::wait() {
-  // FIXME: How to *wait* ?
+  struct timespec tv;
+  tv.tv_sec  = 0;
+  tv.tv_nsec = 10000000; // 10ms
+
+  // FIXME: How to *wait* properly?
+  while(!ready) {
+    nanosleep(&tv, NULL);
+  }
 }
 
 
@@ -85,6 +147,7 @@ template <class T>
 void
 Delayed<T>::unblock() {
   // FIXME: How to *unblock* waiters?
+  ready = true;
 }
 
 

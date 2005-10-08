@@ -21,6 +21,12 @@ Playback::play() {
   xmmsc_result_unref(lastRes);
 }
 
+Delayed<int>*
+Playback::Dplay() {
+  lastRes = xmmsc_playback_start(connection);
+  return new Delayed<int>(lastRes, "Could not start playback: ");
+}
+
 void
 Playback::pause() {
   lastRes = xmmsc_playback_pause(connection);

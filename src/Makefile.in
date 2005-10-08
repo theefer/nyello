@@ -56,7 +56,7 @@ am_nyello_OBJECTS = nyello.$(OBJEXT) dispatcher.$(OBJEXT) \
 	selectresult.$(OBJEXT) richresult.$(OBJEXT) \
 	patternparser.$(OBJEXT) patternnodes.$(OBJEXT) \
 	patternquery.$(OBJEXT) medialibquery.$(OBJEXT) \
-	sequence.$(OBJEXT) command.$(OBJEXT)
+	sequence.$(OBJEXT) command.$(OBJEXT) delayed.$(OBJEXT)
 nyello_OBJECTS = $(am_nyello_OBJECTS)
 nyello_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -177,7 +177,8 @@ nyello_SOURCES = nyello.cc\
 		patternquery.cc\
 		medialibquery.cc\
 		sequence.cc\
-		command.cc
+		command.cc\
+		delayed.cc
 
 all: all-am
 
@@ -250,6 +251,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/columniser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/countercolumn.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/delayed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dispatcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/medialibquery.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/medialibrary.Po@am__quote@

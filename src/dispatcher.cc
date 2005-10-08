@@ -241,7 +241,9 @@ Dispatcher::actionStatus() {
  */
 void
 Dispatcher::actionPlay() {
-  playback->play();
+  Delayed<int>* res = playback->Dplay();
+  res->wait();
+  delete res;
 }
 
 /**

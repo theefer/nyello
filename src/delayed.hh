@@ -1,13 +1,13 @@
 #ifndef __DELAYED_HH__
 #define __DELAYED_HH__
 
-#include <list>
 #include <time.h>
+#include <list>
+#include <iostream>
 
 using namespace std;
 
 #include <xmmsclient/xmmsclient.h>
-
 
 class Handler { };
 class Receiver { };
@@ -39,7 +39,7 @@ class Delayed {
   typedef void (Receiver::*ReceiveFnPtr)(T);
 
 public:
-  Delayed(xmmsc_result_t* res);
+  Delayed(xmmsc_result_t* res, const char* errmsg = NULL);
   ~Delayed();
 
   void callback(xmmsc_result_t* res);
@@ -52,6 +52,8 @@ public:
   list<T> getProducts();
 
 protected:
+  const char* errmsg;
+
   bool ready;
 
   list<HandleFnPtr>  handlers;
@@ -75,12 +77,11 @@ void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
   (d->*func)(res);
 }
 
-
 template <class T>
-Delayed<T>::Delayed(xmmsc_result_t* res) {
+Delayed<T>::Delayed(xmmsc_result_t* res, const char* err) : errmsg(err) {
   ready = false;
 
-  xmmsc_result_notifier_set(res, runDelayedMethod<T, &Delayed::callback>, this);
+  xmmsc_result_notifier_set(res, &runDelayedMethod<T, &Delayed::callback>, this);
   xmmsc_result_unref(res);
 }
 
@@ -96,19 +97,25 @@ template <class T>
 void
 Delayed<T>::callback(xmmsc_result_t* res) {
   if(xmmsc_result_iserror(res)) {
-    // FIXME: Handle error?
+    // FIXME: Show error?
+    if(errmsg != NULL) {
+      cerr << errmsg << xmmsc_result_get_error(res) << endl;
+    }
   }
   else {
     typename list<ReceiveFnPtr>::iterator receive;
     typename list<HandleFnPtr>::iterator  handle;
     for(handle = handlers.begin(); handle != handlers.end(); ++handle) {
-      T product = (*handle)(res);
-      for(receive = receivers.begin(); receive != receivers.end(); ++ receivers) {
-        (*receive)(product);
-      }
-      products.push_back(product);
+// FIXME: We need an *object* to call the method from...
+//       T product = (*handle)(res);
+//       for(receive = receivers.begin(); receive != receivers.end(); ++receive) {
+//         (*receive)(product);
+//       }
+//       products.push_back(product);
     }
   }
+
+  xmmsc_result_unref(res);
   
   // Unblock waiting
   unblock();
@@ -134,11 +141,12 @@ void
 Delayed<T>::wait() {
   struct timespec tv;
   tv.tv_sec  = 0;
-  tv.tv_nsec = 10000000; // 10ms
+  tv.tv_nsec = 100000000; // 100ms
 
   // FIXME: How to *wait* properly?
   while(!ready) {
     nanosleep(&tv, NULL);
+    cout << "not ready" << endl;
   }
 }
 
@@ -148,6 +156,7 @@ void
 Delayed<T>::unblock() {
   // FIXME: How to *unblock* waiters?
   ready = true;
+  cout << "unblock" << endl;
 }
 
 

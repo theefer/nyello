@@ -4,10 +4,11 @@
 
 #include <iostream>
 
+using namespace std;
+
 #include <xmmsclient/xmmsclient.h>
 
-
-using namespace std;
+#include "delayed.hh"
 
 
 /**
@@ -20,6 +21,7 @@ public:
   ~Playback();
 
   void play();
+  Delayed<int>* Dplay();
   void pause();
   void stop();
 

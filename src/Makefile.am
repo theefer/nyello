@@ -22,4 +22,5 @@ nyello_SOURCES = nyello.cc\
 		patternquery.cc\
 		medialibquery.cc\
 		sequence.cc\
-		command.cc
+		command.cc\
+		delayed.cc

@@ -13,6 +13,9 @@ typedef void (Dispatcher::*DispFnPtr)();
 
 #include <xmmsclient/xmmsclient.h>
 
+#include <glib.h>
+#include <xmmsclient/xmmsclient-glib.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -90,12 +93,16 @@ public:
   void actionCollectionEnter();
   void actionCollectionRemove();
 
+  // FIXME: Should remain private?
+  bool parseInput(char* input);
 
 private:
   static const int MAX_ARGUMENTS  = 64;
   static const int MAX_TOKEN_SIZE = 64;
   static const int MAX_PROMPT_LENGTH = 24;
   static const int MAX_COMMAND_LENGTH = 256;
+
+  xmmsc_connection_t* conn;
 
   Playback*      playback;
   MediaLibrary*  medialib;
@@ -109,13 +116,14 @@ private:
   list<Command*> commands;
   map<const char*, Command*, charCmp> commandList;
 
+  bool showprompt;
+
 
   void parsePattern(char* ptr, int num);
   void parsePatternFromArgs();
 
   int parseInteger(char* ptr);
 
-  bool parseInput(char* input);
   char* parseToken(char** str);
 };
 

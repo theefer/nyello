@@ -88,7 +88,6 @@ Delayed<T>::Delayed(xmmsc_result_t* res, const char* err) : errmsg(err) {
 
 template <class T>
 Delayed<T>::~Delayed() {
-  // FIXME: unref?
   // FIXME: Delete handlers and receivers?
 }
 
@@ -156,7 +155,6 @@ void
 Delayed<T>::unblock() {
   // FIXME: How to *unblock* waiters?
   ready = true;
-  cout << "unblock" << endl;
 }
 
 

@@ -10,100 +10,57 @@ Playback::Playback(xmmsc_connection_t* _connection) {
 Playback::~Playback() { }
 
 
-void
-Playback::play() {
-  lastRes = xmmsc_playback_start(connection);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Could not start playback: "
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-  xmmsc_result_unref(lastRes);
-}
-
 Delayed<int>*
-Playback::Dplay() {
+Playback::play() {
   lastRes = xmmsc_playback_start(connection);
   return new Delayed<int>(lastRes, "Could not start playback: ");
 }
 
-void
+Delayed<int>*
 Playback::pause() {
   lastRes = xmmsc_playback_pause(connection);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Could not pause playback: "
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-  xmmsc_result_unref(lastRes);
+  return new Delayed<int>(lastRes, "Could not pause playback: ");
 }
 
-void
+Delayed<int>*
 Playback::stop() {
   lastRes = xmmsc_playback_stop(connection);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Could not stop playback: "
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-  xmmsc_result_unref(lastRes);
+  return new Delayed<int>(lastRes, "Could not stop playback: ");
 }
 
 
 /**
  * Trigger the song change.
  */
-void
+Delayed<int>*
 Playback::tickle() {
   lastRes = xmmsc_playback_tickle(connection);
-  xmmsc_result_wait(lastRes);
-  xmmsc_result_unref(lastRes);
+  return new Delayed<int>(lastRes);
 }
 
-void
+Delayed<int>*
 Playback::jumpAbsolute(int pos) {
   lastRes = xmmsc_playlist_set_next(connection, pos);
-  xmmsc_result_wait(lastRes);
-
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Couldn't advance in playlist: "
-         << xmmsc_result_get_error(lastRes) << endl;
-    return;
-  }
-  xmmsc_result_unref(lastRes);
-
-  tickle();
+  Delayed<int>* del = new Delayed<int>(lastRes, "Couldn't advance in playlist: ");
+  // FIXME:  del->add???(Playback::tickle, this);
+  return del;
 }
 
-void
+Delayed<int>*
 Playback::jumpRelative(int offset) {
   lastRes = xmmsc_playlist_set_next_rel(connection, offset);
-  xmmsc_result_wait(lastRes);
-
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Couldn't advance in playlist: "
-         << xmmsc_result_get_error(lastRes) << endl;
-    return;
-  }
-  xmmsc_result_unref(lastRes);
-
-  tickle();
+  Delayed<int>* del = new Delayed<int>(lastRes, "Couldn't advance in playlist: ");
+  // FIXME:  del->add???(Playback::tickle, this);
+  return del;
 }
 
-void
+Delayed<int>*
 Playback::seekAbsolute(int position) {
   lastRes = xmmsc_playback_seek_ms(connection, position);
-  xmmsc_result_wait(lastRes);
-
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Couldn't seek in current song: "
-         << xmmsc_result_get_error(lastRes) << endl;
-    return;
-  }
-  xmmsc_result_unref(lastRes);
+  return new Delayed<int>(lastRes, "Couldn't seek in current song: ");
 }
 
-void
+Delayed<int>*
 Playback::seekRelative(int offset) {
   int position;
   position = 0;
@@ -115,7 +72,7 @@ Playback::seekRelative(int offset) {
   }
   */
   
-  seekAbsolute(position);
+  return seekAbsolute(position);
 }
 
 bool

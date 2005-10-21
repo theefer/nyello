@@ -2,6 +2,7 @@
 
 
 Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
+  conn = connection;
   playback = new Playback(connection);
   medialib = new MediaLibrary(connection);
   pparser  = new PatternParser(playback, medialib);
@@ -31,6 +32,25 @@ Dispatcher::~Dispatcher() {
 }
 
 
+Dispatcher* korv;
+void foo(char* input) {
+  // End of stream, quit
+  if(input == NULL) {
+    cout << endl;
+    return;
+  }
+
+  // Empty command, do nothing
+  if(strlen(input) == 0) {
+    return;
+  }
+
+  add_history(input);
+  korv->parseInput(input);
+  korv->dispatch();
+}
+
+
 /**
  * Main loop, reading commands from the user and running them.
  */
@@ -39,6 +59,7 @@ Dispatcher::loop() {
   char* prompt = new char[MAX_PROMPT_LENGTH + 1];
   char* input = new char[MAX_COMMAND_LENGTH];
 
+  /*
   // Main loop
   do {
     // Build prompt and get input
@@ -61,6 +82,66 @@ Dispatcher::loop() {
     dispatch();
 
   } while(true);
+  */
+
+
+  korv = this; // FIXME: *UGLY UGLY UGLY HACK*
+  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
+  rl_callback_handler_install(NULL, &foo);
+  cout << prompt;
+  cout.flush();
+
+  // HOMEMADE ASYNC MAIN LOOP
+  fd_set rfds, wfds;
+  int ipc, stdinput, modfds;
+  ipc = xmmsc_io_fd_get(conn);
+  stdinput = 0;
+
+  // Main event loop
+  while(true) {
+    // Setup fds
+    FD_ZERO(&rfds);
+    FD_ZERO(&wfds);
+
+    FD_SET(ipc, &rfds);
+    FD_SET(stdinput, &rfds);
+
+    if(xmmsc_io_want_out(conn)) {
+      FD_SET(ipc, &wfds);
+    }
+
+    // Select on the fds
+    modfds = select(ipc + 1, &rfds, &wfds, NULL, NULL);
+
+    if(modfds < 0) {
+      // FIXME: Error
+    }
+    else if(modfds == 0) {
+      // FIXME: Nothing happened
+    }
+    // Handle the data
+    else {
+      // We can read ipc data
+      if(FD_ISSET(ipc, &rfds)) {
+	xmmsc_io_in_handle(conn);
+        if(showprompt) {
+          cout << prompt;
+          cout.flush();
+          showprompt = false;
+        }
+      }
+      // We can write ipc data
+      if(FD_ISSET(ipc, &wfds)) {
+	xmmsc_io_out_handle(conn);
+      }
+
+      // We have user input
+      if(FD_ISSET(stdinput, &rfds)) {
+	rl_callback_read_char();
+      }
+    }
+    
+  } /* End main event loop */
 
 }
 
@@ -90,6 +171,8 @@ Dispatcher::dispatch() {
   else if(command != NULL) {
     cerr << "Unknown command '" << command << "'!" << endl;
   }
+
+  showprompt = true;
 }
 
 
@@ -241,9 +324,7 @@ Dispatcher::actionStatus() {
  */
 void
 Dispatcher::actionPlay() {
-  Delayed<int>* res = playback->Dplay();
-  res->wait();
-  delete res;
+  Delayed<int>* res = playback->play();
 }
 
 /**
@@ -251,7 +332,7 @@ Dispatcher::actionPlay() {
  */
 void
 Dispatcher::actionPause() {
-  playback->pause();
+  Delayed<int>* res = playback->pause();
 }
 
 /**

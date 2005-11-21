@@ -561,10 +561,9 @@ Dispatcher::actionRemove() {
     for(int i = 0; i < argNumber; ++i) {
       positions->parseAdd(arguments[i]);
     }
-    for(int pos = 1, diff = 0; pos <= playlist_len; ++pos) {
+    for(int pos = playlist_len; pos > 0; --pos) {
       if(positions->contains(pos)) {
-        medialib->removeSongAt(pos - diff - 1);
-        ++diff;
+        medialib->removeSongAt(pos - 1);
       }
     }
   }

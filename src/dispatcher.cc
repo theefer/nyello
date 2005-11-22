@@ -7,6 +7,7 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   medialib = new MediaLibrary(connection);
   pparser  = new PatternParser(playback, medialib);
   output   = new Output();
+  async    = new Asynchronizer(connection);
 
   command   = NULL;
   arguments = new char*[MAX_ARGUMENTS];
@@ -91,55 +92,17 @@ Dispatcher::loop() {
   cout << prompt;
   cout.flush();
 
-  // HOMEMADE ASYNC MAIN LOOP
-  fd_set rfds, wfds;
-  int ipc, stdinput, modfds;
-  ipc = xmmsc_io_fd_get(conn);
-  stdinput = 0;
 
   // Main event loop
   while(true) {
-    // Setup fds
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
+    async->waitForData();
 
-    FD_SET(ipc, &rfds);
-    FD_SET(stdinput, &rfds);
-
-    if(xmmsc_io_want_out(conn)) {
-      FD_SET(ipc, &wfds);
-    }
-
-    // Select on the fds
-    modfds = select(ipc + 1, &rfds, &wfds, NULL, NULL);
-
-    if(modfds < 0) {
-      // FIXME: Error
-    }
-    else if(modfds == 0) {
-      // FIXME: Nothing happened
-    }
-    // Handle the data
-    else {
-      // We can read ipc data
-      if(FD_ISSET(ipc, &rfds)) {
-	xmmsc_io_in_handle(conn);
-        if(showprompt) {
-          cout << prompt;
-          cout.flush();
-          showprompt = false;
-        }
-      }
-      // We can write ipc data
-      if(FD_ISSET(ipc, &wfds)) {
-	xmmsc_io_out_handle(conn);
-      }
-
-      // We have user input
-      if(FD_ISSET(stdinput, &rfds)) {
-	rl_callback_read_char();
-      }
-    }
+//     // FIXME: Show prompt when needed
+//     if(showprompt) {
+//       cout << prompt;
+//       cout.flush();
+//       showprompt = false;
+//     }
     
   } /* End main event loop */
 
@@ -325,6 +288,7 @@ Dispatcher::actionStatus() {
 void
 Dispatcher::actionPlay() {
   Delayed<int>* res = playback->play();
+  res->wait(async);
 }
 
 /**

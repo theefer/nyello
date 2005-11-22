@@ -9,8 +9,20 @@ using namespace std;
 
 #include <xmmsclient/xmmsclient.h>
 
+#include "asynchronizer.hh"
+
+
 class Handler { };
 class Receiver { };
+
+
+class DelayedVoid {
+public:
+  //  static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
+  //  static Asynchronizer* async;
+};
+//FIXME: Compilation error for some reason
+//Asynchronizer* DelayedVoid::async = NULL;
 
 
 /**
@@ -33,7 +45,7 @@ class Receiver { };
  * way, focusing on data rather than on callback functions.
  */
 template <class T>
-class Delayed {
+class Delayed : public DelayedVoid {
 
   typedef T (Handler::*HandleFnPtr)(xmmsc_result_t* res);
   typedef void (Receiver::*ReceiveFnPtr)(T);
@@ -43,13 +55,12 @@ public:
   ~Delayed();
 
   void callback(xmmsc_result_t* res);
-  void wait();
+  void wait(Asynchronizer* async);
 
   inline void addHandler(HandleFnPtr fn)   { handlers.push_back(fn); }
   inline void addReceiver(ReceiveFnPtr fn) { receivers.push_back(fn); }
 
-  T getLastProduct();
-  list<T> getProducts();
+  inline T getProduct() { return product; }
 
 protected:
   const char* errmsg;
@@ -59,7 +70,7 @@ protected:
   list<HandleFnPtr>  handlers;
   list<ReceiveFnPtr> receivers;
 
-  list<T> products;
+  T product;
 
   void unblock();
 };
@@ -120,32 +131,14 @@ Delayed<T>::callback(xmmsc_result_t* res) {
   unblock();
 }
 
-
-template <class T>
-T
-Delayed<T>::getLastProduct() {
-  return products.back();
-}
-
-
-template <class T>
-list<T>
-Delayed<T>::getProducts() {
-  return products;
-}
-
-
 template <class T>
 void
-Delayed<T>::wait() {
-  struct timespec tv;
-  tv.tv_sec  = 0;
-  tv.tv_nsec = 100000000; // 100ms
+Delayed<T>::wait(Asynchronizer* async) {
+  // FIXME: Should be able to inherit async from DelayedVoid
 
-  // FIXME: How to *wait* properly?
+  // Pass IPC traffic until unblocked
   while(!ready) {
-    nanosleep(&tv, NULL);
-    cout << "not ready" << endl;
+    async->waitForData(Asynchronizer::WAIT_XMMSIPC);
   }
 }
 
@@ -153,7 +146,6 @@ Delayed<T>::wait() {
 template <class T>
 void
 Delayed<T>::unblock() {
-  // FIXME: How to *unblock* waiters?
   ready = true;
 }
 

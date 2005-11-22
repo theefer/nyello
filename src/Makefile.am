@@ -23,4 +23,5 @@ nyello_SOURCES = nyello.cc\
 		medialibquery.cc\
 		sequence.cc\
 		command.cc\
-		delayed.cc
+		delayed.cc\
+		asynchronizer.cc

@@ -56,7 +56,8 @@ am_nyello_OBJECTS = nyello.$(OBJEXT) dispatcher.$(OBJEXT) \
 	selectresult.$(OBJEXT) richresult.$(OBJEXT) \
 	patternparser.$(OBJEXT) patternnodes.$(OBJEXT) \
 	patternquery.$(OBJEXT) medialibquery.$(OBJEXT) \
-	sequence.$(OBJEXT) command.$(OBJEXT) delayed.$(OBJEXT)
+	sequence.$(OBJEXT) command.$(OBJEXT) delayed.$(OBJEXT) \
+	asynchronizer.$(OBJEXT)
 nyello_OBJECTS = $(am_nyello_OBJECTS)
 nyello_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -178,7 +179,8 @@ nyello_SOURCES = nyello.cc\
 		medialibquery.cc\
 		sequence.cc\
 		command.cc\
-		delayed.cc
+		delayed.cc\
+		asynchronizer.cc
 
 all: all-am
 
@@ -247,6 +249,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/abstractresult.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asynchronizer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/column.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/columniser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command.Po@am__quote@

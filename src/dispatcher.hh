@@ -13,12 +13,10 @@ typedef void (Dispatcher::*DispFnPtr)();
 
 #include <xmmsclient/xmmsclient.h>
 
-#include <glib.h>
-#include <xmmsclient/xmmsclient-glib.h>
-
 #include <readline/readline.h>
 #include <readline/history.h>
 
+//#include "delayed.hh"
 #include "playback.hh"
 #include "medialibrary.hh"
 #include "patternparser.hh"
@@ -108,6 +106,7 @@ private:
   MediaLibrary*  medialib;
   PatternParser* pparser;
   Output*        output;
+  Asynchronizer* async;
 
   char* command;
   char** arguments;

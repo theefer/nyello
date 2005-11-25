@@ -97,12 +97,12 @@ Dispatcher::loop() {
   while(true) {
     async->waitForData();
 
-//     // FIXME: Show prompt when needed
-//     if(showprompt) {
-//       cout << prompt;
-//       cout.flush();
-//       showprompt = false;
-//     }
+    // FIXME: Show prompt when needed
+    if(showprompt) {
+      cout << prompt;
+      cout.flush();
+      showprompt = false;
+    }
     
   } /* End main event loop */
 
@@ -287,7 +287,7 @@ Dispatcher::actionStatus() {
  */
 void
 Dispatcher::actionPlay() {
-  Delayed<int>* res = playback->play();
+  DelayedVoid* res = playback->play();
   res->wait(async);
 }
 
@@ -296,7 +296,8 @@ Dispatcher::actionPlay() {
  */
 void
 Dispatcher::actionPause() {
-  Delayed<int>* res = playback->pause();
+  DelayedVoid* res = playback->pause();
+  res->wait(async);
 }
 
 /**
@@ -315,7 +316,8 @@ Dispatcher::actionTogglePlay() {
  */
 void
 Dispatcher::actionStop() {
-  playback->stop();
+  DelayedVoid* res = playback->stop();
+  res->wait(async);
 }
 
   
@@ -336,7 +338,8 @@ Dispatcher::actionPrevious() {
     return;
   }
 
-  playback->jumpRelative(offset);
+  DelayedVoid* res = playback->jumpRelative(offset);
+  res->wait(async);
 }
 
 /**
@@ -356,7 +359,8 @@ Dispatcher::actionNext() {
     return;
   }
 
-  playback->jumpRelative(offset);
+  DelayedVoid* res = playback->jumpRelative(offset);
+  res->wait(async);
 }
 
 /**
@@ -366,10 +370,15 @@ void
 Dispatcher::actionJump() {
   int offset;
   if(argNumber == 1) {
-    if((*arguments[0] == '+') || (*arguments[0] == '-'))
-      playback->jumpRelative(parseInteger(arguments[0]));
-    else
-      playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
+    DelayedVoid* res;
+    if((*arguments[0] == '+') || (*arguments[0] == '-')) {
+      res = playback->jumpRelative(parseInteger(arguments[0]));
+    }
+    else {
+      res = playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
+    }
+
+    res->wait(async);
   }
   else {
     cerr << "Error: jump requires one argument!" << endl;
@@ -506,7 +515,8 @@ Dispatcher::actionReplace() {
   if(position > 0) {
     medialib->insertSongs(query, position);
     medialib->removeSongAt(position - 1);
-    playback->jumpRelative(1);
+    DelayedVoid* res = playback->jumpRelative(1);
+    res->wait(async);
   }
   else {
     medialib->enqueueSongs(query);

@@ -6,7 +6,6 @@ Asynchronizer::Asynchronizer(xmmsc_connection_t* connection) : conn(connection) 
 }
 
 Asynchronizer::~Asynchronizer() {
-
 }
 
 void

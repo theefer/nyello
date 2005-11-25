@@ -206,6 +206,8 @@ MediaLibrary::usePlaylist(char* name) {
       currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
       strncpy(currentPlaylistName, name, MAX_PLAYLIST_NAME_LEN);
     }
+
+    xmmsc_result_unref(lastRes);
   }
 
   xmmsc_result_unref(lastRes);
@@ -280,38 +282,17 @@ MediaLibrary::hasPlaylist(char* name) {
   char* entry_name;
   bool found = false;
 
-  // FIXME: Or SELECT ... WHERE name=$name ?
-
-  lastRes = xmmsc_medialib_select(connection,
-                                  "SELECT name FROM Playlist");
-  xmmsc_result_wait(lastRes);
-
-  while(xmmsc_result_list_valid(lastRes)) {
-    xmmsc_result_get_dict_entry_str(lastRes, "name", &entry_name);
-    if(entry_name != NULL && strcmp(name, entry_name) == 0) {
-      found = true;
-      break;
-    }
-
-    xmmsc_result_list_next(lastRes);
-  }
-
-  /* FIXME: Whoops wait until #295 gets committed :-(
+  // Get list of playlists and compare names
   lastRes = xmmsc_medialib_playlists_list(connection);
   xmmsc_result_wait(lastRes);
 
-  while(xmmsc_result_list_valid(lastRes)) {
-    char* entry_name;
+  while(xmmsc_result_list_valid(lastRes) && !found) {
     xmmsc_result_get_string(lastRes, &entry_name);
-    cout << name << " vs " << entry_name << endl;
     if(strcmp(name, entry_name) == 0) {
       found = true;
-      break;
     }
     xmmsc_result_list_next(lastRes);
   }
-
-  */
 
   xmmsc_result_unref(lastRes);
   return found;

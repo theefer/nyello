@@ -20,15 +20,15 @@ public:
   Playback(xmmsc_connection_t* connection);
   ~Playback();
 
-  Delayed<int>* play();
-  Delayed<int>* pause();
-  Delayed<int>* stop();
+  DelayedVoid* play();
+  DelayedVoid* pause();
+  DelayedVoid* stop();
 
-  Delayed<int>* tickle();
-  Delayed<int>* jumpAbsolute(int pos);
-  Delayed<int>* jumpRelative(int offset);
-  Delayed<int>* seekAbsolute(int position);
-  Delayed<int>* seekRelative(int offset);
+  DelayedVoid* tickle();
+  DelayedVoid* jumpAbsolute(int pos);
+  DelayedVoid* jumpRelative(int offset);
+  DelayedVoid* seekAbsolute(int position);
+  DelayedVoid* seekRelative(int offset);
   
   bool isPlaying();
   bool isPaused();

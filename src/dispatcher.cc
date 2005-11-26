@@ -9,6 +9,8 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   output   = new Output();
   async    = new Asynchronizer(connection);
 
+  DelayedVoid::setAsynchronizer(async);
+
   command   = NULL;
   arguments = new char*[MAX_ARGUMENTS];
   argNumber = 0;
@@ -261,18 +263,18 @@ void
 Dispatcher::actionStatus() {
   if(argNumber == 0) {
     AbstractResult* song;
-    int curr_id = playback->getCurrentId();
+    int curr_id = playback->getCurrentId()->getProduct();
     if(curr_id > 0 && (song = medialib->getSongById(curr_id)) != NULL) {
       ResultList* rlist = new ResultList(song);
       output->printStatus(rlist,
-                          playback->getStatus(),
-                          playback->getCurrentPlaytime(),
-                          playback->getCurrentPosition(),
+                          playback->getStatus()->getProduct(),
+                          playback->getCurrentPlaytime()->getProduct(),
+                          playback->getCurrentPosition()->getProduct(),
                           medialib->getCurrentPlaylistName());
       delete rlist;
     }
     else {
-      output->printEmptyStatus(playback->getStatus(),
+      output->printEmptyStatus(playback->getStatus()->getProduct(),
                                medialib->getCurrentPlaylistName());
     }
   }
@@ -288,7 +290,7 @@ Dispatcher::actionStatus() {
 void
 Dispatcher::actionPlay() {
   DelayedVoid* res = playback->play();
-  res->wait(async);
+  res->wait();
 }
 
 /**
@@ -297,7 +299,7 @@ Dispatcher::actionPlay() {
 void
 Dispatcher::actionPause() {
   DelayedVoid* res = playback->pause();
-  res->wait(async);
+  res->wait();
 }
 
 /**
@@ -305,7 +307,7 @@ Dispatcher::actionPause() {
  */
 void
 Dispatcher::actionTogglePlay() {
-  if(playback->isPlaying())
+  if(playback->isPlaying()->getProduct())
     actionPause();
   else
     actionPlay();
@@ -317,7 +319,7 @@ Dispatcher::actionTogglePlay() {
 void
 Dispatcher::actionStop() {
   DelayedVoid* res = playback->stop();
-  res->wait(async);
+  res->wait();
 }
 
   
@@ -339,7 +341,7 @@ Dispatcher::actionPrevious() {
   }
 
   DelayedVoid* res = playback->jumpRelative(offset);
-  res->wait(async);
+  res->wait();
 }
 
 /**
@@ -360,7 +362,7 @@ Dispatcher::actionNext() {
   }
 
   DelayedVoid* res = playback->jumpRelative(offset);
-  res->wait(async);
+  res->wait();
 }
 
 /**
@@ -378,7 +380,7 @@ Dispatcher::actionJump() {
       res = playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
     }
 
-    res->wait(async);
+    res->wait();
   }
   else {
     cerr << "Error: jump requires one argument!" << endl;
@@ -427,7 +429,7 @@ Dispatcher::actionList() {
     playlist = medialib->getCurrentPlaylist();
     if(playlist != NULL) {
       songList = new SelectionResultList(playlist,
-                                         playback->getCurrentPosition());
+                                         playback->getCurrentPosition()->getProduct());
     }
     else {
       cerr << "Error: problem while listing the playlist!" << endl;
@@ -489,7 +491,7 @@ Dispatcher::actionInsert() {
     cerr << "Error: failed to parse the pattern!" << endl;
     return;
   }
-  position = playback->getCurrentPosition() + 1;
+  position = playback->getCurrentPosition()->getProduct() + 1;
   if(position > 0) {
     medialib->insertSongs(query, position);
   }
@@ -511,12 +513,12 @@ Dispatcher::actionReplace() {
     cerr << "Error: failed to parse the pattern!" << endl;
     return;
   }
-  position = playback->getCurrentPosition() + 1;
+  position = playback->getCurrentPosition()->getProduct() + 1;
   if(position > 0) {
     medialib->insertSongs(query, position);
     medialib->removeSongAt(position - 1);
     DelayedVoid* res = playback->jumpRelative(1);
-    res->wait(async);
+    res->wait();
   }
   else {
     medialib->enqueueSongs(query);

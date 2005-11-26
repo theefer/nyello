@@ -42,19 +42,22 @@
       [X] Clean isolation of the message-passing block of code, reuse everywhere
           * One class handles the main loop.
           * Configure which signal to listen (xmms2, readline).
-      [ ] Improve quality of Asynchronizer
-            Will have to call Dispatcher::parseInput().
-            Make it available without requiring the call to wait(async)
-      [ ] How to instantiate complex types in or from Delayed<T> ?
+      [X] Special DelayedVoid type, possibly parent of Delayed<T>
+      [X] How to instantiate complex types in or from Delayed<T> ?
             Simple use of constructor? Do we need extra arguments?
             For simple types, we need to use API functions to retrieve product!
             => Modular solution to vary how products are created.
       [ ] Do we need product, handlers and receivers?
-            handlers: yes but more general, mostly to handle errors and product generation,       
+            handlers: yes but more general, mostly to handle errors or similar stuff,
                       dedicated classes, *not* any method of any class.
             receivers: not really needed if we wait (pass the Delayed object),
                        needed if we set a callback => nice way of running a method (type problem) ?
-      [ ] Special DelayedVoid type, possibly parent of Delayed<T>
+            tests: playback->tickle(), mlib->usePlaylist()
+      [ ] Use delayed object in songresult.cc too!
+      [ ] Improve quality of Asynchronizer
+            Will have to call Dispatcher::parseInput().
+            Make it available without requiring the call to wait(async)
+      [ ] Free all the allocated delayed objects (do we need dyn-alloc?)
   [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
   [ ] Design proper abstraction layer (all async events, current PL, collections)
   ==> v0.4

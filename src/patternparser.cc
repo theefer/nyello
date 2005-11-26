@@ -77,7 +77,7 @@ PatternParser::parse() {
   top = parseGroup();
   if((numArgs == 0) || (top == NULL && orderby != NULL)) {
     IdSequence* seq = new IdSequence();
-    seq->addValue(playback->getCurrentId());
+    seq->addValue(playback->getCurrentId()->getProduct());
     top = new PatternMLibSequence(seq);
   }
 

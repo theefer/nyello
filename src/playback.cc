@@ -75,60 +75,48 @@ Playback::seekRelative(int offset) {
   return seekAbsolute(position);
 }
 
-bool
+/**
+ * Return whether a song is currently being played.
+ */
+Delayed<bool>*
 Playback::isPlaying() {
-  return (getStatus() == XMMS_PLAYBACK_STATUS_PLAY);
+  lastRes = xmmsc_playback_status(connection);
+  return new Delayed<bool>(lastRes,
+                           new ComparatorProduct<unsigned int, &xmmsc_result_get_uint>(XMMS_PLAYBACK_STATUS_PLAY),
+                           "Could not get playback status: ");
 }
 
-bool
+/**
+ * Return whether playback is currently paused.
+ */
+Delayed<bool>*
 Playback::isPaused() {
-  return (getStatus() == XMMS_PLAYBACK_STATUS_PAUSE);
+  lastRes = xmmsc_playback_status(connection);
+  return new Delayed<bool>(lastRes,
+                           new ComparatorProduct<unsigned int, &xmmsc_result_get_uint>(XMMS_PLAYBACK_STATUS_PAUSE),
+                           "Could not get playback status: ");
 }
 
 /**
  * Return the mlib id of the song currently playing, or -1 if there is
  * no valid entry.
  */
-int
+Delayed<unsigned int>*
 Playback::getCurrentId() {
-  int id;
   lastRes = xmmsc_playback_current_id(connection);
-  xmmsc_result_wait(lastRes);
-
-  if (xmmsc_result_iserror(lastRes)) {
-    id = -1;
-  }
-  else {
-    unsigned int uid;
-    xmmsc_result_get_uint(lastRes, &uid);
-    id = uid;
-  }
-  xmmsc_result_unref(lastRes);
-
-  return id;
+  return new Delayed<unsigned int>(lastRes,
+                                   new PrimitiveProduct<unsigned int, &xmmsc_result_get_uint>());
 }
 
 /**
  * Return the current position in the playlist, or -1 if there is no
  * valid position.
  */
-int
+Delayed<unsigned int>*
 Playback::getCurrentPosition() {
-  int pos;
   lastRes = xmmsc_playlist_current_pos(connection);
-  xmmsc_result_wait(lastRes);
-
-  if (xmmsc_result_iserror(lastRes)) {
-    pos = -1;
-  }
-  else {
-    unsigned int upos;
-    xmmsc_result_get_uint(lastRes, &upos);
-    pos = upos;
-  }
-  xmmsc_result_unref(lastRes);
-
-  return pos;
+  return new Delayed<unsigned int>(lastRes,
+                                   new PrimitiveProduct<unsigned int, &xmmsc_result_get_uint>());
 }
 
 
@@ -136,46 +124,22 @@ Playback::getCurrentPosition() {
  * Return the current playtime of the playing song, or 0 if there is
  * no playing song.
  */
-unsigned int
+Delayed<unsigned int>*
 Playback::getCurrentPlaytime() {
-  unsigned int playtime;
   lastRes = xmmsc_playback_playtime(connection);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Could not get playtime: "
-         << xmmsc_result_get_error(lastRes) << endl;
-
-    // FIXME: Err, not really
-    playtime = 0;
-  }
-  else {
-    xmmsc_result_get_uint(lastRes, &playtime);
-  }
-  xmmsc_result_unref(lastRes);
-
-  return playtime;
+  return new Delayed<unsigned int>(lastRes,
+                                   new PrimitiveProduct<unsigned int, &xmmsc_result_get_uint>(),
+                                   "Could not get playtime: ");
 }
 
 /**
  * Return the current status of the player (playing, paused, stopped,
  * etc), or STOPPED if an error occured.
  */
-unsigned int
+Delayed<unsigned int>*
 Playback::getStatus() {
-  unsigned int status;
   lastRes = xmmsc_playback_status(connection);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Could not get playback status: "
-         << xmmsc_result_get_error(lastRes) << endl;
-
-    // FIXME: Err, not really
-    status = XMMS_PLAYBACK_STATUS_STOP;
-  }
-  else {
-    xmmsc_result_get_uint(lastRes, &status);
-  }
-  xmmsc_result_unref(lastRes);
-
-  return status;
+  return new Delayed<unsigned int>(lastRes,
+                                   new PrimitiveProduct<unsigned int, &xmmsc_result_get_uint>(),
+                                   "Could not get playback status: ");
 }

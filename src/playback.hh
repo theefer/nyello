@@ -30,14 +30,14 @@ public:
   DelayedVoid* seekAbsolute(int position);
   DelayedVoid* seekRelative(int offset);
   
-  bool isPlaying();
-  bool isPaused();
+  Delayed<bool>* isPlaying();
+  Delayed<bool>* isPaused();
 
-  int getCurrentId();
-  int getCurrentPosition();
-  unsigned int getCurrentPlaytime();
+  Delayed<unsigned int>* getCurrentId();
+  Delayed<unsigned int>* getCurrentPosition();
+  Delayed<unsigned int>* getCurrentPlaytime();
 
-  unsigned int getStatus();
+  Delayed<unsigned int>* getStatus();
 
 private:
   xmmsc_connection_t* connection;

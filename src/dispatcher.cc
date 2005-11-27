@@ -269,7 +269,7 @@ Dispatcher::actionStatus() {
       output->printStatus(rlist,
                           playback->getStatus()->getProduct(),
                           playback->getCurrentPlaytime()->getProduct(),
-                          playback->getCurrentPosition()->getProduct(),
+                          playback->getCurrentPosition()->getProduct() + 1,
                           medialib->getCurrentPlaylistName());
       delete rlist;
     }
@@ -588,7 +588,7 @@ Dispatcher::actionPlaylistList() {
     return;
   }
 
-  AbstractResult* playlists = medialib->getPlaylists();
+  AbstractResult* playlists = medialib->getPlaylists()->getProduct();
   if(playlists == NULL) {
     cerr << "Error: failed to get the list of playlists!" << endl;
   }

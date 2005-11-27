@@ -78,8 +78,6 @@ MediaLibrary::getPlaylist(char* name) {
   }
 
   return new SongResult(lastRes, connection);
-
-  // OLD: "SELECT songs.*, substr(playlistentries.entry,8,10) AS id FROM playlistentries, playlist LEFT JOIN songs ON songs.id=substr(playlistentries.entry,8,10) WHERE playlist_id=playlist.id AND playlist.name=\"%s\" ORDER BY pos",
 }
 
 
@@ -87,7 +85,7 @@ MediaLibrary::getPlaylist(char* name) {
  * Get the list of all the Playlist objects in the medialib.
  * Playlists starting with a '_' prefix are hidden.
  */
-AbstractResult*
+Delayed<RichResult*>*
 MediaLibrary::getPlaylists() {
   // Retrieve all the playlists
   lastRes = xmmsc_medialib_select(connection, 
@@ -96,14 +94,20 @@ MediaLibrary::getPlaylists() {
                                   "LEFT JOIN PlaylistEntries ON id=playlist_id "
                                   "WHERE substr(name, 0, 1) <> \"_\" "
                                   "GROUP BY playlist_id");
-  xmmsc_result_wait(lastRes);
 
-  // Oops, no playlist, return empty list!
-  if(!xmmsc_result_list_valid(lastRes)) {
-    return NULL;
-  }
+//   xmmsc_result_wait(lastRes);
 
-  return new RichResult(lastRes);
+//   // Oops, no playlist, return empty list!
+//   if(!xmmsc_result_list_valid(lastRes)) {
+//     return NULL;
+//   }
+
+//   return new RichResult(lastRes);
+
+  // FIXME: Check xmmsc_result_list_valid, not just error!
+  return new Delayed<RichResult*>(lastRes,
+                                  new ObjectProduct<RichResult>(),
+                                  "Could not list playlists: ");
 }
 
 

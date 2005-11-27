@@ -15,6 +15,7 @@
 #include "selectresult.hh"
 #include "patternquery.hh"
 #include "collection.hh"
+#include "delayed.hh"
 
 
 
@@ -29,7 +30,7 @@ public:
 
   AbstractResult* getCurrentPlaylist();
   AbstractResult* getPlaylist(char* name);
-  AbstractResult* getPlaylists();
+  Delayed<RichResult*>* getPlaylists();
 
   int getPlaylistSize(char* name);
   int getCurrentPlaylistSize();

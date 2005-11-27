@@ -24,4 +24,5 @@ nyello_SOURCES = nyello.cc\
 		sequence.cc\
 		command.cc\
 		delayed.cc\
-		asynchronizer.cc
+		asynchronizer.cc\
+		productmaker.cc

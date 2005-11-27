@@ -1,28 +1,6 @@
 #include "delayed.hh"
 
 
-StringMatcherProduct::StringMatcherProduct(char* _str) : str(_str) {
-}
-
-bool
-StringMatcherProduct::create(xmmsc_result_t* res) {
-  char* entry_name;
-  bool found = false;
-
-  while(xmmsc_result_list_valid(res) && !found) {
-    xmmsc_result_get_string(res, &entry_name);
-    if(strcmp(str, entry_name) == 0) {
-      found = true;
-    }
-    xmmsc_result_list_next(res);
-  }
-
-  return found;
-}
-
-
-
-
 // Generic hack-function to use methods as callback functions
 template <void (DelayedVoid::*func) (xmmsc_result_t*)>
 void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
@@ -39,7 +17,7 @@ DelayedVoid::DelayedVoid(xmmsc_result_t* res, const char* err) : errmsg(err) {
 }
 
 DelayedVoid::~DelayedVoid() {
-  // FIXME: Delete receivers?
+  // FIXME: Delete callbacks?
 }
 
 void
@@ -52,7 +30,6 @@ DelayedVoid::callback(xmmsc_result_t* res) {
     // FIXME: What do we do? throw further?
   }
 
-  xmmsc_result_unref(res);
   unblock();
 }
 
@@ -70,13 +47,13 @@ DelayedVoid::runHooks(xmmsc_result_t* res) {
 
 void
 DelayedVoid::runCallbacks(xmmsc_result_t* res) {
+  // FIXME: Do NOT count of overloading of this to assume this is not done in Delayed<T> !
+  xmmsc_result_unref(res);
 }
 
 
 DelayedVoid*
 DelayedVoid::wait() {
-  // FIXME: Should be able to inherit async from DelayedVoid
-
   // Pass IPC traffic until unblocked
   while(!ready) {
     async->waitForData(Asynchronizer::WAIT_XMMSIPC);

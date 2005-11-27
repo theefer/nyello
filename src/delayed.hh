@@ -1,7 +1,6 @@
 #ifndef __DELAYED_HH__
 #define __DELAYED_HH__
 
-#include <time.h>
 #include <list>
 #include <iostream>
 
@@ -9,112 +8,17 @@ using namespace std;
 
 #include <xmmsclient/xmmsclient.h>
 
+#include "productmaker.hh"
 #include "asynchronizer.hh"
 
 
 class DelayedCallback { };
 
 
-
-template <class T>
-class ProductMaker {
-public:
-  virtual T create(xmmsc_result_t* res) = 0;
-};
-
-
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
-class PrimitiveProduct : public ProductMaker<T> {
-public:
-  virtual T create(xmmsc_result_t* res);
-};
-
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
-T
-PrimitiveProduct<T, extractor>::create(xmmsc_result_t* res) {
-  T product;
-  (*extractor)(res, &product);
-  return product;
-}
-
-
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
-class ComparatorProduct : public ProductMaker<bool> {
-public:
-  ComparatorProduct(T value);
-
-  bool ComparatorProduct::create(xmmsc_result_t* res);
-
-private:
-  int value;
-};
-
-
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
-ComparatorProduct<T, extractor>::ComparatorProduct(T _value) : value(_value) {
-}
-
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
-bool
-ComparatorProduct<T, extractor>::create(xmmsc_result_t* res) {
-  T product;
-  (*extractor)(res, &product);
-  return (product == value);
-}
-
-
-
-
-class StringMatcherProduct : public ProductMaker<bool> {
-public:
-  StringMatcherProduct(char* str);
-
-  bool StringMatcherProduct::create(xmmsc_result_t* res);
-
-private:
-  char* str;
-};
-
-
-template <class T>
-class ObjectProduct : public ProductMaker<T> {
-public:
-  virtual T create(xmmsc_result_t* res);
-};
-
-template <class T>
-T
-ObjectProduct<T>::create(xmmsc_result_t* res) {
-  T product(res);
-  return product;
-}
-
-
-template <class T, class X>
-class ComplexObjectProduct : public ProductMaker<T> {
-public:
-  ComplexObjectProduct(X extraParam);
-
-  virtual T create(xmmsc_result_t* res);
-
-private:
-  X extraParam;
-};
-
-template <class T, class X>
-ComplexObjectProduct<T, X>::ComplexObjectProduct(X extra) : extraParam(extra) {
-}
-
-template <class T, class X>
-T
-ComplexObjectProduct<T, X>::create(xmmsc_result_t* res) {
-  T product(res, extraParam);
-  return product;
-}
-
-
-
 class DelayedVoid {
+
+//  typedef void (DelayedCallback::*DVCallbackFnPtr)();
+
 public:
   static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
 
@@ -127,8 +31,12 @@ public:
 
   DelayedVoid* wait();
 
+//  inline void addCallback(DVCallbackFnPtr fn) { callbacks.push_back(fn); }
+
 protected:
   static Asynchronizer* async;
+
+//  list<DVCallbackFnPtr> callbacks;
 
   const char* errmsg;
 
@@ -191,6 +99,7 @@ void runDelayedMethod(xmmsc_result_t *res, void *del_ptr);
 
 template <class T>
 Delayed<T>::Delayed(xmmsc_result_t* res, const char* err) : DelayedVoid(res, err) {
+  // FIXME: actually working?
   ObjectProduct<T> oprod;
   pmaker = &oprod;
 }
@@ -202,8 +111,7 @@ Delayed<T>::Delayed(xmmsc_result_t* res, ProductMaker<T>* _pmaker, const char* e
 
 template <class T>
 Delayed<T>::~Delayed() {
-  // FIXME: Delete callbacks?
-  // FIXME: Delete product maker?
+  delete pmaker;
 }
 
 

@@ -3,6 +3,9 @@
 
 #define MAX_PLAYLIST_NAME_LEN 64
 
+// FIXME: enable to show generated SQL queries
+//#define MLIB_QUERY_DEBUG
+
 #include <xmmsclient/xmmsclient.h>
 
 #include <list>

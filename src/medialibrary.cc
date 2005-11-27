@@ -402,7 +402,12 @@ AbstractResult*
 MediaLibrary::performQuery(PatternQuery* query) {
   AbstractResult* songlist;
   char* sql = query->getSql();
+
+// FIXME: Remove this when queries are stable
+#ifdef MLIB_QUERY_DEBUG
   cout << "QUERY: " << query->getSql() << endl;
+#endif
+
   lastRes = xmmsc_medialib_select(connection, sql);
   xmmsc_result_wait(lastRes);
 

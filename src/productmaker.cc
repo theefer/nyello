@@ -5,7 +5,7 @@ StringMatcherProduct::StringMatcherProduct(char* _str) : str(_str) {
 }
 
 bool
-StringMatcherProduct::create(xmmsc_result_t* res) {
+StringMatcherProduct::create() {
   char* entry_name;
   bool found = false;
 
@@ -16,8 +16,6 @@ StringMatcherProduct::create(xmmsc_result_t* res) {
     }
     xmmsc_result_list_next(res);
   }
-
-  xmmsc_result_unref(res);
 
   return found;
 }

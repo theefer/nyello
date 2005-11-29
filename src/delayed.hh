@@ -17,8 +17,6 @@ class DelayedCallback { };
 
 class DelayedVoid {
 
-//  typedef void (DelayedCallback::*DVCallbackFnPtr)();
-
 public:
   static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
 
@@ -29,18 +27,15 @@ public:
 
   DelayedVoid* wait();
 
-//  inline void addCallback(DVCallbackFnPtr fn) { callbacks.push_back(fn); }
-
 protected:
   static Asynchronizer* async;
 
-//  list<DVCallbackFnPtr> callbacks;
-
+  ProductMaker<void>* pmaker;
   const char* errmsg;
 
   bool ready;
 
-  virtual void runHooks(xmmsc_result_t* res);
+  virtual void createProduct();
   virtual void runCallbacks(xmmsc_result_t* res);
 
   void unblock();
@@ -73,9 +68,6 @@ public:
   Delayed(xmmsc_result_t* res, ProductMaker<T>* pmaker, const char* errmsg = NULL);
   ~Delayed();
 
-  virtual void runHooks(xmmsc_result_t* res);
-  virtual void runCallbacks(xmmsc_result_t* res);
-
   inline void addCallback(DelayedCallbackFnPtr fn) { receivers.push_back(fn); }
 
   T getProduct();
@@ -85,6 +77,9 @@ protected:
 
   ProductMaker<T>* pmaker;
   list<DelayedCallbackFnPtr> receivers;
+
+  virtual void createProduct();
+  virtual void runCallbacks(xmmsc_result_t* res);
 };
 
 
@@ -118,9 +113,8 @@ Delayed<T>::~Delayed() {
 
 template <class T>
 void
-Delayed<T>::runHooks(xmmsc_result_t* res) {
-  DelayedVoid::runHooks(res);
-  product = pmaker->create(res);
+Delayed<T>::createProduct() {
+  product = pmaker->create();
 }
 
 template <class T>

@@ -11,19 +11,24 @@ void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
 
 DelayedVoid::DelayedVoid(xmmsc_result_t* res, const char* err) : errmsg(err) {
   ready = false;
+  pmaker = new VoidProduct();
 
   xmmsc_result_notifier_set(res, &runDelayedMethod<&DelayedVoid::callback>, this);
   xmmsc_result_unref(res);
 }
 
 DelayedVoid::~DelayedVoid() {
+  delete pmaker;
+
   // FIXME: Delete callbacks?
 }
 
 void
 DelayedVoid::callback(xmmsc_result_t* res) {
   try {
-    runHooks(res);
+    pmaker->setResult(res);
+    pmaker->checkErrors(errmsg);
+    createProduct();
     runCallbacks(res);
   }
   catch(...) {
@@ -34,21 +39,12 @@ DelayedVoid::callback(xmmsc_result_t* res) {
 }
 
 void
-DelayedVoid::runHooks(xmmsc_result_t* res) {
-  if(xmmsc_result_iserror(res)) {
-    // FIXME: Show error?
-    if(errmsg != NULL) {
-      cerr << errmsg << xmmsc_result_get_error(res) << endl;
-    }
-
-    // FIXME: Throw error?
-  }
+DelayedVoid::createProduct() {
+  pmaker->create();
 }
 
 void
 DelayedVoid::runCallbacks(xmmsc_result_t* res) {
-  // FIXME: Do NOT count on overloading of this to assume this is not done in Delayed<T> !
-  xmmsc_result_unref(res);
 }
 
 

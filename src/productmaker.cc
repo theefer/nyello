@@ -9,6 +9,8 @@ StringMatcherProduct::create() {
   char* entry_name;
   bool found = false;
 
+  this->unrefResult = true;
+
   while(xmmsc_result_list_valid(res) && !found) {
     xmmsc_result_get_string(res, &entry_name);
     if(strcmp(str, entry_name) == 0) {

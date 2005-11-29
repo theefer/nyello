@@ -17,10 +17,12 @@ public:
 
   virtual void checkErrors(const char* errmsg = NULL);
   virtual T create() = 0;
-  virtual void cleanup();
 
 protected:
   xmmsc_result_t* res;
+
+  // FIXME: Why can't we use a virtual function to determine that?
+  bool unrefResult;
 };
 
 
@@ -46,7 +48,6 @@ template <class T>
 class ObjectProduct : public ProductMaker<T*> {
 public:
   virtual T* create();
-  virtual void cleanup();
 };
 
 
@@ -95,15 +96,9 @@ private:
 
 template <class T>
 ProductMaker<T>::~ProductMaker() {
-  cleanup();
-  cout << "cleanup done" << endl;
-}
-
-template <class T>
-void
-ProductMaker<T>::cleanup() {
-  cout << "unref this" << endl;
-  xmmsc_result_unref(res);
+  if(unrefResult) {
+    xmmsc_result_unref(res);
+  }
 }
 
 template <class T>
@@ -115,7 +110,6 @@ ProductMaker<T>::checkErrors(const char* errmsg) {
       cerr << errmsg << xmmsc_result_get_error(res) << endl;
     }
   }
-  cerr << "NO ERROR: " << errmsg << endl;
 }
 
 
@@ -123,23 +117,19 @@ ProductMaker<T>::checkErrors(const char* errmsg) {
 template <class T, int (*extractor)(xmmsc_result_t*, T*)>
 T
 PrimitiveProduct<T, extractor>::create() {
+  this->unrefResult = true;
+
   T product;
   (*extractor)(this->res, &product);
   return product;
 }
 
 
-
-template <class T>
-void
-ObjectProduct<T>::cleanup() {
-  // FIXME: How do we avoid the super-destructor to be called, so we do not
-  // free the result?
-}
-
 template <class T>
 T*
 ObjectProduct<T>::create() {
+  this->unrefResult = false;
+
   T* product = new T(this->res);
   return product;
 }
@@ -153,6 +143,8 @@ ComplexObjectProduct<T, X>::ComplexObjectProduct(X extra) : extraParam(extra) {
 template <class T, class X>
 T
 ComplexObjectProduct<T, X>::create() {
+  this->unrefResult = false;
+
   T product(this->res, extraParam);
   return product;
 }
@@ -166,6 +158,8 @@ ComparatorProduct<T, extractor>::ComparatorProduct(T _value) : value(_value) {
 template <class T, int (*extractor)(xmmsc_result_t*, T*)>
 bool
 ComparatorProduct<T, extractor>::create() {
+  this->unrefResult = true;
+
   T product;
   (*extractor)(res, &product);
   return (product == value);

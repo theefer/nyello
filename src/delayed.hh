@@ -26,8 +26,6 @@ public:
   ~DelayedVoid();
 
   void callback(xmmsc_result_t* res);
-  virtual void runHooks(xmmsc_result_t* res);
-  virtual void runCallbacks(xmmsc_result_t* res);
 
   DelayedVoid* wait();
 
@@ -41,6 +39,9 @@ protected:
   const char* errmsg;
 
   bool ready;
+
+  virtual void runHooks(xmmsc_result_t* res);
+  virtual void runCallbacks(xmmsc_result_t* res);
 
   void unblock();
 };

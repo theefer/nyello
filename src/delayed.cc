@@ -47,7 +47,7 @@ DelayedVoid::runHooks(xmmsc_result_t* res) {
 
 void
 DelayedVoid::runCallbacks(xmmsc_result_t* res) {
-  // FIXME: Do NOT count of overloading of this to assume this is not done in Delayed<T> !
+  // FIXME: Do NOT count on overloading of this to assume this is not done in Delayed<T> !
   xmmsc_result_unref(res);
 }
 

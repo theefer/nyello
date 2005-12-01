@@ -105,7 +105,7 @@ template <class T>
 void
 ProductMaker<T>::checkErrors(const char* errmsg) {
   if(xmmsc_result_iserror(res)) {
-    // FIXME: Show error?
+    // FIXME: Show error? Throw error?
     if(errmsg != NULL) {
       cerr << errmsg << xmmsc_result_get_error(res) << endl;
     }

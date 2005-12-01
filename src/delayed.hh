@@ -52,7 +52,6 @@ protected:
 };
 
 
-
 class DelayedVoid : public AbstractDelayed<void> {
 public:
   DelayedVoid(xmmsc_result_t* res, const char* errmsg = NULL);

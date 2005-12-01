@@ -1,6 +1,9 @@
 #include "delayed.hh"
 
 
+Asynchronizer* FooDelayed::async = NULL;
+
+
 DelayedVoid::DelayedVoid(xmmsc_result_t* res, const char* err) : AbstractDelayed<void>(res, err) {
   pmaker = new VoidProduct();
 }

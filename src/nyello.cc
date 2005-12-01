@@ -145,10 +145,6 @@
 #include "dispatcher.hh"
 
 
-//FIXME: This should be somewhere else, e.g. in async.hh!
-Asynchronizer* FooDelayed::async = NULL;
-
-
 using namespace std;
 
 

@@ -8,7 +8,7 @@
 using namespace std;
 
 
-template <class T>
+template <typename T>
 class ProductMaker {
 public:
   ~ProductMaker();
@@ -36,7 +36,7 @@ public:
 };
 
 
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
+template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 class PrimitiveProduct : public ProductMaker<T> {
 public:
   virtual T create();
@@ -44,7 +44,7 @@ public:
 
 
 
-template <class T>
+template <typename T>
 class ObjectProduct : public ProductMaker<T*> {
 public:
   virtual T* create();
@@ -52,7 +52,7 @@ public:
 
 
 
-template <class T, class X>
+template <typename T, class X>
 class ComplexObjectProduct : public ProductMaker<T> {
 public:
   ComplexObjectProduct(X extraParam);
@@ -65,7 +65,7 @@ private:
 
 
 
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
+template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 class ComparatorProduct : public ProductMaker<bool> {
 public:
   ComparatorProduct(T value);
@@ -94,14 +94,14 @@ private:
        boring GCC limitations...  == */
 
 
-template <class T>
+template <typename T>
 ProductMaker<T>::~ProductMaker() {
   if(unrefResult) {
     xmmsc_result_unref(res);
   }
 }
 
-template <class T>
+template <typename T>
 void
 ProductMaker<T>::checkErrors(const char* errmsg) {
   if(xmmsc_result_iserror(res)) {
@@ -114,7 +114,7 @@ ProductMaker<T>::checkErrors(const char* errmsg) {
 
 
 
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
+template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 T
 PrimitiveProduct<T, extractor>::create() {
   this->unrefResult = true;
@@ -125,7 +125,7 @@ PrimitiveProduct<T, extractor>::create() {
 }
 
 
-template <class T>
+template <typename T>
 T*
 ObjectProduct<T>::create() {
   this->unrefResult = false;
@@ -136,11 +136,11 @@ ObjectProduct<T>::create() {
 
 
 
-template <class T, class X>
+template <typename T, class X>
 ComplexObjectProduct<T, X>::ComplexObjectProduct(X extra) : extraParam(extra) {
 }
 
-template <class T, class X>
+template <typename T, class X>
 T
 ComplexObjectProduct<T, X>::create() {
   this->unrefResult = false;
@@ -151,11 +151,11 @@ ComplexObjectProduct<T, X>::create() {
 
 
 
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
+template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 ComparatorProduct<T, extractor>::ComparatorProduct(T _value) : value(_value) {
 }
 
-template <class T, int (*extractor)(xmmsc_result_t*, T*)>
+template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 bool
 ComparatorProduct<T, extractor>::create() {
   this->unrefResult = true;

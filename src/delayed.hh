@@ -25,7 +25,7 @@ protected:
 };
 
 
-template <class T>
+template <typename T>
 class AbstractDelayed : public FooDelayed {
 public:
   //  static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
@@ -79,7 +79,7 @@ protected:
  * functions).  Abstraction is performed in a more object-oriented
  * way, focusing on data rather than on callback functions.
  */
-template <class T>
+template <typename T>
 class Delayed : public AbstractDelayed<T> {
 
   typedef void (DelayedCallback::*DelayedCallbackFnPtr)(T);
@@ -109,7 +109,7 @@ protected:
 
 
 // Generic hack-function to use methods as callback functions
-template <class T, void (AbstractDelayed<T>::*func) (xmmsc_result_t*)>
+template <typename T, void (AbstractDelayed<T>::*func) (xmmsc_result_t*)>
 void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
   AbstractDelayed<T>* d = (AbstractDelayed<T>*)del_ptr;
   (d->*func)(res);
@@ -117,7 +117,7 @@ void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
 
 
 
-template <class T>
+template <typename T>
 AbstractDelayed<T>::AbstractDelayed(xmmsc_result_t* res, const char* err) : errmsg(err) {
   ready = false;
   pmaker = NULL;
@@ -126,7 +126,7 @@ AbstractDelayed<T>::AbstractDelayed(xmmsc_result_t* res, const char* err) : errm
   xmmsc_result_unref(res);
 }
 
-template <class T>
+template <typename T>
 AbstractDelayed<T>::~AbstractDelayed() {
   if(pmaker != NULL) {
     delete pmaker;
@@ -135,7 +135,7 @@ AbstractDelayed<T>::~AbstractDelayed() {
   // FIXME: Delete callbacks?
 }
 
-template <class T>
+template <typename T>
 void
 AbstractDelayed<T>::callback(xmmsc_result_t* res) {
   try {
@@ -157,7 +157,7 @@ AbstractDelayed<T>::callback(xmmsc_result_t* res) {
   unblock();
 }
 
-template <class T>
+template <typename T>
 AbstractDelayed<T>*
 AbstractDelayed<T>::wait() {
   // Pass IPC traffic until unblocked
@@ -168,7 +168,7 @@ AbstractDelayed<T>::wait() {
   return this;
 }
 
-template <class T>
+template <typename T>
 void
 AbstractDelayed<T>::unblock() {
   ready = true;
@@ -176,33 +176,33 @@ AbstractDelayed<T>::unblock() {
 
 
 
-template <class T>
+template <typename T>
 Delayed<T>::Delayed(xmmsc_result_t* res, const char* err) : AbstractDelayed<T>(res, err) {
   // FIXME: actually working?
   this->pmaker = new ObjectProduct<T>();
 }
 
-template <class T>
+template <typename T>
 Delayed<T>::Delayed(xmmsc_result_t* res, ProductMaker<T>* _pmaker, const char* err)
   : AbstractDelayed<T>(res, err) {
   this->pmaker = _pmaker;
 }
 
 
-template <class T>
+template <typename T>
 T
 Delayed<T>::getProduct() {
   this->wait();
   return product;
 }
 
-template <class T>
+template <typename T>
 void
 Delayed<T>::createProduct() {
   product = this->pmaker->create();
 }
 
-template <class T>
+template <typename T>
 void
 Delayed<T>::runCallbacks(xmmsc_result_t* res) {
   // FIXME: We need an *object* to call the method from...

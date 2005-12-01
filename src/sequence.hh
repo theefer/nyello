@@ -9,13 +9,13 @@
 using namespace std;
 
 
-template <class T> class Sequence;
+template <typename T> class Sequence;
 
 typedef Sequence<unsigned int> IdSequence;
 typedef Sequence<unsigned int> PositionSequence;
 
 
-template <class T>
+template <typename T>
 class Sequence {
 public:
 
@@ -62,18 +62,18 @@ private:
 /*  == And here comes the implementation, in the header file due to
        boring GCC limitations...  == */
 
-template <class T>
+template <typename T>
 Sequence<T>::Sequence() {
   rangeToMaxIsset   = false;
   rangeFromMinIsset = false;
 }
 
-template <class T>
+template <typename T>
 Sequence<T>::~Sequence() {
 
 }
 
-template <class T>
+template <typename T>
 void
 Sequence<T>::addValue(T val) {
   if(!contains(val)) {
@@ -82,7 +82,7 @@ Sequence<T>::addValue(T val) {
   }
 }
 
-template <class T>
+template <typename T>
 void
 Sequence<T>::addRange(T from, T to) {
   // Invalid range, stop now
@@ -119,7 +119,7 @@ Sequence<T>::addRange(T from, T to) {
   // FIXME: Remove values in range
 }
 
-template <class T>
+template <typename T>
 void
 Sequence<T>::addRangeFrom(T from) {
   // Initialize
@@ -134,7 +134,7 @@ Sequence<T>::addRangeFrom(T from) {
   }
 }
 
-template <class T>
+template <typename T>
 void
 Sequence<T>::addRangeTo(T to) {
   // Initialize
@@ -149,7 +149,7 @@ Sequence<T>::addRangeTo(T to) {
   }
 }
 
-template <class T>
+template <typename T>
 bool
 Sequence<T>::parseAdd(char* char_seq) {
   // It's really too painful without C++ strings...
@@ -192,7 +192,7 @@ Sequence<T>::parseAdd(char* char_seq) {
   return true;
 }
 
-template <class T>
+template <typename T>
 bool
 Sequence<T>::contains(T elem) {
   typename list<T>::iterator valIt;
@@ -237,7 +237,7 @@ Sequence<T>::contains(T elem) {
   return false;
 }
 
-template <class T>
+template <typename T>
 bool
 Sequence<T>::empty() {
   return (!hasRangeToMax() && !hasRangeFromMin()
@@ -247,7 +247,7 @@ Sequence<T>::empty() {
 /**
  * A bit of a hack, but allows us to convert a string to type T.
  */
-template <class T>
+template <typename T>
 T
 Sequence<T>::convToT(string s) {
   T converted;

@@ -9,7 +9,7 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   output   = new Output();
   async    = new Asynchronizer(connection);
 
-  FooDelayed::setAsynchronizer(async);
+  StaticAsynchronizer::setAsynchronizer(async);
 
   command   = NULL;
   arguments = new char*[MAX_ARGUMENTS];

@@ -24,4 +24,17 @@ private:
 };
 
 
+/**
+ * A class that statically contains a reference to a global
+ * Asynchronizer* object.
+ */
+class StaticAsynchronizer {
+public:
+  static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
+
+protected:
+  static Asynchronizer* async;
+};
+
+
 #endif  // __ASYNCHRONIZER_HH__

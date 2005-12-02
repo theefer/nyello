@@ -12,24 +12,53 @@ using namespace std;
 #include "asynchronizer.hh"
 
 
-class DelayedCallback { };
-
-
-// FIXME: How do we declare a static var for a class that uses templates?
-class FooDelayed {
+class TopDelayedCallbackVoid {
 public:
-  static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
+  virtual void run() = 0;
+};
 
-protected:
-  static Asynchronizer* async;
+template <typename C>
+class DelayedCallbackVoid : public TopDelayedCallbackVoid {
+
+  typedef void (C::*CallbackVoidFnPtr)();
+
+public:
+  DelayedCallbackVoid(C* object, void (C::*function)());
+
+  virtual inline void run() { (object->*function)(); }
+
+private:
+  C* object;
+  CallbackVoidFnPtr function;
 };
 
 
 template <typename T>
-class AbstractDelayed : public FooDelayed {
+class TopDelayedCallback {
 public:
-  //  static inline void setAsynchronizer(Asynchronizer* _async) { async = _async; }
+  virtual void run(T product) = 0;
+};
 
+template <typename C, typename T>
+class DelayedCallback : public TopDelayedCallback<T> {
+
+  typedef void (C::*CallbackFnPtr)(T);
+
+public:
+  DelayedCallback(C* object, void (C::*function)(T));
+
+  virtual inline void run(T product) { (object->*function)(product); }
+
+private:
+  C* object;
+  CallbackFnPtr function;
+};
+
+
+
+template <typename T>
+class AbstractDelayed : public StaticAsynchronizer {
+public:
   AbstractDelayed(xmmsc_result_t* res, const char* errmsg = NULL);
   ~AbstractDelayed();
 
@@ -38,15 +67,13 @@ public:
   AbstractDelayed<T>* wait();
 
 protected:
-  //  static Asynchronizer* async;
-
   ProductMaker<T>* pmaker;
   const char* errmsg;
 
   bool ready;
 
   virtual void createProduct() = 0;
-  virtual void runCallbacks(xmmsc_result_t* res) = 0;
+  virtual void runCallbacks() = 0;
 
   void unblock();
 };
@@ -56,9 +83,14 @@ class DelayedVoid : public AbstractDelayed<void> {
 public:
   DelayedVoid(xmmsc_result_t* res, const char* errmsg = NULL);
 
+  template<typename C>
+  void addCallback(C* object, void (C::*function)());
+
 protected:
+  list<TopDelayedCallbackVoid*> receivers;
+
   virtual void createProduct();
-  virtual void runCallbacks(xmmsc_result_t* res);
+  virtual void runCallbacks();
 };
 
 
@@ -82,23 +114,22 @@ protected:
 template <typename T>
 class Delayed : public AbstractDelayed<T> {
 
-  typedef void (DelayedCallback::*DelayedCallbackFnPtr)(T);
-
 public:
   Delayed(xmmsc_result_t* res, const char* errmsg = NULL);
   Delayed(xmmsc_result_t* res, ProductMaker<T>* pmaker, const char* errmsg = NULL);
 
-  inline void addCallback(DelayedCallbackFnPtr fn) { receivers.push_back(fn); }
+  template<typename C>
+  void addCallback(C* object, void (C::*function)(T));
 
   T getProduct();
 
 protected:
   T product;
 
-  list<DelayedCallbackFnPtr> receivers;
+  list<TopDelayedCallback<T>* > receivers;
 
   virtual void createProduct();
-  virtual void runCallbacks(xmmsc_result_t* res);
+  virtual void runCallbacks();
 };
 
 
@@ -106,6 +137,16 @@ protected:
 
 /*  == And here comes the implementation, in the header file due to
        boring GCC limitations...  == */
+
+template <typename C>
+DelayedCallbackVoid<C>::DelayedCallbackVoid(C* _object, void (C::*_function)()) 
+  : object(_object), function(_function) {
+}
+
+template <typename C, typename T>
+DelayedCallback<C, T>::DelayedCallback(C* _object, void (C::*_function)(T))
+  : object(_object), function(_function) {
+}
 
 
 // Generic hack-function to use methods as callback functions
@@ -142,13 +183,12 @@ AbstractDelayed<T>::callback(xmmsc_result_t* res) {
     pmaker->setResult(res);
     pmaker->checkErrors(errmsg);
     createProduct();
-    runCallbacks(res);
+    runCallbacks();
 
     // FIXME: TEMPORARY because delayed objects are never destroyed - yet!
     if(pmaker != NULL) {
       delete pmaker;
     }
-
   }
   catch(...) {
     // FIXME: What do we do? throw further?
@@ -202,14 +242,31 @@ Delayed<T>::createProduct() {
   product = this->pmaker->create();
 }
 
+
+template <typename T>
+template <typename C>
+void
+Delayed<T>::addCallback(C* object, void (C::*function)(T)) {
+  receivers.push_back(new DelayedCallback<C, T>(object, function));
+}
+
 template <typename T>
 void
-Delayed<T>::runCallbacks(xmmsc_result_t* res) {
-  // FIXME: We need an *object* to call the method from...
-//   typename list<DelayedCallbackFnPtr>::iterator receive;
-//   for(receive = receivers.begin(); receive != receivers.end(); ++receive) {
-//     (*receive)(product);
-//   }
+Delayed<T>::runCallbacks() {
+  while(receivers.size() > 0) {
+    receivers.front()->run(product);
+    delete receivers.front();
+    receivers.pop_front();
+  }
 }
+
+
+
+template<typename C>
+void
+DelayedVoid::addCallback(C* object, void (C::*function)()) {
+  receivers.push_back(new DelayedCallbackVoid<C>(object, function));
+}
+
 
 #endif  // __DELAYED_HH__

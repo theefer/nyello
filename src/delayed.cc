@@ -1,10 +1,8 @@
 #include "delayed.hh"
 
 
-Asynchronizer* FooDelayed::async = NULL;
-
-
-DelayedVoid::DelayedVoid(xmmsc_result_t* res, const char* err) : AbstractDelayed<void>(res, err) {
+DelayedVoid::DelayedVoid(xmmsc_result_t* res, const char* err)
+  : AbstractDelayed<void>(res, err) {
   pmaker = new VoidProduct();
 }
 
@@ -14,6 +12,11 @@ DelayedVoid::createProduct() {
 }
 
 void
-DelayedVoid::runCallbacks(xmmsc_result_t* res) {
+DelayedVoid::runCallbacks() {
+  while(receivers.size() > 0) {
+    receivers.front()->run();
+    delete receivers.front();
+    receivers.pop_front();
+  }
 }
 

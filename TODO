@@ -67,6 +67,9 @@
 R [ ] Handle collections internally (enter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
+Design issues and needed improvements
+  [ ] Allow chained delays and bind wait() and callback methods [Delayed tickle()]
+
 Unscheduled fixes (by order of importance, most important first)
   [ ] Improve pattern features (comparators, limit)
   [ ] More commands (seek, exclude, filter)

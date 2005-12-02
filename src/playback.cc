@@ -32,17 +32,18 @@ Playback::stop() {
 /**
  * Trigger the song change.
  */
-DelayedVoid*
+void
 Playback::tickle() {
+  // FIXME: *wrong* ! We should return the DelayedVoid, but not doable now
   lastRes = xmmsc_playback_tickle(connection);
-  return new DelayedVoid(lastRes);
+  DelayedVoid(lastRes).wait();
 }
 
 DelayedVoid*
 Playback::jumpAbsolute(int pos) {
   lastRes = xmmsc_playlist_set_next(connection, pos);
   DelayedVoid* del = new DelayedVoid(lastRes, "Couldn't advance in playlist: ");
-  // FIXME:  del->add???(Playback::tickle, this);
+  del->addCallback<Playback>(this, &Playback::tickle);
   return del;
 }
 
@@ -50,7 +51,7 @@ DelayedVoid*
 Playback::jumpRelative(int offset) {
   lastRes = xmmsc_playlist_set_next_rel(connection, offset);
   DelayedVoid* del = new DelayedVoid(lastRes, "Couldn't advance in playlist: ");
-  // FIXME:  del->add???(Playback::tickle, this);
+  del->addCallback<Playback>(this, &Playback::tickle);
   return del;
 }
 

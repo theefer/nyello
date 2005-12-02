@@ -24,7 +24,7 @@ public:
   DelayedVoid* pause();
   DelayedVoid* stop();
 
-  DelayedVoid* tickle();
+  void tickle();
   DelayedVoid* jumpAbsolute(int pos);
   DelayedVoid* jumpRelative(int offset);
   DelayedVoid* seekAbsolute(int position);

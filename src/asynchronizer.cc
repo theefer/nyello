@@ -1,5 +1,9 @@
 #include "asynchronizer.hh"
 
+
+Asynchronizer* StaticAsynchronizer::async = NULL;
+
+
 Asynchronizer::Asynchronizer(xmmsc_connection_t* connection) : conn(connection) {
   xmmsIpc = xmmsc_io_fd_get(conn);
   stdinput = 0;

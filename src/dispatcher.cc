@@ -291,6 +291,7 @@ void
 Dispatcher::actionPlay() {
   DelayedVoid* res = playback->play();
   res->wait();
+  delete res;
 }
 
 /**
@@ -300,6 +301,7 @@ void
 Dispatcher::actionPause() {
   DelayedVoid* res = playback->pause();
   res->wait();
+  delete res;
 }
 
 /**
@@ -307,10 +309,12 @@ Dispatcher::actionPause() {
  */
 void
 Dispatcher::actionTogglePlay() {
-  if(playback->isPlaying()->getProduct())
+  Delayed<bool>* res = playback->isPlaying();
+  if(res->getProduct())
     actionPause();
   else
     actionPlay();
+  delete res;
 }
 
 /**
@@ -320,6 +324,7 @@ void
 Dispatcher::actionStop() {
   DelayedVoid* res = playback->stop();
   res->wait();
+  delete res;
 }
 
   
@@ -342,6 +347,7 @@ Dispatcher::actionPrevious() {
 
   DelayedVoid* res = playback->jumpRelative(offset);
   res->wait();
+  delete res;
 }
 
 /**
@@ -363,6 +369,7 @@ Dispatcher::actionNext() {
 
   DelayedVoid* res = playback->jumpRelative(offset);
   res->wait();
+  delete res;
 }
 
 /**
@@ -381,6 +388,7 @@ Dispatcher::actionJump() {
     }
 
     res->wait();
+    delete res;
   }
   else {
     cerr << "Error: jump requires one argument!" << endl;
@@ -519,6 +527,7 @@ Dispatcher::actionReplace() {
     medialib->removeSongAt(position - 1);
     DelayedVoid* res = playback->jumpRelative(1);
     res->wait();
+    delete res;
   }
   else {
     medialib->enqueueSongs(query);

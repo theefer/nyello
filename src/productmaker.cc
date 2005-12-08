@@ -1,5 +1,9 @@
 #include "productmaker.hh"
 
+void
+VoidProduct::create() {
+  this->unrefResult = true;
+}
 
 StringMatcherProduct::StringMatcherProduct(char* _str) : str(_str) {
 }

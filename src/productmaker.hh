@@ -32,7 +32,7 @@ protected:
  */
 class VoidProduct : public ProductMaker<void> {
 public:
-  inline virtual void create() {}
+  virtual void create();
 };
 
 

@@ -184,11 +184,6 @@ AbstractDelayed<T>::callback(xmmsc_result_t* res) {
     pmaker->checkErrors(errmsg);
     createProduct();
     runCallbacks();
-
-    // FIXME: TEMPORARY because delayed objects are never destroyed - yet!
-    if(pmaker != NULL) {
-      delete pmaker;
-    }
   }
   catch(...) {
     // FIXME: What do we do? throw further?

@@ -53,11 +53,11 @@ public:
 
 
 template <typename T, class X>
-class ComplexObjectProduct : public ProductMaker<T> {
+class ComplexObjectProduct : public ProductMaker<T*> {
 public:
   ComplexObjectProduct(X extraParam);
 
-  virtual T create();
+  virtual T* create();
 
 private:
   X extraParam;
@@ -141,11 +141,11 @@ ComplexObjectProduct<T, X>::ComplexObjectProduct(X extra) : extraParam(extra) {
 }
 
 template <typename T, class X>
-T
+T*
 ComplexObjectProduct<T, X>::create() {
   this->unrefResult = false;
 
-  T product(this->res, extraParam);
+  T* product = new T(this->res, extraParam);
   return product;
 }
 

@@ -32,13 +32,10 @@ Playback::stop() {
 /**
  * Trigger the song change.
  */
-void
+DelayedVoid*
 Playback::tickle() {
-  // FIXME: *wrong* ! We should return the DelayedVoid, but not doable now
   lastRes = xmmsc_playback_tickle(connection);
-  DelayedVoid* del = new DelayedVoid(lastRes);
-  del->wait();
-  delete del;
+  return new DelayedVoid(lastRes);
 }
 
 DelayedVoid*

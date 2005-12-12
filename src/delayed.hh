@@ -23,7 +23,7 @@ class DelayedCallbackVoid : public TopDelayedCallbackVoid {
   typedef void (C::*CallbackVoidFnPtr)();
 
 public:
-  DelayedCallbackVoid(C* object, void (C::*function)());
+  DelayedCallbackVoid(C* object, CallbackVoidFnPtr function);
 
   virtual inline void run() { (object->*function)(); }
 
@@ -45,7 +45,7 @@ class DelayedCallback : public TopDelayedCallback<T> {
   typedef void (C::*CallbackFnPtr)(T);
 
 public:
-  DelayedCallback(C* object, void (C::*function)(T));
+  DelayedCallback(C* object, CallbackFnPtr function);
 
   virtual inline void run(T product) { (object->*function)(product); }
 
@@ -139,12 +139,12 @@ protected:
        boring GCC limitations...  == */
 
 template <typename C>
-DelayedCallbackVoid<C>::DelayedCallbackVoid(C* _object, void (C::*_function)()) 
+DelayedCallbackVoid<C>::DelayedCallbackVoid(C* _object, CallbackVoidFnPtr _function) 
   : object(_object), function(_function) {
 }
 
 template <typename C, typename T>
-DelayedCallback<C, T>::DelayedCallback(C* _object, void (C::*_function)(T))
+DelayedCallback<C, T>::DelayedCallback(C* _object, CallbackFnPtr _function)
   : object(_object), function(_function) {
 }
 

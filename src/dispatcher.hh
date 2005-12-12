@@ -124,6 +124,8 @@ private:
   int parseInteger(char* ptr);
 
   char* parseToken(char** str);
+
+  void waitAndFree(DelayedVoid* del);
 };
 
 

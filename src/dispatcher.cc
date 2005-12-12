@@ -225,6 +225,18 @@ Dispatcher::parseToken(char** strref) {
 
 
 /**
+ * Wait on the given Delayed pointer and destroy it.
+ */
+void
+Dispatcher::waitAndFree(DelayedVoid* del) {
+  if(del != NULL) {
+    del->wait();
+    delete del;
+  }
+}
+
+
+/**
  * Terminate the execution.
  */
 void
@@ -265,7 +277,7 @@ Dispatcher::actionStatus() {
   if(argNumber == 0) {
     AbstractResult* song;
     int curr_id = playback->getCurrentId()->getProduct();
-    if(curr_id > 0 && (song = medialib->getSongById(curr_id)) != NULL) {
+    if(curr_id > 0 && (song = medialib->getSongById(curr_id)->getProduct()) != NULL) {
       ResultList* rlist = new ResultList(song);
       output->printStatus(rlist,
                           playback->getStatus()->getProduct(),
@@ -291,8 +303,7 @@ Dispatcher::actionStatus() {
 void
 Dispatcher::actionPlay() {
   DelayedVoid* res = playback->play();
-  res->wait();
-  delete res;
+  waitAndFree(res);
 }
 
 /**
@@ -301,8 +312,7 @@ Dispatcher::actionPlay() {
 void
 Dispatcher::actionPause() {
   DelayedVoid* res = playback->pause();
-  res->wait();
-  delete res;
+  waitAndFree(res);
 }
 
 /**
@@ -324,8 +334,7 @@ Dispatcher::actionTogglePlay() {
 void
 Dispatcher::actionStop() {
   DelayedVoid* res = playback->stop();
-  res->wait();
-  delete res;
+  waitAndFree(res);
 }
 
   
@@ -347,8 +356,7 @@ Dispatcher::actionPrevious() {
   }
 
   DelayedVoid* res = playback->jumpRelative(offset);
-  res->wait();
-  delete res;
+  waitAndFree(res);
 }
 
 /**
@@ -369,8 +377,7 @@ Dispatcher::actionNext() {
   }
 
   DelayedVoid* res = playback->jumpRelative(offset);
-  res->wait();
-  delete res;
+  waitAndFree(res);
 }
 
 /**
@@ -388,8 +395,7 @@ Dispatcher::actionJump() {
       res = playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
     }
 
-    res->wait();
-    delete res;
+    waitAndFree(res);
   }
   else {
     cerr << "Error: jump requires one argument!" << endl;
@@ -431,13 +437,13 @@ Dispatcher::actionInfo() {
 void
 Dispatcher::actionList() {
   Printable* songList = NULL;
-  AbstractResult* playlist = NULL;
+  Delayed<SongResult*>* pldel = NULL;
 
   // No playlist name, list current
   if(argNumber == 0) {
-    playlist = medialib->getCurrentPlaylist();
-    if(playlist != NULL) {
-      songList = new SelectionResultList(playlist,
+    pldel = medialib->getCurrentPlaylist();
+    if(pldel != NULL) {
+      songList = new SelectionResultList(pldel->getProduct(),
                                          playback->getCurrentPosition()->getProduct());
     }
     else {
@@ -446,9 +452,9 @@ Dispatcher::actionList() {
   }
   // List playlist with the given name
   else if(argNumber == 1) {
-    playlist = medialib->getPlaylist(arguments[0]);
-    if(playlist != NULL) {
-      songList = new ResultList(playlist);
+    pldel = medialib->getPlaylist(arguments[0]);
+    if(pldel != NULL) {
+      songList = new ResultList(pldel->getProduct());
     }
     else {
       cerr << "Error: problem while listing the playlist!" << endl;
@@ -527,8 +533,7 @@ Dispatcher::actionReplace() {
     medialib->insertSongs(query, position);
     medialib->removeSongAt(position - 1);
     DelayedVoid* res = playback->jumpRelative(1);
-    res->wait();
-    delete res;
+    waitAndFree(res);
   }
   else {
     medialib->enqueueSongs(query);
@@ -565,7 +570,8 @@ Dispatcher::actionRemove() {
 void
 Dispatcher::actionClear() {
   if(argNumber == 0) {
-    medialib->clearCurrentPlaylist();
+    DelayedVoid* del = medialib->clearCurrentPlaylist();
+    waitAndFree(del);
   }
   else {
     cerr << "Error: this command doesn't take any argument!" << endl;
@@ -579,7 +585,8 @@ Dispatcher::actionClear() {
 void
 Dispatcher::actionShuffle() {
   if(argNumber == 0) {
-    medialib->shuffleCurrentPlaylist();
+    DelayedVoid* del = medialib->shuffleCurrentPlaylist();
+    waitAndFree(del);
   }
   else {
     cerr << "Error: this command doesn't take any argument!" << endl;
@@ -618,7 +625,8 @@ void
 Dispatcher::actionPlaylistSaveAs() {
   // Save the current playlist under the new name
   if(argNumber == 1) {
-    medialib->saveCurrentPlaylistAs(arguments[0]);
+    DelayedVoid* del = medialib->saveCurrentPlaylistAs(arguments[0]);
+    waitAndFree(del);
   }
   // Missing the playlist name
   else if(argNumber == 0) {
@@ -638,10 +646,7 @@ Dispatcher::actionPlaylistUse() {
   // Use the given playlist
   if(argNumber == 1) {
     DelayedVoid* del = medialib->usePlaylist(arguments[0]);
-    if(del != NULL) {
-      del->wait();
-      delete del;
-    }
+    waitAndFree(del);
   }
   // Missing the playlist name
   else if(argNumber == 0) {
@@ -660,7 +665,8 @@ void
 Dispatcher::actionPlaylistRemove() {
   // Remove the given playlist
   if(argNumber == 1) {
-    medialib->removePlaylist(arguments[0]);
+    DelayedVoid* del = medialib->removePlaylist(arguments[0]);
+    waitAndFree(del);
   }
   // Missing the playlist name
   else if(argNumber == 0) {

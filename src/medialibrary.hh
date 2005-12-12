@@ -31,23 +31,23 @@ public:
 
   MediaLibrary(xmmsc_connection_t* connection);
 
-  AbstractResult* getCurrentPlaylist();
-  AbstractResult* getPlaylist(char* name);
+  Delayed<SongResult*>* getCurrentPlaylist();
+  Delayed<SongResult*>* getPlaylist(char* name);
   Delayed<RichResult*>* getPlaylists();
 
   int getPlaylistSize(char* name);
   int getCurrentPlaylistSize();
 
-  void saveCurrentPlaylistAs(char* name);
+  DelayedVoid* saveCurrentPlaylistAs(char* name);
   DelayedVoid* usePlaylist(char* name);
-  void removePlaylist(char* name);
+  DelayedVoid* removePlaylist(char* name);
 
-  void clearCurrentPlaylist();
-  void shuffleCurrentPlaylist();
+  DelayedVoid* clearCurrentPlaylist();
+  DelayedVoid* shuffleCurrentPlaylist();
 
   bool hasPlaylist(char* name);
 
-  AbstractResult* getSongById(unsigned int id);
+  Delayed<RichResult*>* getSongById(unsigned int id);
   AbstractResult* searchSongs(PatternQuery* query);
 
   void enqueueSongs(PatternQuery* query);

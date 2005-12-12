@@ -40,16 +40,11 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
 }
 
 
-AbstractResult*
+Delayed<SongResult*>*
 MediaLibrary::getCurrentPlaylist() {
   lastRes = xmmsc_playlist_list(connection);
-  xmmsc_result_wait(lastRes);
-
-  if(xmmsc_result_iserror(lastRes)) {
-    return NULL;
-  }
-
-  return new SongResult(lastRes, connection);
+  return new Delayed<SongResult*>(lastRes,
+                                  new ComplexObjectProduct<SongResult, xmmsc_connection_t*>(connection));
 }
 
 
@@ -57,7 +52,7 @@ MediaLibrary::getCurrentPlaylist() {
  * Get the Playlist object of the playlist with the given name in
  * the medialib.
  */
-AbstractResult*
+Delayed<SongResult*>*
 MediaLibrary::getPlaylist(char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
@@ -72,13 +67,8 @@ MediaLibrary::getPlaylist(char* name) {
 
   // Get list of songs of the given playlist
   lastRes = xmmsc_medialib_playlist_list(connection, name);
-  xmmsc_result_wait(lastRes);
-
-  if(xmmsc_result_iserror(lastRes)) {
-    return NULL;
-  }
-
-  return new SongResult(lastRes, connection);
+  return new Delayed<SongResult*>(lastRes,
+                                  new ComplexObjectProduct<SongResult, xmmsc_connection_t*>(connection));
 }
 
 
@@ -96,16 +86,6 @@ MediaLibrary::getPlaylists() {
                                   "WHERE substr(name, 0, 1) <> \"_\" "
                                   "GROUP BY playlist_id");
 
-//   xmmsc_result_wait(lastRes);
-
-//   // Oops, no playlist, return empty list!
-//   if(!xmmsc_result_list_valid(lastRes)) {
-//     return NULL;
-//   }
-
-//   return new RichResult(lastRes);
-
-  // FIXME: Check xmmsc_result_list_valid, not just error!
   return new Delayed<RichResult*>(lastRes,
                                   new ObjectProduct<RichResult>(),
                                   "Could not list playlists: ");
@@ -158,22 +138,17 @@ MediaLibrary::getCurrentPlaylistSize() {
  * Save the current server playlist in the medialib under the given
  * name.
  */
-void
+DelayedVoid*
 MediaLibrary::saveCurrentPlaylistAs(char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
-    return;
+    return NULL;
   }
 
   lastRes = xmmsc_medialib_playlist_save_current(connection, name);
-  xmmsc_result_wait(lastRes);
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed to save the playlist, server said:" << endl
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-
-  xmmsc_result_unref(lastRes);
+  return new DelayedVoid(lastRes,
+                         "Error: failed to save the playlist, server said:");
 }
 
 
@@ -193,9 +168,7 @@ MediaLibrary::usePlaylist(char* name) {
 
   // Seems ok, let's clear and load the new playlist instead
   newPlaylistName = name;
-  lastRes = xmmsc_playlist_clear(connection);
-  DelayedVoid* del = new DelayedVoid(lastRes,
-                                     "Error: failed while clearing the playlist, server said: ");
+  DelayedVoid* del = clearCurrentPlaylist();
   del->addCallback<MediaLibrary>(this, &MediaLibrary::loadNewPlaylist);
   return del;
 }
@@ -228,59 +201,44 @@ MediaLibrary::updateCurrentPlaylistName() {
 /**
  * Remove the given playlist from the medialib.
  */
-void
+DelayedVoid*
 MediaLibrary::removePlaylist(char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
-    return;
+    return NULL;
   }
 
   // Forbid to remove current playlist!
   if(strcmp(name, currentPlaylistName) == 0) {
     cerr << "Error: you cannot remove the current playlist!" << endl;
-    return;
+    return NULL;
   }
 
   lastRes = xmmsc_medialib_playlist_remove(connection, name);
-  xmmsc_result_wait(lastRes);
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed to remove the playlist, server said:" << endl
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-
-  xmmsc_result_unref(lastRes);
+  return new DelayedVoid(lastRes,
+                         "Error: failed to remove the playlist, server said:");
 }
 
 
 /**
  * Empty the current playlist.
  */
-void
+DelayedVoid*
 MediaLibrary::clearCurrentPlaylist() {
   lastRes = xmmsc_playlist_clear(connection);
-  xmmsc_result_wait(lastRes);
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed to clear the playlist, server said:" << endl
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-
-  xmmsc_result_unref(lastRes);
+  return new DelayedVoid(lastRes,
+                         "Error: failed to clear the playlist, server said:");
 }
 
 /**
  * Shuffle the current playlist.
  */
-void
+DelayedVoid*
 MediaLibrary::shuffleCurrentPlaylist() {
   lastRes = xmmsc_playlist_shuffle(connection);
-  xmmsc_result_wait(lastRes);
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed to shuffle the playlist, server said:" << endl
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-
-  xmmsc_result_unref(lastRes);
+  return new DelayedVoid(lastRes,
+                         "Error: failed to shuffle the playlist, server said:");
 }
 
 
@@ -312,18 +270,13 @@ MediaLibrary::hasPlaylist(char* name) {
 
 /**
  * Return an object containing the informations about the song with
- * the given id.  NULL is returned if an error occurs.
+ * the given id.
  */
-AbstractResult*
+Delayed<RichResult*>*
 MediaLibrary::getSongById(unsigned int id) {
   lastRes = xmmsc_medialib_get_info(connection, id);
-  xmmsc_result_wait(lastRes);
-
-  if(xmmsc_result_iserror(lastRes)) {
-    return NULL;
-  }
-
-  return new RichResult(lastRes);
+  return new Delayed<RichResult*>(lastRes,
+                                  new ObjectProduct<RichResult>());
 }
 
 

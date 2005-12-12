@@ -13,6 +13,7 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   connection = _connection;
   lastRes    = NULL;
   currentPlaylistName = NULL;
+  newPlaylistName = NULL;
 
 
   // FIXME: Find current playlist name or start with the autosaved playlist
@@ -176,45 +177,51 @@ MediaLibrary::saveCurrentPlaylistAs(char* name) {
 }
 
 
-void
+DelayedVoid*
 MediaLibrary::usePlaylist(char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
-    return;
+    return NULL;
   }
 
   // Check that we can load that playlist
   if(!hasPlaylist(name)) {
     cerr << "Error: the playlist '" << name << "' does not exist!" << endl;
-    return;
+    return NULL;
   }
 
   // Seems ok, let's clear and load the new playlist instead
+  newPlaylistName = name;
   lastRes = xmmsc_playlist_clear(connection);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed while clearing the playlist, server said:" << endl
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-  else {
-    lastRes = xmmsc_medialib_playlist_load(connection, name);
-    xmmsc_result_wait(lastRes);
-    if(xmmsc_result_iserror(lastRes)) {
-      cerr << "Error: failed while changing the playlist, server said:" << endl
-           << xmmsc_result_get_error(lastRes) << endl;
-    }
-    else {
-      if(currentPlaylistName != NULL)
-        delete currentPlaylistName;
-      currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
-      strncpy(currentPlaylistName, name, MAX_PLAYLIST_NAME_LEN);
-    }
+  DelayedVoid* del = new DelayedVoid(lastRes,
+                                     "Error: failed while clearing the playlist, server said: ");
+  del->addCallback<MediaLibrary>(this, &MediaLibrary::loadNewPlaylist);
+  return del;
+}
 
-    xmmsc_result_unref(lastRes);
-  }
 
-  xmmsc_result_unref(lastRes);
+DelayedVoid*
+MediaLibrary::loadNewPlaylist() {
+  return loadPlaylist(newPlaylistName);
+}
+
+DelayedVoid*
+MediaLibrary::loadPlaylist(char* name) {
+  lastRes = xmmsc_medialib_playlist_load(connection, name);
+  DelayedVoid* del = new DelayedVoid(lastRes,
+                                     "Error: failed while changing the playlist, server said: ");
+  del->addCallback<MediaLibrary>(this, &MediaLibrary::updateCurrentPlaylistName);
+  return del;
+}
+
+void
+MediaLibrary::updateCurrentPlaylistName() {
+  if(currentPlaylistName != NULL)
+    delete currentPlaylistName;
+  currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
+  strncpy(currentPlaylistName, newPlaylistName, MAX_PLAYLIST_NAME_LEN);
+  newPlaylistName = NULL;
 }
 
 

@@ -39,7 +39,7 @@ public:
   int getCurrentPlaylistSize();
 
   void saveCurrentPlaylistAs(char* name);
-  void usePlaylist(char* name);
+  DelayedVoid* usePlaylist(char* name);
   void removePlaylist(char* name);
 
   void clearCurrentPlaylist();
@@ -70,10 +70,15 @@ private:
   xmmsc_result_t*     lastRes;
 
   char* currentPlaylistName;
+  char* newPlaylistName;
 
   AbstractResult* performQuery(PatternQuery* query);
 
   bool validPlaylistName(char* name);
+
+  DelayedVoid* loadNewPlaylist();
+  DelayedVoid* loadPlaylist(char* name);
+  void updateCurrentPlaylistName();
 
 };
 

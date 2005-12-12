@@ -12,6 +12,11 @@ using namespace std;
 #include "asynchronizer.hh"
 
 
+// Simple forward definitions so the callback classes compile
+class DelayedVoid;
+template <typename T> class Delayed;
+
+
 class TopDelayedCallbackVoid {
 public:
   virtual void run() = 0;
@@ -30,6 +35,21 @@ public:
 private:
   C* object;
   CallbackVoidFnPtr function;
+};
+
+template <typename C>
+class DelayedChainCallbackVoid : public TopDelayedCallbackVoid {
+
+  typedef DelayedVoid* (C::*ChainCallbackVoidFnPtr)();
+
+public:
+  DelayedChainCallbackVoid(C* object, ChainCallbackVoidFnPtr function);
+
+  virtual void run();
+
+private:
+  C* object;
+  ChainCallbackVoidFnPtr function;
 };
 
 
@@ -52,6 +72,21 @@ public:
 private:
   C* object;
   CallbackFnPtr function;
+};
+
+template <typename C, typename T>
+class DelayedChainCallback : public TopDelayedCallback<T> {
+
+  typedef void (C::*ChainCallbackFnPtr)(T);
+
+public:
+  DelayedChainCallback(C* object, ChainCallbackFnPtr function);
+
+  virtual void run(T product);
+
+private:
+  C* object;
+  ChainCallbackFnPtr function;
 };
 
 
@@ -85,6 +120,9 @@ public:
 
   template<typename C>
   void addCallback(C* object, void (C::*function)());
+
+  template<typename C>
+  void addCallback(C* object, DelayedVoid* (C::*function)());
 
 protected:
   list<TopDelayedCallbackVoid*> receivers;
@@ -121,6 +159,9 @@ public:
   template<typename C>
   void addCallback(C* object, void (C::*function)(T));
 
+  template<typename C>
+  void addCallback(C* object, DelayedVoid* (C::*function)(T));
+
   T getProduct();
 
 protected:
@@ -143,9 +184,39 @@ DelayedCallbackVoid<C>::DelayedCallbackVoid(C* _object, CallbackVoidFnPtr _funct
   : object(_object), function(_function) {
 }
 
+template <typename C>
+DelayedChainCallbackVoid<C>::DelayedChainCallbackVoid(C* _object, ChainCallbackVoidFnPtr _function) 
+  : object(_object), function(_function) {
+}
+
+template <typename C>
+void
+DelayedChainCallbackVoid<C>::run() {
+  DelayedVoid* del = (object->*function)();
+
+  // FIXME: Could be bad for fast async; setup callback? doh, complex...
+  del->wait();
+  delete del;
+}
+
 template <typename C, typename T>
 DelayedCallback<C, T>::DelayedCallback(C* _object, CallbackFnPtr _function)
   : object(_object), function(_function) {
+}
+
+template <typename C, typename T>
+DelayedChainCallback<C, T>::DelayedChainCallback(C* _object, ChainCallbackFnPtr _function)
+  : object(_object), function(_function) {
+}
+
+template <typename C, typename T>
+void
+DelayedChainCallback<C, T>::run(T product) {
+  DelayedVoid* del = (object->*function)(product);
+
+  // FIXME: Could be bad for fast async; setup callback? doh, complex...
+  del->wait();
+  delete del;
 }
 
 
@@ -246,6 +317,13 @@ Delayed<T>::addCallback(C* object, void (C::*function)(T)) {
 }
 
 template <typename T>
+template <typename C>
+void
+Delayed<T>::addCallback(C* object, DelayedVoid* (C::*function)(T)) {
+  receivers.push_back(new DelayedChainCallback<C, T>(object, function));
+}
+
+template <typename T>
 void
 Delayed<T>::runCallbacks() {
   while(receivers.size() > 0) {
@@ -261,6 +339,12 @@ template<typename C>
 void
 DelayedVoid::addCallback(C* object, void (C::*function)()) {
   receivers.push_back(new DelayedCallbackVoid<C>(object, function));
+}
+
+template<typename C>
+void
+DelayedVoid::addCallback(C* object, DelayedVoid* (C::*function)()) {
+  receivers.push_back(new DelayedChainCallbackVoid<C>(object, function));
 }
 
 

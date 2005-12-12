@@ -47,17 +47,22 @@
             Simple use of constructor? Do we need extra arguments?
             For simple types, we need to use API functions to retrieve product!
             => Modular solution to vary how products are created.
-      [ ] Do we need product, handlers and receivers?
+      [X] Do we need product, handlers and receivers?
             handlers: yes but more general, mostly to handle errors or similar stuff,
                       dedicated classes, *not* any method of any class.
             receivers: not really needed if we wait (pass the Delayed object),
                        needed if we set a callback => nice way of running a method (type problem) ?
             tests: playback->tickle(), mlib->usePlaylist()
+      [X] runCallbacks() should wait (?) on callbacks returning Delayed<T> objects.
+      [ ] Use C++ features (template specialisation, overloading) to
+          make the class structures simpler and cleaner, and to make
+          the construction of Delayed objects straighter. Also, to unref
+          results in ProductMaker cleanly.
       [ ] Use delayed object in songresult.cc too!
       [ ] Improve quality of Asynchronizer
             Will have to call Dispatcher::parseInput().
             Make it available without requiring the call to wait(async)
-      [ ] Free all the allocated delayed objects (do we need dyn-alloc?)
+      [ ] Free all the allocated delayed objects
   [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
   [ ] Design proper abstraction layer (all async events, current PL, collections)
   ==> v0.4
@@ -79,6 +84,7 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] When no metadata is present, display Title=filename
   [ ] Generalize the #argument check in the dispatcher
   [ ] Templatize the STATUS output
+  [ ] Allow no-network operations (e.g. help) even without a server
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)

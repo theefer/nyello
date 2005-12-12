@@ -101,6 +101,7 @@ Dispatcher::loop() {
 
     // FIXME: Show prompt when needed
     if(showprompt) {
+      snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
       cout << prompt;
       cout.flush();
       showprompt = false;
@@ -636,7 +637,11 @@ void
 Dispatcher::actionPlaylistUse() {
   // Use the given playlist
   if(argNumber == 1) {
-    medialib->usePlaylist(arguments[0]);
+    DelayedVoid* del = medialib->usePlaylist(arguments[0]);
+    if(del != NULL) {
+      del->wait();
+      delete del;
+    }
   }
   // Missing the playlist name
   else if(argNumber == 0) {

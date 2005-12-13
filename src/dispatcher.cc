@@ -55,7 +55,10 @@ Dispatcher::~Dispatcher() {
 }
 
 
-void foo(char* input) {
+/**
+ * Function called whenever a full line is read by readline.
+ */
+void readline_callback(char* input) {
   // End of stream, quit
   if(input == NULL) {
     cout << endl;
@@ -67,9 +70,9 @@ void foo(char* input) {
     return;
   }
 
-  Dispatcher* disp = Dispatcher::getInstance();
-  
   add_history(input);
+
+  Dispatcher* disp = Dispatcher::getInstance();
   disp->parseInput(input);
   disp->dispatch();
 }
@@ -83,34 +86,8 @@ Dispatcher::loop() {
   char* prompt = new char[MAX_PROMPT_LENGTH + 1];
   char* input = new char[MAX_COMMAND_LENGTH];
 
-  /*
-  // Main loop
-  do {
-    // Build prompt and get input
-    snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
-    input = readline(prompt);
-
-    // End of stream, quit
-    if(input == NULL) {
-      cout << endl;
-      break;
-    }
-
-    // Empty command, do nothing
-    if(strlen(input) == 0) {
-      continue;
-    }
-
-    add_history(input);
-    parseInput(input);
-    dispatch();
-
-  } while(true);
-  */
-
-
   snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
-  rl_callback_handler_install(NULL, &foo);
+  rl_callback_handler_install(NULL, &readline_callback);
   cout << prompt;
   cout.flush();
 
@@ -126,8 +103,7 @@ Dispatcher::loop() {
       cout.flush();
       showprompt = false;
     }
-    
-  } /* End main event loop */
+  }
 
 }
 

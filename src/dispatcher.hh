@@ -47,7 +47,9 @@ struct charCmp {
 
 class Dispatcher {
 public:
-  Dispatcher(xmmsc_connection_t* connection);
+  static Dispatcher* getInstance(xmmsc_connection_t* connection);
+  static Dispatcher* getInstance();
+
   ~Dispatcher();
 
   void loop();
@@ -100,6 +102,8 @@ private:
   static const int MAX_PROMPT_LENGTH = 24;
   static const int MAX_COMMAND_LENGTH = 256;
 
+  static Dispatcher* instance;
+
   xmmsc_connection_t* conn;
 
   Playback*      playback;
@@ -117,6 +121,8 @@ private:
 
   bool showprompt;
 
+
+  Dispatcher(xmmsc_connection_t* connection);
 
   void parsePattern(char* ptr, int num);
   void parsePatternFromArgs();

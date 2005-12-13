@@ -1,5 +1,8 @@
 #include "dispatcher.hh"
 
+// Declare singleton instance
+Dispatcher* Dispatcher::instance = NULL;
+
 
 Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   conn = connection;
@@ -28,6 +31,23 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
 }
 
 
+Dispatcher*
+Dispatcher::getInstance(xmmsc_connection_t* connection) {
+  if(instance != NULL) {
+    delete instance;
+  }
+
+  instance = new Dispatcher(connection);
+  return instance;
+}
+
+
+Dispatcher*
+Dispatcher::getInstance() {
+  return instance;
+}
+
+
 Dispatcher::~Dispatcher() {
   delete playback;
   delete medialib;
@@ -35,7 +55,6 @@ Dispatcher::~Dispatcher() {
 }
 
 
-Dispatcher* korv;
 void foo(char* input) {
   // End of stream, quit
   if(input == NULL) {
@@ -48,9 +67,11 @@ void foo(char* input) {
     return;
   }
 
+  Dispatcher* disp = Dispatcher::getInstance();
+  
   add_history(input);
-  korv->parseInput(input);
-  korv->dispatch();
+  disp->parseInput(input);
+  disp->dispatch();
 }
 
 
@@ -88,7 +109,6 @@ Dispatcher::loop() {
   */
 
 
-  korv = this; // FIXME: *UGLY UGLY UGLY HACK*
   snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
   rl_callback_handler_install(NULL, &foo);
   cout << prompt;

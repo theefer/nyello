@@ -45,10 +45,14 @@
 
   * L   LIST [playlist]  Display the list of songs in the given playlist, or the currently
                          playing playlist if no playlist given.
+
+-   +   IMPORT [path...] Import new files in the media-library.
   
   * E   ENQUEUE <pattern> [IN <playlist>?]
   * E+  INSERT  <pattern>
   * E-  REPLACE <pattern>
+
+    M   MOVE    ???           Move a group of song in the playlist.
 -   X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
   * O   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
@@ -169,7 +173,7 @@ int main(int argc, char* argv[]) {
 
   // Everything is fine, we can run the dispatcher
   else {
-    Dispatcher* disp = new Dispatcher(connection);
+    Dispatcher* disp = Dispatcher::getInstance(connection);
     if(argc > 1)
       disp->execute(argc - 1, argv + 1);
     else

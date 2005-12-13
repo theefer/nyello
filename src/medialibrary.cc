@@ -161,7 +161,7 @@ MediaLibrary::usePlaylist(char* name) {
   }
 
   // Check that we can load that playlist
-  if(!hasPlaylist(name)) {
+  if(!hasPlaylist(name)->getProduct()) {
     cerr << "Error: the playlist '" << name << "' does not exist!" << endl;
     return NULL;
   }
@@ -246,25 +246,12 @@ MediaLibrary::shuffleCurrentPlaylist() {
  * Checks whether there is a playlist with the given name in the
  * medialib.
  */
-bool
+Delayed<bool>*
 MediaLibrary::hasPlaylist(char* name) {
-  char* entry_name;
-  bool found = false;
-
   // Get list of playlists and compare names
   lastRes = xmmsc_medialib_playlists_list(connection);
-  xmmsc_result_wait(lastRes);
-
-  while(xmmsc_result_list_valid(lastRes) && !found) {
-    xmmsc_result_get_string(lastRes, &entry_name);
-    if(strcmp(name, entry_name) == 0) {
-      found = true;
-    }
-    xmmsc_result_list_next(lastRes);
-  }
-
-  xmmsc_result_unref(lastRes);
-  return found;
+  return new Delayed<bool>(lastRes,
+                           new StringMatcherProduct(name));
 }
 
 

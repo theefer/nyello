@@ -45,7 +45,7 @@ public:
   DelayedVoid* clearCurrentPlaylist();
   DelayedVoid* shuffleCurrentPlaylist();
 
-  bool hasPlaylist(char* name);
+  Delayed<bool>* hasPlaylist(char* name);
 
   Delayed<RichResult*>* getSongById(unsigned int id);
   AbstractResult* searchSongs(PatternQuery* query);

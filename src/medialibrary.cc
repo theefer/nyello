@@ -323,16 +323,51 @@ MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
 /**
  * Remove the song at the given position from the playlist.
  */
-void
+DelayedVoid*
 MediaLibrary::removeSongAt(unsigned int position) {
+  // FIXME: add position in error message [itos()?]
   lastRes = xmmsc_playlist_remove(connection, position);
-  xmmsc_result_wait(lastRes);
-  if(xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed to remove song at position "
-         << position << ", server said: "
-         << xmmsc_result_get_error(lastRes) << endl;
+  return new DelayedVoid(lastRes,
+                         "Error: failed to remove song at position X, server said: ");
+}
+
+
+/**
+ * Import files into the medialib.  The argument can be an HTTP URL, a
+ * file pattern (parsed by glob) or a directory, in which case it it
+ * recursively imported.
+ */
+DelayedVoid*
+MediaLibrary::import(char* uri) {
+  // FIXME: todo!
+  // FIXME: handle HTTP URIs too
+  // FIXME: include uri in error message
+  DelayedVoid* res = NULL;
+
+  // Make it an absolute path
+  char path[PATH_MAX];
+  if(!realpath(uri, path)) {
+    return NULL;
   }
-  xmmsc_result_unref(lastRes);
+
+  // FIXME: Glob it
+
+  char lastchar = path[ strlen(path) - 1 ];
+
+  // Path is a directory
+  if(lastchar == '/') {
+    lastRes = xmmsc_medialib_path_import(connection, path);
+    res = new DelayedVoid(lastRes,
+                          "Error: cannot import directory into the medialib, server said: ");
+  }
+  // Path is a file
+  else {
+    lastRes = xmmsc_medialib_add_entry(connection, path);
+    res = new DelayedVoid(lastRes,
+                          "Error: cannot import file into the medialib, server said: ");
+  }
+
+  return res;
 }
 
 

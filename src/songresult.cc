@@ -46,7 +46,6 @@ SongResult::next() {
   }
   ++counter;
 
-  // Try to move forward in the list
   return xmmsc_result_list_next(res);
 }
 

@@ -474,6 +474,23 @@ Dispatcher::actionList() {
 
 
 /**
+ * Import new files in the medialibrary.
+ */
+void
+Dispatcher::actionImport() {
+  if(argNumber == 0) {
+    cerr << "Error: you must specify at least one file!" << endl;
+  }
+  else {
+    for(int i = 0; i < argNumber; ++i) {
+      DelayedVoid* res = medialib->import(arguments[i]);
+      waitAndFree(res);
+    }
+  }
+}
+
+
+/**
  * Enqueue the songs matched by the given pattern at the end of the
  * current playlist.
  */
@@ -527,7 +544,7 @@ Dispatcher::actionReplace() {
   position = playback->getCurrentPosition()->getProduct() + 1;
   if(position > 0) {
     medialib->insertSongs(query, position);
-    medialib->removeSongAt(position - 1);
+    waitAndFree(medialib->removeSongAt(position - 1));
     DelayedVoid* res = playback->jumpRelative(1);
     waitAndFree(res);
   }
@@ -550,7 +567,8 @@ Dispatcher::actionRemove() {
     }
     for(int pos = playlist_len; pos > 0; --pos) {
       if(positions->contains(pos)) {
-        medialib->removeSongAt(pos - 1);
+        DelayedVoid* res = medialib->removeSongAt(pos - 1);
+        waitAndFree(res);
       }
     }
   }

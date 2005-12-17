@@ -74,6 +74,8 @@ public:
   void actionInfo();
   void actionList();
 
+  void actionImport();
+
   void actionEnqueue();
   void actionInsert();
   void actionReplace();

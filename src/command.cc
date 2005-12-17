@@ -241,6 +241,14 @@ Command::listAll() {
                         "marking the playing song.\n");
   cmds.push_back(current);
 
+  // Medialib actions
+  current = new Command("import", "+", &Dispatcher::actionImport,
+                        "import PATH...",
+                        "Import files in the medialib.",
+                        "Import all the files specifies in argument to the medialib.  Directories \n"
+                        "are recursively imported.\n");
+  cmds.push_back(current);
+
   // Playlist edition
   current = new Command("enqueue", "e", &Dispatcher::actionEnqueue,
                         "enqueue PATTERN",

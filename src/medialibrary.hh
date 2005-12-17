@@ -53,7 +53,9 @@ public:
   void enqueueSongs(PatternQuery* query);
   void insertSongs(PatternQuery* query, unsigned int position);
 
-  void removeSongAt(unsigned int position);
+  DelayedVoid* removeSongAt(unsigned int position);
+
+  DelayedVoid* import(char* uri);
 
   Collection* newCollection();
   Collection* getCollection(char* name);

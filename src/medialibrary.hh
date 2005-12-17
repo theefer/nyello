@@ -35,8 +35,8 @@ public:
   Delayed<SongResult*>* getPlaylist(char* name);
   Delayed<RichResult*>* getPlaylists();
 
-  int getPlaylistSize(char* name);
-  int getCurrentPlaylistSize();
+  Delayed<int>* getPlaylistSize(char* name);
+  Delayed<int>* getCurrentPlaylistSize();
 
   DelayedVoid* saveCurrentPlaylistAs(char* name);
   DelayedVoid* usePlaylist(char* name);

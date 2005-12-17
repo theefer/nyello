@@ -43,6 +43,18 @@ public:
 };
 
 
+template <typename T, int (*extractor)(xmmsc_result_t*, const char*, T*)>
+class PrimitiveDictProduct : public ProductMaker<T> {
+public:
+  PrimitiveDictProduct(const char* key);
+
+  virtual T create();
+
+private:
+  const char* key;
+};
+
+
 
 template <typename T>
 class ObjectProduct : public ProductMaker<T*> {
@@ -121,6 +133,21 @@ PrimitiveProduct<T, extractor>::create() {
 
   T product;
   (*extractor)(this->res, &product);
+  return product;
+}
+
+
+template <typename T, int (*extractor)(xmmsc_result_t*, const char*, T*)>
+PrimitiveDictProduct<T, extractor>::PrimitiveDictProduct(const char* _key) : key(_key) {
+}
+
+template <typename T, int (*extractor)(xmmsc_result_t*, const char*, T*)>
+T
+PrimitiveDictProduct<T, extractor>::create() {
+  this->unrefResult = true;
+
+  T product;
+  (*extractor)(this->res, key, &product);
   return product;
 }
 

@@ -560,15 +560,16 @@ Dispatcher::actionReplace() {
 void
 Dispatcher::actionRemove() {
   if(argNumber > 0) {
-    int playlist_len = medialib->getCurrentPlaylistSize();
+    Delayed<int>* res = medialib->getCurrentPlaylistSize();
+    int playlist_len = res->getProduct();
     PositionSequence* positions = new PositionSequence();
     for(int i = 0; i < argNumber; ++i) {
       positions->parseAdd(arguments[i]);
     }
     for(int pos = playlist_len; pos > 0; --pos) {
       if(positions->contains(pos)) {
-        DelayedVoid* res = medialib->removeSongAt(pos - 1);
-        waitAndFree(res);
+        DelayedVoid* resrem = medialib->removeSongAt(pos - 1);
+        waitAndFree(resrem);
       }
     }
   }

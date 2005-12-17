@@ -96,7 +96,7 @@ MediaLibrary::getPlaylists() {
  * Get the size of the given playlist.
  * If an error occured (e.g. invalid playlist name), return -1.
  */
-int
+Delayed<int>*
 MediaLibrary::getPlaylistSize(char* name) {
   int size = -1;
   char* curr_name = xmmsc_sqlite_prepare_string(name);
@@ -107,28 +107,18 @@ MediaLibrary::getPlaylistSize(char* name) {
   query += curr_name;
   delete curr_name;
 
+  // FIXME: Insert name in error message
   lastRes = xmmsc_medialib_select(connection, query.c_str());
-  xmmsc_result_wait(lastRes);
-
-  if (xmmsc_result_iserror(lastRes)) {
-    cerr << "Error: failed to get size of playlist '" << name 
-         << "', server said:" << endl
-         << xmmsc_result_get_error(lastRes) << endl;
-  }
-  else {
-    xmmsc_result_get_dict_entry_int32(lastRes, "size", &size);
-  }
-
-  xmmsc_result_unref(lastRes);
-
-  return size;
+  return new Delayed<int>(lastRes,
+                          new PrimitiveDictProduct<int, &xmmsc_result_get_dict_entry_int32>("size"),
+                          "Error: failed to get size of playlist 'X', server said: ");
 }
 
 
 /**
  * Get the size of the current playlist.
  */
-int
+Delayed<int>*
 MediaLibrary::getCurrentPlaylistSize() {
   return getPlaylistSize(currentPlaylistName);
 }

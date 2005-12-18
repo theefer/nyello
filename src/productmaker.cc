@@ -5,7 +5,7 @@ VoidProduct::create() {
   this->unrefResult = true;
 }
 
-StringMatcherProduct::StringMatcherProduct(char* _str) : str(_str) {
+StringMatcherProduct::StringMatcherProduct(string _str) : str(_str) {
 }
 
 bool
@@ -17,7 +17,7 @@ StringMatcherProduct::create() {
 
   while(xmmsc_result_list_valid(res) && !found) {
     xmmsc_result_get_string(res, &entry_name);
-    if(strcmp(str, entry_name) == 0) {
+    if(str == entry_name) {
       found = true;
     }
     xmmsc_result_list_next(res);

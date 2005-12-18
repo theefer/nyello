@@ -1,23 +1,25 @@
 #ifndef __PLAYLISTRESULTLIST_HH__
 #define __PLAYLISTRESULTLIST_HH__
 
-#include <cstring>
+#include <string>
 
 #include <xmmsclient/xmmsclient.h>
 
 #include "resultlist.hh"
 
+using namespace std;
+
 
 class PlaylistResultList : public ResultList {
 public:
 
-  PlaylistResultList(AbstractResult* result, const char* playingPlaylist);
+  PlaylistResultList(AbstractResult* result, string playingPlaylist);
   ~PlaylistResultList();
 
   virtual bool isSelected();
 
 private:
-  const char* playingPlaylist;
+  string playingPlaylist;
 
 };
 

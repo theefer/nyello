@@ -61,7 +61,7 @@ Output::printSongs(Printable* songs) {
  */
 void
 Output::printStatus(Printable* song, unsigned int status,
-                    unsigned int playtime, int pos, const char* plname) {
+                    unsigned int playtime, int pos, string plname) {
   // FIXME: All this output should be customizable!
 
   // FIXME: Why can't we rewind here?
@@ -88,7 +88,7 @@ Output::printStatus(Printable* song, unsigned int status,
  * informations not needing song or position informations.
  */
 void
-Output::printEmptyStatus(unsigned int status, const char* plname) {
+Output::printEmptyStatus(unsigned int status, string plname) {
   cout << "[" << getStatusString(status)
        << "] no entry currently selected" << endl
        << "playlist: " << plname << endl;

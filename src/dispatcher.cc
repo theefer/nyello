@@ -86,7 +86,7 @@ Dispatcher::loop() {
   char* prompt = new char[MAX_PROMPT_LENGTH + 1];
   char* input = new char[MAX_COMMAND_LENGTH];
 
-  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
+  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
   rl_callback_handler_install(NULL, &readline_callback);
   cout << prompt;
   cout.flush();
@@ -98,7 +98,7 @@ Dispatcher::loop() {
 
     // FIXME: Show prompt when needed
     if(showprompt) {
-      snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName());
+      snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
       cout << prompt;
       cout.flush();
       showprompt = false;
@@ -279,7 +279,7 @@ Dispatcher::actionStatus() {
                           playback->getStatus()->getProduct(),
                           playback->getCurrentPlaytime()->getProduct(),
                           playback->getCurrentPosition()->getProduct() + 1,
-                          medialib->getCurrentPlaylistName());
+                          medialib->getCurrentPlaylistName().c_str());
       delete rlist;
     }
     else {
@@ -625,7 +625,7 @@ Dispatcher::actionPlaylistList() {
     cerr << "Error: failed to get the list of playlists!" << endl;
   }
   else {
-    const char* curr_playlist = medialib->getCurrentPlaylistName();
+    string curr_playlist = medialib->getCurrentPlaylistName();
     PlaylistResultList* plist = new PlaylistResultList(playlists, curr_playlist);
     output->printPlaylists(plist);
     delete plist;

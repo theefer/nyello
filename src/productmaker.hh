@@ -92,12 +92,12 @@ private:
 
 class StringMatcherProduct : public ProductMaker<bool> {
 public:
-  StringMatcherProduct(char* str);
+  StringMatcherProduct(string str);
 
   virtual bool create();
 
 private:
-  char* str;
+  string str;
 };
 
 

@@ -359,7 +359,7 @@ PatternParser::parsePlaylistSequence() {
   // No playlist name, use current playlist
   else {
     // FIXME: Use makeCopy() despite the const ?
-    const char* buffer = medialib->getCurrentPlaylistName();
+    const char* buffer = medialib->getCurrentPlaylistName().c_str();
     plname = new char[ strlen(buffer) + 1 ];
     strcpy(plname, buffer);
   }

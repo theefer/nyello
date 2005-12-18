@@ -12,8 +12,8 @@ void runMediaLibraryMethod(xmmsc_result_t *res, void *mlib_ptr) {
 MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   connection = _connection;
   lastRes    = NULL;
-  currentPlaylistName = NULL;
-  newPlaylistName = NULL;
+  currentPlaylistName = "autosaved";
+  newPlaylistName = "";
 
 
   // FIXME: Find current playlist name or start with the autosaved playlist
@@ -21,9 +21,6 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
 
   // FIXME: Let's not mess with the PL on startup for now
   //usePlaylist("autosaved");
-
-  currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
-  strncpy(currentPlaylistName, "autosaved", MAX_PLAYLIST_NAME_LEN);
 
   // Setup signal hooks
   /* FIXME: segfault?
@@ -53,7 +50,7 @@ MediaLibrary::getCurrentPlaylist() {
  * the medialib.
  */
 Delayed<SongResult*>*
-MediaLibrary::getPlaylist(char* name) {
+MediaLibrary::getPlaylist(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
@@ -61,7 +58,7 @@ MediaLibrary::getPlaylist(char* name) {
   }
 
   // Use the other method for current playlist (shows position)
-  if(strcmp(name, currentPlaylistName) == 0) {
+  if(currentPlaylistName == name) {
     return getCurrentPlaylist();
   }
 
@@ -97,7 +94,7 @@ MediaLibrary::getPlaylists() {
  * If an error occured (e.g. invalid playlist name), return -1.
  */
 Delayed<int>*
-MediaLibrary::getPlaylistSize(char* name) {
+MediaLibrary::getPlaylistSize(const char* name) {
   int size = -1;
   char* curr_name = xmmsc_sqlite_prepare_string(name);
   string query = "SELECT count(entry) AS size "
@@ -120,7 +117,7 @@ MediaLibrary::getPlaylistSize(char* name) {
  */
 Delayed<int>*
 MediaLibrary::getCurrentPlaylistSize() {
-  return getPlaylistSize(currentPlaylistName);
+  return getPlaylistSize(currentPlaylistName.c_str());
 }
 
 
@@ -129,7 +126,7 @@ MediaLibrary::getCurrentPlaylistSize() {
  * name.
  */
 DelayedVoid*
-MediaLibrary::saveCurrentPlaylistAs(char* name) {
+MediaLibrary::saveCurrentPlaylistAs(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
@@ -143,7 +140,7 @@ MediaLibrary::saveCurrentPlaylistAs(char* name) {
 
 
 DelayedVoid*
-MediaLibrary::usePlaylist(char* name) {
+MediaLibrary::usePlaylist(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
@@ -166,11 +163,11 @@ MediaLibrary::usePlaylist(char* name) {
 
 DelayedVoid*
 MediaLibrary::loadNewPlaylist() {
-  return loadPlaylist(newPlaylistName);
+  return loadPlaylist(newPlaylistName.c_str());
 }
 
 DelayedVoid*
-MediaLibrary::loadPlaylist(char* name) {
+MediaLibrary::loadPlaylist(const char* name) {
   lastRes = xmmsc_medialib_playlist_load(connection, name);
   DelayedVoid* del = new DelayedVoid(lastRes,
                                      "Error: failed while changing the playlist, server said: ");
@@ -180,11 +177,8 @@ MediaLibrary::loadPlaylist(char* name) {
 
 void
 MediaLibrary::updateCurrentPlaylistName() {
-  if(currentPlaylistName != NULL)
-    delete currentPlaylistName;
-  currentPlaylistName = new char[MAX_PLAYLIST_NAME_LEN + 1];
-  strncpy(currentPlaylistName, newPlaylistName, MAX_PLAYLIST_NAME_LEN);
-  newPlaylistName = NULL;
+  currentPlaylistName = newPlaylistName;
+  newPlaylistName = "";
 }
 
 
@@ -192,7 +186,7 @@ MediaLibrary::updateCurrentPlaylistName() {
  * Remove the given playlist from the medialib.
  */
 DelayedVoid*
-MediaLibrary::removePlaylist(char* name) {
+MediaLibrary::removePlaylist(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
@@ -200,7 +194,7 @@ MediaLibrary::removePlaylist(char* name) {
   }
 
   // Forbid to remove current playlist!
-  if(strcmp(name, currentPlaylistName) == 0) {
+  if(currentPlaylistName == name) {
     cerr << "Error: you cannot remove the current playlist!" << endl;
     return NULL;
   }
@@ -237,7 +231,7 @@ MediaLibrary::shuffleCurrentPlaylist() {
  * medialib.
  */
 Delayed<bool>*
-MediaLibrary::hasPlaylist(char* name) {
+MediaLibrary::hasPlaylist(const char* name) {
   // Get list of playlists and compare names
   lastRes = xmmsc_medialib_playlists_list(connection);
   return new Delayed<bool>(lastRes,
@@ -364,7 +358,7 @@ MediaLibrary::import(char* uri) {
 /**
  * Return the name of the active playlist on the server.
  */
-const char*
+string
 MediaLibrary::getCurrentPlaylistName() {
   return currentPlaylistName;
 }
@@ -394,7 +388,7 @@ MediaLibrary::performQuery(PatternQuery* query) {
 
 
 bool
-MediaLibrary::validPlaylistName(char* name) {
+MediaLibrary::validPlaylistName(const char* name) {
   // Playlists starting with '_' are hidden
   if(*name == '_')
     return false;
@@ -411,12 +405,10 @@ MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res) {
 
   // FIXME: Ignore if playlist loaded too ?
   // FIXME: not ALL clients should do it!
-  if(currentPlaylistName != NULL) {
-    saveCurrentPlaylistAs(currentPlaylistName);
-  }
+  saveCurrentPlaylistAs(currentPlaylistName.c_str());
 
-  cout << "PL changed, command type: " << endl;
-  //  xmmsc_result_dict_foreach (res, dump_dict, NULL);
+  cout << "DEBUG: Playlist changed, saved to mlib in " 
+       << currentPlaylistName << endl;
   xmmsc_result_unref(res);
 }
 
@@ -430,14 +422,13 @@ MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res) {
 
   // Copy name of the loaded playlist as the current playlist
   xmmsc_result_get_string(res, &loadedName);
-  currentPlaylistName = new char[ strlen(loadedName) + 1 ];
-  strcpy(currentPlaylistName, loadedName);
+  currentPlaylistName = loadedName;
 
   // FIXME: Leak! delete previous name memory!
 
   xmmsc_result_unref(res);
 
   // DEBUG:
-  cout << "Playlist loaded, new current playlist: "
+  cout << "DEBUG: Playlist loaded, new current playlist: "
        << currentPlaylistName << endl;
 }

@@ -13,6 +13,7 @@ class Output;
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -30,8 +31,8 @@ public:
   void printPlaylists(Printable* playlists);
   void printCollections(Collection* collections);
   void printStatus(Printable* song, unsigned int status,
-                   unsigned int playtime, int pos, const char* plname);
-  void printEmptyStatus(unsigned int status, const char* plname);
+                   unsigned int playtime, int pos, string plname);
+  void printEmptyStatus(unsigned int status, string plname);
   void printFilter();
 
   void printCommandSummary(list<Command*> commands);

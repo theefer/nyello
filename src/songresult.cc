@@ -41,7 +41,8 @@ bool
 SongResult::next() {
   // Update internal state
   if(cache != NULL) {
-    xmmsc_result_unref(cache);
+    delete delay;
+    delay = NULL;
     cache = NULL;
   }
   ++counter;
@@ -52,5 +53,6 @@ SongResult::next() {
 void
 SongResult::fetchCache() {
   cache = xmmsc_medialib_get_info(conn, getId());
-  xmmsc_result_wait(cache);
+  delay = new DelayedVoid(cache);
+  delay->wait();
 }

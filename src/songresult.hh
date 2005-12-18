@@ -4,6 +4,7 @@
 #include <xmmsclient/xmmsclient.h>
 
 #include "abstractresult.hh"
+#include "delayed.hh"
 
 
 class SongResult : public AbstractResult {
@@ -30,6 +31,7 @@ private:
    * song.
    */
   xmmsc_result_t* cache;
+  DelayedVoid* delay;
 
   void fetchCache();
 

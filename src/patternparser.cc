@@ -354,7 +354,7 @@ PatternParser::parsePlaylistSequence() {
   int name_len  = pos - currArg;
   char* plname;
   if(name_len > 0) {
-    plname = makeCopy(currArg);
+    plname = makeCopy(currArg, name_len);
   }
   // No playlist name, use current playlist
   else {
@@ -606,7 +606,13 @@ PatternParser::charToId(char* number) {
 
 char*
 PatternParser::makeCopy(char* orig) {
-  char* copy = new char[ strlen(orig) + 1 ];
-  strcpy(copy, orig);
+  return makeCopy(orig, strlen(orig));
+}
+
+char*
+PatternParser::makeCopy(char* orig, unsigned int length) {
+  char* copy = new char[ length + 1 ];
+  strncpy(copy, orig, length);
+  copy[length] = '\0';
   return copy;
 }

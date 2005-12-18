@@ -148,6 +148,7 @@ PatternMLibSequence::appendToQuery(MedialibQuery* query) {
 
 void
 PatternPlaylistSequence::appendToQuery(MedialibQuery* query) {
+  // FIXME: What of entries not starting with "mlib://" ?
   query->appendString("m0.id IN ("
                       "SELECT substr(entry, 8, 10) "
                       "FROM PlaylistEntries, Playlist "
@@ -157,9 +158,9 @@ PatternPlaylistSequence::appendToQuery(MedialibQuery* query) {
   query->appendProtectedString(plname);
   if(!seq->empty()) {
     query->appendString(" AND ");
-    query->appendSequence("pos", seq);
+    query->appendSequence("PlaylistEntries.pos", seq);
   }
-  query->appendString(" ORDER BY pos)");
+  query->appendString(" ORDER BY Playlist.pos, PlaylistEntries.pos)");
 }
 
 

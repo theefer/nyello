@@ -74,6 +74,7 @@ private:
   void padHistory();
   unsigned int charToId(char* number);
   char* makeCopy(char* orig);
+  char* makeCopy(char* orig, unsigned int length);
 };
 
 #endif  // __PATTERNPARSER_HH__

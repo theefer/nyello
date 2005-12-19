@@ -104,11 +104,14 @@ MediaLibrary::getPlaylistSize(const char* name) {
   query += curr_name;
   delete curr_name;
 
-  // FIXME: Insert name in error message
+  string errmsg = "Error: failed to get size of playlist '";
+  errmsg += name;
+  errmsg += "', server said: ";
+
   lastRes = xmmsc_medialib_select(connection, query.c_str());
   return new Delayed<int>(lastRes,
                           new PrimitiveDictProduct<int, &xmmsc_result_get_dict_entry_int32>("size"),
-                          "Error: failed to get size of playlist 'X', server said: ");
+                          errmsg);
 }
 
 
@@ -135,7 +138,7 @@ MediaLibrary::saveCurrentPlaylistAs(const char* name) {
 
   lastRes = xmmsc_medialib_playlist_save_current(connection, name);
   return new DelayedVoid(lastRes,
-                         "Error: failed to save the playlist, server said:");
+                         "Error: failed to save the playlist, server said: ");
 }
 
 
@@ -201,7 +204,7 @@ MediaLibrary::removePlaylist(const char* name) {
 
   lastRes = xmmsc_medialib_playlist_remove(connection, name);
   return new DelayedVoid(lastRes,
-                         "Error: failed to remove the playlist, server said:");
+                         "Error: failed to remove the playlist, server said: ");
 }
 
 
@@ -212,7 +215,7 @@ DelayedVoid*
 MediaLibrary::clearCurrentPlaylist() {
   lastRes = xmmsc_playlist_clear(connection);
   return new DelayedVoid(lastRes,
-                         "Error: failed to clear the playlist, server said:");
+                         "Error: failed to clear the playlist, server said: ");
 }
 
 /**
@@ -222,7 +225,7 @@ DelayedVoid*
 MediaLibrary::shuffleCurrentPlaylist() {
   lastRes = xmmsc_playlist_shuffle(connection);
   return new DelayedVoid(lastRes,
-                         "Error: failed to shuffle the playlist, server said:");
+                         "Error: failed to shuffle the playlist, server said: ");
 }
 
 
@@ -309,10 +312,12 @@ MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
  */
 DelayedVoid*
 MediaLibrary::removeSongAt(unsigned int position) {
-  // FIXME: add position in error message [itos()?]
+  stringstream errmsg;
+  errmsg << "Error: failed to remove song at position " << position
+         << ", server said: ";
+
   lastRes = xmmsc_playlist_remove(connection, position);
-  return new DelayedVoid(lastRes,
-                         "Error: failed to remove song at position X, server said: ");
+  return new DelayedVoid(lastRes, errmsg.str());
 }
 
 
@@ -325,8 +330,8 @@ DelayedVoid*
 MediaLibrary::import(char* uri) {
   // FIXME: todo!
   // FIXME: handle HTTP URIs too
-  // FIXME: include uri in error message
   DelayedVoid* res = NULL;
+  string errmsg;
 
   // Make it an absolute path
   char path[PATH_MAX];
@@ -340,15 +345,21 @@ MediaLibrary::import(char* uri) {
 
   // Path is a directory
   if(lastchar == '/') {
+    errmsg = "Error: cannot import directory '";
+    errmsg += uri;
+    errmsg += "' into the medialib, server said: ";
+
     lastRes = xmmsc_medialib_path_import(connection, path);
-    res = new DelayedVoid(lastRes,
-                          "Error: cannot import directory into the medialib, server said: ");
+    res = new DelayedVoid(lastRes, errmsg);
   }
   // Path is a file
   else {
+    errmsg = "Error: cannot import file '";
+    errmsg += uri;
+    errmsg += "' into the medialib, server said: ";
+
     lastRes = xmmsc_medialib_add_entry(connection, path);
-    res = new DelayedVoid(lastRes,
-                          "Error: cannot import file into the medialib, server said: ");
+    res = new DelayedVoid(lastRes, errmsg);
   }
 
   return res;
@@ -423,8 +434,6 @@ MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res) {
   // Copy name of the loaded playlist as the current playlist
   xmmsc_result_get_string(res, &loadedName);
   currentPlaylistName = loadedName;
-
-  // FIXME: Leak! delete previous name memory!
 
   xmmsc_result_unref(res);
 

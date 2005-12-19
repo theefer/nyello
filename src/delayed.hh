@@ -94,7 +94,8 @@ private:
 template <typename T>
 class AbstractDelayed : public StaticAsynchronizer {
 public:
-  AbstractDelayed(xmmsc_result_t* res, const char* errmsg = NULL);
+  AbstractDelayed(xmmsc_result_t* res, string errmsg = "");
+  AbstractDelayed(xmmsc_result_t* res, const char* errmsg);
   ~AbstractDelayed();
 
   void callback(xmmsc_result_t* res);
@@ -103,7 +104,7 @@ public:
 
 protected:
   ProductMaker<T>* pmaker;
-  const char* errmsg;
+  string errmsg;
 
   bool ready;
 
@@ -116,7 +117,8 @@ protected:
 
 class DelayedVoid : public AbstractDelayed<void> {
 public:
-  DelayedVoid(xmmsc_result_t* res, const char* errmsg = NULL);
+  DelayedVoid(xmmsc_result_t* res, string errmsg = "");
+  DelayedVoid(xmmsc_result_t* res, const char* errmsg);
 
   template<typename C>
   void addCallback(C* object, void (C::*function)());
@@ -153,8 +155,10 @@ template <typename T>
 class Delayed : public AbstractDelayed<T> {
 
 public:
-  Delayed(xmmsc_result_t* res, const char* errmsg = NULL);
-  Delayed(xmmsc_result_t* res, ProductMaker<T>* pmaker, const char* errmsg = NULL);
+  Delayed(xmmsc_result_t* res, string errmsg = "");
+  Delayed(xmmsc_result_t* res, ProductMaker<T>* pmaker, string errmsg = "");
+  Delayed(xmmsc_result_t* res, const char* errmsg);
+  Delayed(xmmsc_result_t* res, ProductMaker<T>* pmaker, const char* errmsg);
 
   template<typename C>
   void addCallback(C* object, void (C::*function)(T));
@@ -230,6 +234,15 @@ void runDelayedMethod(xmmsc_result_t *res, void *del_ptr) {
 
 
 template <typename T>
+AbstractDelayed<T>::AbstractDelayed(xmmsc_result_t* res, string err) : errmsg(err) {
+  ready = false;
+  pmaker = NULL;
+
+  xmmsc_result_notifier_set(res, &runDelayedMethod<T, &AbstractDelayed<T>::callback>, this);
+  xmmsc_result_unref(res);
+}
+
+template <typename T>
 AbstractDelayed<T>::AbstractDelayed(xmmsc_result_t* res, const char* err) : errmsg(err) {
   ready = false;
   pmaker = NULL;
@@ -281,6 +294,18 @@ AbstractDelayed<T>::unblock() {
 }
 
 
+
+template <typename T>
+Delayed<T>::Delayed(xmmsc_result_t* res, string err) : AbstractDelayed<T>(res, err) {
+  // FIXME: actually working?
+  this->pmaker = new ObjectProduct<T>();
+}
+
+template <typename T>
+Delayed<T>::Delayed(xmmsc_result_t* res, ProductMaker<T>* _pmaker, string err)
+  : AbstractDelayed<T>(res, err) {
+  this->pmaker = _pmaker;
+}
 
 template <typename T>
 Delayed<T>::Delayed(xmmsc_result_t* res, const char* err) : AbstractDelayed<T>(res, err) {

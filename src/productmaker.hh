@@ -15,7 +15,7 @@ public:
 
   inline void setResult(xmmsc_result_t* result) { res = result; }
 
-  virtual void checkErrors(const char* errmsg = NULL);
+  virtual void checkErrors(string errmsg);
   virtual T create() = 0;
 
 protected:
@@ -115,10 +115,10 @@ ProductMaker<T>::~ProductMaker() {
 
 template <typename T>
 void
-ProductMaker<T>::checkErrors(const char* errmsg) {
+ProductMaker<T>::checkErrors(string errmsg) {
   if(xmmsc_result_iserror(res)) {
     // FIXME: Show error? Throw error?
-    if(errmsg != NULL) {
+    if(errmsg.size() > 0) {
       cerr << errmsg << xmmsc_result_get_error(res) << endl;
     }
   }

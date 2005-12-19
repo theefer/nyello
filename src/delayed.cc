@@ -1,6 +1,11 @@
 #include "delayed.hh"
 
 
+DelayedVoid::DelayedVoid(xmmsc_result_t* res, string err)
+  : AbstractDelayed<void>(res, err) {
+  pmaker = new VoidProduct();
+}
+
 DelayedVoid::DelayedVoid(xmmsc_result_t* res, const char* err)
   : AbstractDelayed<void>(res, err) {
   pmaker = new VoidProduct();

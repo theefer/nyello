@@ -129,8 +129,9 @@ private:
   void parsePattern(char* ptr, int num);
   void parsePatternFromArgs();
 
-  int parseInteger(char* ptr);
+  AbstractResult* findSongsFromArgs();
 
+  int parseInteger(char* ptr);
   char* parseToken(char** str);
 
   void waitAndFree(DelayedVoid* del);

@@ -22,7 +22,7 @@ PatternQuery::~PatternQuery() {
 
 
 void
-PatternQuery::saveResults(AbstractResult* songlist) {
+PatternQuery::saveResults(SelectResult* songlist) {
   resultCache.erase(resultCache.begin(), resultCache.end());
   // FIXME: causes a segfault?
   songlist->rewind();

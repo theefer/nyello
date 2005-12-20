@@ -49,10 +49,10 @@ public:
   Delayed<bool>* hasPlaylist(const char* name);
 
   Delayed<RichResult*>* getSongById(unsigned int id);
-  AbstractResult* searchSongs(PatternQuery* query);
+  Delayed<SelectResult*>* searchSongs(PatternQuery* query);
 
-  void enqueueSongs(PatternQuery* query);
-  void insertSongs(PatternQuery* query, unsigned int position);
+  void enqueueSongs(AbstractResult* songlist);
+  void insertSongs(AbstractResult* songlist, unsigned int position);
 
   DelayedVoid* removeSongAt(unsigned int position);
 
@@ -74,8 +74,6 @@ private:
 
   string currentPlaylistName;
   string newPlaylistName;
-
-  AbstractResult* performQuery(PatternQuery* query);
 
   bool validPlaylistName(const char* name);
 

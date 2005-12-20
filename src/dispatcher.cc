@@ -405,21 +405,14 @@ Dispatcher::actionJump() {
  */
 void
 Dispatcher::actionInfo() {
-  AbstractResult* songList;
-  PatternQuery* query;
+  AbstractResult* songlist;
 
-  query = pparser->registerNewPattern(arguments, argNumber);
-  if(query == NULL) {
-    cerr << "Error: failed to parse the pattern!" << endl;
-    return;
-  }
-
-  songList = medialib->searchSongs(query);
-  if(songList == NULL) {
+  songlist = findSongsFromArgs();
+  if(songlist == NULL) {
     cerr << "Error: failed to query the medialibrary!" << endl;
   }
   else {
-    ResultList* rlist = new ResultList(songList);
+    ResultList* rlist = new ResultList(songlist);
     output->printSongs(rlist);
     delete rlist;
   }  
@@ -496,13 +489,14 @@ Dispatcher::actionImport() {
  */
 void
 Dispatcher::actionEnqueue() {
-  PatternQuery* query;
-  query = pparser->registerNewPattern(arguments, argNumber);
-  if(query == NULL) {
-    cerr << "Error: failed to parse the pattern!" << endl;
+  AbstractResult* songlist;
+
+  songlist = findSongsFromArgs();
+  if(songlist == NULL) {
     return;
   }
-  medialib->enqueueSongs(query);
+
+  medialib->enqueueSongs(songlist);
 }
 
 
@@ -512,19 +506,20 @@ Dispatcher::actionEnqueue() {
  */
 void
 Dispatcher::actionInsert() {
-  PatternQuery* query;
+  AbstractResult* songlist;
   unsigned int position;
-  query = pparser->registerNewPattern(arguments, argNumber);
-  if(query == NULL) {
-    cerr << "Error: failed to parse the pattern!" << endl;
+
+  songlist = findSongsFromArgs();
+  if(songlist == NULL) {
     return;
   }
+
   position = playback->getCurrentPosition()->getProduct() + 1;
   if(position > 0) {
-    medialib->insertSongs(query, position);
+    medialib->insertSongs(songlist, position);
   }
   else {
-    medialib->enqueueSongs(query);
+    medialib->enqueueSongs(songlist);
   }
 }
 
@@ -534,24 +529,50 @@ Dispatcher::actionInsert() {
  */
 void
 Dispatcher::actionReplace() {
-  PatternQuery* query;
+  AbstractResult* songlist;
   unsigned int position;
-  query = pparser->registerNewPattern(arguments, argNumber);
-  if(query == NULL) {
-    cerr << "Error: failed to parse the pattern!" << endl;
+
+  songlist = findSongsFromArgs();
+  if(songlist == NULL) {
     return;
   }
+
   position = playback->getCurrentPosition()->getProduct() + 1;
   if(position > 0) {
-    medialib->insertSongs(query, position);
+    medialib->insertSongs(songlist, position);
     waitAndFree(medialib->removeSongAt(position - 1));
     DelayedVoid* res = playback->jumpRelative(1);
     waitAndFree(res);
   }
   else {
-    medialib->enqueueSongs(query);
+    medialib->enqueueSongs(songlist);
   }
 }
+
+
+/**
+ * Search the medialibrary for songs corresponding to the pattern
+ * read from the arguments.
+ */
+AbstractResult*
+Dispatcher::findSongsFromArgs() {
+  Delayed<SelectResult*>* res;
+  AbstractResult* songlist;
+  PatternQuery* query;
+
+  query = pparser->registerNewPattern(arguments, argNumber);
+  if(query == NULL) {
+    cerr << "Error: failed to parse the pattern!" << endl;
+    return NULL;
+  }
+
+  res = medialib->searchSongs(query);
+  songlist = res->getProduct();
+  delete res;
+
+  return songlist;
+}
+
 
 /**
  * Remove all songs with a position matched by the sequences given in

@@ -58,13 +58,14 @@
           make the class structures simpler and cleaner, and to make
           the construction of Delayed objects straighter. Also, to unref
           results in ProductMaker cleanly.
-      [ ] Use delayed object in songresult.cc too!
-      [ ] Improve quality of Asynchronizer
+      [X] Use delayed object in songresult.cc too!
+      [X] Improve quality of Asynchronizer
             Will have to call Dispatcher::parseInput().
             Make it available without requiring the call to wait(async)
       [ ] Free all the allocated delayed objects
   [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
   [ ] Design proper abstraction layer (all async events, current PL, collections)
+  [ ] Add command to import files in mlib (import)
   ==> v0.4
 
   [ ] Develop collection handling and classes
@@ -73,7 +74,9 @@ R [ ] Handle collections internally (enter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
 Design issues and needed improvements
-  [ ] Allow chained delays and bind wait() and callback methods [Delayed tickle()]
+  [ ] Make error message handling more flexible in Delayed<T>
+  [ ] Use wchar* instead of char* for UTF-8 support
+  [ ] Use string class whenever possible (including in the parser)
 
 Unscheduled fixes (by order of importance, most important first)
   [ ] Improve pattern features (comparators, limit)
@@ -90,3 +93,5 @@ Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)
   [ ] REMOVE can behave wrong if the active playlist and the matching saved playlist differ
   [ ] NOT and XOR not working at all
+  [ ] Cannot replace song when playing the last song of the playlist
+  [ ] Playlist sequences are broken (non-continuous ids in the DB)

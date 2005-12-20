@@ -7,7 +7,7 @@
 using namespace std;
 
 #include "patternnodes.hh"
-#include "abstractresult.hh"
+#include "selectresult.hh"
 #include "sequence.hh"
 
 
@@ -20,7 +20,7 @@ public:
   PatternQuery(PatternNode* top, PatternOrderBy* order);
   ~PatternQuery();
 
-  void saveResults(AbstractResult* songlist);
+  void saveResults(SelectResult* songlist);
 
   char* getSql();
   IdSequence* getIds();

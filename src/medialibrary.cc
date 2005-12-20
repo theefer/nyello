@@ -255,51 +255,48 @@ MediaLibrary::getSongById(unsigned int id) {
 
 
 /**
- * Queries the medialib and return the resulting list of songs.
- */
-AbstractResult*
-MediaLibrary::searchSongs(PatternQuery* query) {
-  return performQuery(query);  
-}
-
-/**
- * Enqueue all songs matching the given query to the current playlist.
+ * Enqueue all songs in the list to the current playlist.
  */
 void
-MediaLibrary::enqueueSongs(PatternQuery* query) {
-  AbstractResult* songlist = performQuery(query);
+MediaLibrary::enqueueSongs(AbstractResult* songlist) {
+  DelayedVoid* res;
+
   songlist->rewind();
   while(songlist->isValid()) {
+    stringstream errmsg;
+    errmsg << "Error: couldn't add song #" << songlist->getId()
+           << ", server said: ";
+
+    // FIXME: We should not wait in MediaLibrary!
     lastRes = xmmsc_playlist_add_id(connection, songlist->getId());
-    xmmsc_result_wait(lastRes);
-    if(xmmsc_result_iserror(lastRes)) {
-      cerr << "Error: couldn't add song #" << songlist->getId()
-           << ", server said: "
-           << xmmsc_result_get_error(lastRes) << endl;
-    }
-    xmmsc_result_unref(lastRes);
+    res = new DelayedVoid(lastRes, errmsg.str());
+    res->wait();
+    delete res;
 
     songlist->next();
   }
 }
 
 /**
- * Insert all songs matching the given query in the current playlist
- * at the given position.
+ * Insert all songs in the list in the current playlist at the given
+ * position.
  */
 void
-MediaLibrary::insertSongs(PatternQuery* query, unsigned int position) {
-  AbstractResult* songlist = performQuery(query);
+MediaLibrary::insertSongs(AbstractResult* songlist, unsigned int position) {
+  DelayedVoid* res;
+
   songlist->rewind();
   while(songlist->isValid()) {
+    stringstream errmsg;
+    errmsg << "Error: couldn't add song #" << songlist->getId()
+           << " at position " << position << ", server said: ";
+
+    // FIXME: We should not wait in MediaLibrary!
     lastRes = xmmsc_playlist_insert_id(connection, position, songlist->getId());
-    xmmsc_result_wait(lastRes);
-    if(xmmsc_result_iserror(lastRes)) {
-      cerr << "Error: couldn't add song #" << songlist->getId()
-           << " at position " << position << ", server said: "
-           << xmmsc_result_get_error(lastRes) << endl;
-    }
-    xmmsc_result_unref(lastRes);
+    res = new DelayedVoid(lastRes, errmsg.str());
+    res->wait();
+    delete res;
+
 
     songlist->next();
     ++position;
@@ -375,9 +372,12 @@ MediaLibrary::getCurrentPlaylistName() {
 }
 
 
-AbstractResult*
-MediaLibrary::performQuery(PatternQuery* query) {
-  AbstractResult* songlist;
+/**
+ * Queries the medialib and return the resulting list of songs.
+ */
+Delayed<SelectResult*>*
+MediaLibrary::searchSongs(PatternQuery* query) {
+  Delayed<SelectResult*>* del;
   char* sql = query->getSql();
 
 // FIXME: Remove this when queries are stable
@@ -386,15 +386,10 @@ MediaLibrary::performQuery(PatternQuery* query) {
 #endif
 
   lastRes = xmmsc_medialib_select(connection, sql);
-  xmmsc_result_wait(lastRes);
-
-  if(xmmsc_result_iserror(lastRes)) {
-    return NULL;
-  }
-
-  songlist = new SelectResult(lastRes, connection);
-  query->saveResults(songlist);
-  return songlist;
+  del = new Delayed<SelectResult*>(lastRes,
+                                   new ComplexObjectProduct<SelectResult, xmmsc_connection_t*>(connection));
+  del->addCallback<PatternQuery>(query, &PatternQuery::saveResults);
+  return del;
 }
 
 

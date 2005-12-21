@@ -31,7 +31,7 @@ private:
    * song.
    */
   xmmsc_result_t* cache;
-  DelayedVoid* delay;
+  Delayed<void>* delay;
 
   void fetchCache();
 

@@ -10,57 +10,57 @@ Playback::Playback(xmmsc_connection_t* _connection) {
 Playback::~Playback() { }
 
 
-DelayedVoid*
+Delayed<void>*
 Playback::play() {
   lastRes = xmmsc_playback_start(connection);
-  return new DelayedVoid(lastRes, "Could not start playback: ");
+  return new Delayed<void>(lastRes, "Could not start playback: ");
 }
 
-DelayedVoid*
+Delayed<void>*
 Playback::pause() {
   lastRes = xmmsc_playback_pause(connection);
-  return new DelayedVoid(lastRes, "Could not pause playback: ");
+  return new Delayed<void>(lastRes, "Could not pause playback: ");
 }
 
-DelayedVoid*
+Delayed<void>*
 Playback::stop() {
   lastRes = xmmsc_playback_stop(connection);
-  return new DelayedVoid(lastRes, "Could not stop playback: ");
+  return new Delayed<void>(lastRes, "Could not stop playback: ");
 }
 
 
 /**
  * Trigger the song change.
  */
-DelayedVoid*
+Delayed<void>*
 Playback::tickle() {
   lastRes = xmmsc_playback_tickle(connection);
-  return new DelayedVoid(lastRes);
+  return new Delayed<void>(lastRes);
 }
 
-DelayedVoid*
+Delayed<void>*
 Playback::jumpAbsolute(int pos) {
   lastRes = xmmsc_playlist_set_next(connection, pos);
-  DelayedVoid* del = new DelayedVoid(lastRes, "Couldn't advance in playlist: ");
+  Delayed<void>* del = new Delayed<void>(lastRes, "Couldn't advance in playlist: ");
   del->addCallback<Playback>(this, &Playback::tickle);
   return del;
 }
 
-DelayedVoid*
+Delayed<void>*
 Playback::jumpRelative(int offset) {
   lastRes = xmmsc_playlist_set_next_rel(connection, offset);
-  DelayedVoid* del = new DelayedVoid(lastRes, "Couldn't advance in playlist: ");
+  Delayed<void>* del = new Delayed<void>(lastRes, "Couldn't advance in playlist: ");
   del->addCallback<Playback>(this, &Playback::tickle);
   return del;
 }
 
-DelayedVoid*
+Delayed<void>*
 Playback::seekAbsolute(int position) {
   lastRes = xmmsc_playback_seek_ms(connection, position);
-  return new DelayedVoid(lastRes, "Couldn't seek in current song: ");
+  return new Delayed<void>(lastRes, "Couldn't seek in current song: ");
 }
 
-DelayedVoid*
+Delayed<void>*
 Playback::seekRelative(int offset) {
   int position;
   position = 0;

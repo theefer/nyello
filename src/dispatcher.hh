@@ -16,14 +16,12 @@ typedef void (Dispatcher::*DispFnPtr)();
 #include <readline/readline.h>
 #include <readline/history.h>
 
-//#include "delayed.hh"
 #include "playback.hh"
 #include "medialibrary.hh"
 #include "patternparser.hh"
 #include "command.hh"
 #include "output.hh"
 #include "sequence.hh"
-
 #include "patternquery.hh"
 #include "abstractresult.hh"
 #include "resultlist.hh"
@@ -95,7 +93,6 @@ public:
   void actionCollectionEnter();
   void actionCollectionRemove();
 
-  // FIXME: Should remain private?
   bool parseInput(char* input);
 
 private:
@@ -134,7 +131,7 @@ private:
   int parseInteger(char* ptr);
   char* parseToken(char** str);
 
-  void waitAndFree(DelayedVoid* del);
+  void waitAndFree(Delayed<void>* del);
 };
 
 

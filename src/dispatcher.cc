@@ -51,7 +51,9 @@ Dispatcher::getInstance() {
 Dispatcher::~Dispatcher() {
   delete playback;
   delete medialib;
+  delete pparser;
   delete output;
+  // FIXME: Delete asynchronizer?
 }
 
 
@@ -86,8 +88,9 @@ Dispatcher::loop() {
   char* prompt = new char[MAX_PROMPT_LENGTH + 1];
   char* input = new char[MAX_COMMAND_LENGTH];
 
-  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
   rl_callback_handler_install(NULL, &readline_callback);
+
+  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
   cout << prompt;
   cout.flush();
 
@@ -224,7 +227,7 @@ Dispatcher::parseToken(char** strref) {
  * Wait on the given Delayed pointer and destroy it.
  */
 void
-Dispatcher::waitAndFree(DelayedVoid* del) {
+Dispatcher::waitAndFree(Delayed<void>* del) {
   if(del != NULL) {
     del->wait();
     delete del;
@@ -298,7 +301,7 @@ Dispatcher::actionStatus() {
  */
 void
 Dispatcher::actionPlay() {
-  DelayedVoid* res = playback->play();
+  Delayed<void>* res = playback->play();
   waitAndFree(res);
 }
 
@@ -307,7 +310,7 @@ Dispatcher::actionPlay() {
  */
 void
 Dispatcher::actionPause() {
-  DelayedVoid* res = playback->pause();
+  Delayed<void>* res = playback->pause();
   waitAndFree(res);
 }
 
@@ -329,7 +332,7 @@ Dispatcher::actionTogglePlay() {
  */
 void
 Dispatcher::actionStop() {
-  DelayedVoid* res = playback->stop();
+  Delayed<void>* res = playback->stop();
   waitAndFree(res);
 }
 
@@ -351,7 +354,7 @@ Dispatcher::actionPrevious() {
     return;
   }
 
-  DelayedVoid* res = playback->jumpRelative(offset);
+  Delayed<void>* res = playback->jumpRelative(offset);
   waitAndFree(res);
 }
 
@@ -372,7 +375,7 @@ Dispatcher::actionNext() {
     return;
   }
 
-  DelayedVoid* res = playback->jumpRelative(offset);
+  Delayed<void>* res = playback->jumpRelative(offset);
   waitAndFree(res);
 }
 
@@ -383,7 +386,7 @@ void
 Dispatcher::actionJump() {
   int offset;
   if(argNumber == 1) {
-    DelayedVoid* res;
+    Delayed<void>* res;
     if((*arguments[0] == '+') || (*arguments[0] == '-')) {
       res = playback->jumpRelative(parseInteger(arguments[0]));
     }
@@ -476,7 +479,7 @@ Dispatcher::actionImport() {
   }
   else {
     for(int i = 0; i < argNumber; ++i) {
-      DelayedVoid* res = medialib->import(arguments[i]);
+      Delayed<void>* res = medialib->import(arguments[i]);
       waitAndFree(res);
     }
   }
@@ -541,7 +544,7 @@ Dispatcher::actionReplace() {
   if(position > 0) {
     medialib->insertSongs(songlist, position);
     waitAndFree(medialib->removeSongAt(position - 1));
-    DelayedVoid* res = playback->jumpRelative(1);
+    Delayed<void>* res = playback->jumpRelative(1);
     waitAndFree(res);
   }
   else {
@@ -589,7 +592,7 @@ Dispatcher::actionRemove() {
     }
     for(int pos = playlist_len; pos > 0; --pos) {
       if(positions->contains(pos)) {
-        DelayedVoid* resrem = medialib->removeSongAt(pos - 1);
+        Delayed<void>* resrem = medialib->removeSongAt(pos - 1);
         waitAndFree(resrem);
       }
     }
@@ -606,7 +609,7 @@ Dispatcher::actionRemove() {
 void
 Dispatcher::actionClear() {
   if(argNumber == 0) {
-    DelayedVoid* del = medialib->clearCurrentPlaylist();
+    Delayed<void>* del = medialib->clearCurrentPlaylist();
     waitAndFree(del);
   }
   else {
@@ -621,7 +624,7 @@ Dispatcher::actionClear() {
 void
 Dispatcher::actionShuffle() {
   if(argNumber == 0) {
-    DelayedVoid* del = medialib->shuffleCurrentPlaylist();
+    Delayed<void>* del = medialib->shuffleCurrentPlaylist();
     waitAndFree(del);
   }
   else {
@@ -661,7 +664,7 @@ void
 Dispatcher::actionPlaylistSaveAs() {
   // Save the current playlist under the new name
   if(argNumber == 1) {
-    DelayedVoid* del = medialib->saveCurrentPlaylistAs(arguments[0]);
+    Delayed<void>* del = medialib->saveCurrentPlaylistAs(arguments[0]);
     waitAndFree(del);
   }
   // Missing the playlist name
@@ -681,7 +684,7 @@ void
 Dispatcher::actionPlaylistUse() {
   // Use the given playlist
   if(argNumber == 1) {
-    DelayedVoid* del = medialib->usePlaylist(arguments[0]);
+    Delayed<void>* del = medialib->usePlaylist(arguments[0]);
     waitAndFree(del);
   }
   // Missing the playlist name
@@ -701,7 +704,7 @@ void
 Dispatcher::actionPlaylistRemove() {
   // Remove the given playlist
   if(argNumber == 1) {
-    DelayedVoid* del = medialib->removePlaylist(arguments[0]);
+    Delayed<void>* del = medialib->removePlaylist(arguments[0]);
     waitAndFree(del);
   }
   // Missing the playlist name

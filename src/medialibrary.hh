@@ -39,12 +39,12 @@ public:
   Delayed<int>* getPlaylistSize(const char* name);
   Delayed<int>* getCurrentPlaylistSize();
 
-  DelayedVoid* saveCurrentPlaylistAs(const char* name);
-  DelayedVoid* usePlaylist(const char* name);
-  DelayedVoid* removePlaylist(const char* name);
+  Delayed<void>* saveCurrentPlaylistAs(const char* name);
+  Delayed<void>* usePlaylist(const char* name);
+  Delayed<void>* removePlaylist(const char* name);
 
-  DelayedVoid* clearCurrentPlaylist();
-  DelayedVoid* shuffleCurrentPlaylist();
+  Delayed<void>* clearCurrentPlaylist();
+  Delayed<void>* shuffleCurrentPlaylist();
 
   Delayed<bool>* hasPlaylist(const char* name);
 
@@ -54,9 +54,9 @@ public:
   void enqueueSongs(AbstractResult* songlist);
   void insertSongs(AbstractResult* songlist, unsigned int position);
 
-  DelayedVoid* removeSongAt(unsigned int position);
+  Delayed<void>* removeSongAt(unsigned int position);
 
-  DelayedVoid* import(char* uri);
+  Delayed<void>* import(char* uri);
 
   Collection* newCollection();
   Collection* getCollection(char* name);
@@ -77,8 +77,8 @@ private:
 
   bool validPlaylistName(const char* name);
 
-  DelayedVoid* loadNewPlaylist();
-  DelayedVoid* loadPlaylist(const char* name);
+  Delayed<void>* loadNewPlaylist();
+  Delayed<void>* loadPlaylist(const char* name);
   void updateCurrentPlaylistName();
 
 };

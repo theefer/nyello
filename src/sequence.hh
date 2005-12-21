@@ -59,8 +59,7 @@ private:
 
 
 
-/*  == And here comes the implementation, in the header file due to
-       boring GCC limitations...  == */
+/*  == And here comes the implementation of template functions. == */
 
 template <typename T>
 Sequence<T>::Sequence() {

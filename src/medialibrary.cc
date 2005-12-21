@@ -128,7 +128,7 @@ MediaLibrary::getCurrentPlaylistSize() {
  * Save the current server playlist in the medialib under the given
  * name.
  */
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::saveCurrentPlaylistAs(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
@@ -137,12 +137,12 @@ MediaLibrary::saveCurrentPlaylistAs(const char* name) {
   }
 
   lastRes = xmmsc_medialib_playlist_save_current(connection, name);
-  return new DelayedVoid(lastRes,
+  return new Delayed<void>(lastRes,
                          "Error: failed to save the playlist, server said: ");
 }
 
 
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::usePlaylist(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
@@ -158,21 +158,21 @@ MediaLibrary::usePlaylist(const char* name) {
 
   // Seems ok, let's clear and load the new playlist instead
   newPlaylistName = name;
-  DelayedVoid* del = clearCurrentPlaylist();
+  Delayed<void>* del = clearCurrentPlaylist();
   del->addCallback<MediaLibrary>(this, &MediaLibrary::loadNewPlaylist);
   return del;
 }
 
 
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::loadNewPlaylist() {
   return loadPlaylist(newPlaylistName.c_str());
 }
 
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::loadPlaylist(const char* name) {
   lastRes = xmmsc_medialib_playlist_load(connection, name);
-  DelayedVoid* del = new DelayedVoid(lastRes,
+  Delayed<void>* del = new Delayed<void>(lastRes,
                                      "Error: failed while changing the playlist, server said: ");
   del->addCallback<MediaLibrary>(this, &MediaLibrary::updateCurrentPlaylistName);
   return del;
@@ -188,7 +188,7 @@ MediaLibrary::updateCurrentPlaylistName() {
 /**
  * Remove the given playlist from the medialib.
  */
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::removePlaylist(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
@@ -203,7 +203,7 @@ MediaLibrary::removePlaylist(const char* name) {
   }
 
   lastRes = xmmsc_medialib_playlist_remove(connection, name);
-  return new DelayedVoid(lastRes,
+  return new Delayed<void>(lastRes,
                          "Error: failed to remove the playlist, server said: ");
 }
 
@@ -211,20 +211,20 @@ MediaLibrary::removePlaylist(const char* name) {
 /**
  * Empty the current playlist.
  */
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::clearCurrentPlaylist() {
   lastRes = xmmsc_playlist_clear(connection);
-  return new DelayedVoid(lastRes,
+  return new Delayed<void>(lastRes,
                          "Error: failed to clear the playlist, server said: ");
 }
 
 /**
  * Shuffle the current playlist.
  */
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::shuffleCurrentPlaylist() {
   lastRes = xmmsc_playlist_shuffle(connection);
-  return new DelayedVoid(lastRes,
+  return new Delayed<void>(lastRes,
                          "Error: failed to shuffle the playlist, server said: ");
 }
 
@@ -259,7 +259,7 @@ MediaLibrary::getSongById(unsigned int id) {
  */
 void
 MediaLibrary::enqueueSongs(AbstractResult* songlist) {
-  DelayedVoid* res;
+  Delayed<void>* res;
 
   songlist->rewind();
   while(songlist->isValid()) {
@@ -269,7 +269,7 @@ MediaLibrary::enqueueSongs(AbstractResult* songlist) {
 
     // FIXME: We should not wait in MediaLibrary!
     lastRes = xmmsc_playlist_add_id(connection, songlist->getId());
-    res = new DelayedVoid(lastRes, errmsg.str());
+    res = new Delayed<void>(lastRes, errmsg.str());
     res->wait();
     delete res;
 
@@ -283,7 +283,7 @@ MediaLibrary::enqueueSongs(AbstractResult* songlist) {
  */
 void
 MediaLibrary::insertSongs(AbstractResult* songlist, unsigned int position) {
-  DelayedVoid* res;
+  Delayed<void>* res;
 
   songlist->rewind();
   while(songlist->isValid()) {
@@ -293,7 +293,7 @@ MediaLibrary::insertSongs(AbstractResult* songlist, unsigned int position) {
 
     // FIXME: We should not wait in MediaLibrary!
     lastRes = xmmsc_playlist_insert_id(connection, position, songlist->getId());
-    res = new DelayedVoid(lastRes, errmsg.str());
+    res = new Delayed<void>(lastRes, errmsg.str());
     res->wait();
     delete res;
 
@@ -307,14 +307,14 @@ MediaLibrary::insertSongs(AbstractResult* songlist, unsigned int position) {
 /**
  * Remove the song at the given position from the playlist.
  */
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::removeSongAt(unsigned int position) {
   stringstream errmsg;
   errmsg << "Error: failed to remove song at position " << position
          << ", server said: ";
 
   lastRes = xmmsc_playlist_remove(connection, position);
-  return new DelayedVoid(lastRes, errmsg.str());
+  return new Delayed<void>(lastRes, errmsg.str());
 }
 
 
@@ -323,11 +323,11 @@ MediaLibrary::removeSongAt(unsigned int position) {
  * file pattern (parsed by glob) or a directory, in which case it it
  * recursively imported.
  */
-DelayedVoid*
+Delayed<void>*
 MediaLibrary::import(char* uri) {
   // FIXME: todo!
   // FIXME: handle HTTP URIs too
-  DelayedVoid* res = NULL;
+  Delayed<void>* res = NULL;
   string errmsg;
 
   // Make it an absolute path
@@ -347,7 +347,7 @@ MediaLibrary::import(char* uri) {
     errmsg += "' into the medialib, server said: ";
 
     lastRes = xmmsc_medialib_path_import(connection, path);
-    res = new DelayedVoid(lastRes, errmsg);
+    res = new Delayed<void>(lastRes, errmsg);
   }
   // Path is a file
   else {
@@ -356,7 +356,7 @@ MediaLibrary::import(char* uri) {
     errmsg += "' into the medialib, server said: ";
 
     lastRes = xmmsc_medialib_add_entry(connection, path);
-    res = new DelayedVoid(lastRes, errmsg);
+    res = new Delayed<void>(lastRes, errmsg);
   }
 
   return res;

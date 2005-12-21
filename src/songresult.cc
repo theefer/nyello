@@ -53,6 +53,6 @@ SongResult::next() {
 void
 SongResult::fetchCache() {
   cache = xmmsc_medialib_get_info(conn, getId());
-  delay = new DelayedVoid(cache);
+  delay = new Delayed<void>(cache);
   delay->wait();
 }

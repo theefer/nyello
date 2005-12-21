@@ -8,11 +8,13 @@
 using namespace std;
 
 
+/**
+ * Generic ProductMaker parent class implementing methods shared by
+ * all ProductMaker specializations.
+ */
 template <typename T>
-class ProductMaker {
+class AbstractProductMaker {
 public:
-  ~ProductMaker();
-
   inline void setResult(xmmsc_result_t* result) { res = result; }
 
   virtual void checkErrors(string errmsg);
@@ -20,10 +22,28 @@ public:
 
 protected:
   xmmsc_result_t* res;
-
-  // FIXME: Why can't we use a virtual function to determine that?
-  bool unrefResult;
 };
+
+/**
+ * Standard ProductMaker specialization class; frees the associated
+ * result.
+ */
+template <typename T>
+class ProductMaker : public AbstractProductMaker<T> {
+public:
+  ~ProductMaker();
+};
+
+/**
+ * ProductMaker specialization class for pointer products; does not
+ * free the associated result.
+ */
+template <typename T>
+class ProductMaker<T*> : public AbstractProductMaker<T*> {
+public:
+  ~ProductMaker();
+};
+
 
 
 /**
@@ -32,17 +52,24 @@ protected:
  */
 class VoidProduct : public ProductMaker<void> {
 public:
-  virtual void create();
+  inline virtual void create() { }
 };
 
 
+/**
+ * Produces a value of a primitive type using the provided function to
+ * extract it from the result.
+ */
 template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 class PrimitiveProduct : public ProductMaker<T> {
 public:
   virtual T create();
 };
 
-
+/**
+ * Produces a value of a primitive type using the provided function to
+ * extract it from the dict result (under the given key).
+ */
 template <typename T, int (*extractor)(xmmsc_result_t*, const char*, T*)>
 class PrimitiveDictProduct : public ProductMaker<T> {
 public:
@@ -55,7 +82,10 @@ private:
 };
 
 
-
+/**
+ * Produces a value of a pointer to an object created by calling its
+ * constructor on the result.
+ */
 template <typename T>
 class ObjectProduct : public ProductMaker<T*> {
 public:
@@ -63,7 +93,11 @@ public:
 };
 
 
-
+/**
+ * Produces a value of a pointer to an object created by calling its
+ * constructor on the result, with a second argument provided to this
+ * object.
+ */
 template <typename T, class X>
 class ComplexObjectProduct : public ProductMaker<T*> {
 public:
@@ -76,7 +110,10 @@ private:
 };
 
 
-
+/**
+ * Produces a boolean comparison between the given value and the value
+ * extracted from the result using the provided function.
+ */
 template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 class ComparatorProduct : public ProductMaker<bool> {
 public:
@@ -89,7 +126,10 @@ private:
 };
 
 
-
+/**
+ * Reads the list contained in the result and determines whether the
+ * given string is in that list or not.
+ */
 class StringMatcherProduct : public ProductMaker<bool> {
 public:
   StringMatcherProduct(string str);
@@ -106,14 +146,18 @@ private:
 
 template <typename T>
 ProductMaker<T>::~ProductMaker() {
-  if(unrefResult) {
-    xmmsc_result_unref(res);
-  }
+  xmmsc_result_unref(this->res);
 }
 
 template <typename T>
+ProductMaker<T*>::~ProductMaker() {
+  // Do not unref the result when producing a pointer to an object.
+}
+
+
+template <typename T>
 void
-ProductMaker<T>::checkErrors(string errmsg) {
+AbstractProductMaker<T>::checkErrors(string errmsg) {
   if(xmmsc_result_iserror(res)) {
     // FIXME: Show error? Throw error?
     if(errmsg.size() > 0) {
@@ -127,8 +171,6 @@ ProductMaker<T>::checkErrors(string errmsg) {
 template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 T
 PrimitiveProduct<T, extractor>::create() {
-  this->unrefResult = true;
-
   T product;
   (*extractor)(this->res, &product);
   return product;
@@ -142,8 +184,6 @@ PrimitiveDictProduct<T, extractor>::PrimitiveDictProduct(const char* _key) : key
 template <typename T, int (*extractor)(xmmsc_result_t*, const char*, T*)>
 T
 PrimitiveDictProduct<T, extractor>::create() {
-  this->unrefResult = true;
-
   T product;
   (*extractor)(this->res, key, &product);
   return product;
@@ -153,8 +193,6 @@ PrimitiveDictProduct<T, extractor>::create() {
 template <typename T>
 T*
 ObjectProduct<T>::create() {
-  this->unrefResult = false;
-
   T* product = new T(this->res);
   return product;
 }
@@ -168,8 +206,6 @@ ComplexObjectProduct<T, X>::ComplexObjectProduct(X extra) : extraParam(extra) {
 template <typename T, class X>
 T*
 ComplexObjectProduct<T, X>::create() {
-  this->unrefResult = false;
-
   T* product = new T(this->res, extraParam);
   return product;
 }
@@ -183,8 +219,6 @@ ComparatorProduct<T, extractor>::ComparatorProduct(T _value) : value(_value) {
 template <typename T, int (*extractor)(xmmsc_result_t*, T*)>
 bool
 ComparatorProduct<T, extractor>::create() {
-  this->unrefResult = true;
-
   T product;
   (*extractor)(res, &product);
   return (product == value);

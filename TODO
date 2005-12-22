@@ -64,7 +64,7 @@
             Make it available without requiring the call to wait(async)
       [X] Free all the allocated delayed objects
   [X] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
-  [ ] Design proper abstraction layer (all async events, current PL, collections)
+  [X] Design proper abstraction layer (all async events, current PL, collections)
   [ ] Add command to import files in mlib (import)
   ==> v0.4
 

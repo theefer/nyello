@@ -5,14 +5,14 @@ Dispatcher* Dispatcher::instance = NULL;
 
 
 Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
-  conn = connection;
+  conn     = connection;
+  async    = new Asynchronizer(connection);
+  StaticAsynchronizer::setAsynchronizer(async);
+
   playback = new Playback(connection);
   medialib = new MediaLibrary(connection);
   pparser  = new PatternParser(playback, medialib);
   output   = new Output();
-  async    = new Asynchronizer(connection);
-
-  StaticAsynchronizer::setAsynchronizer(async);
 
   command   = NULL;
   arguments = new char*[MAX_ARGUMENTS];

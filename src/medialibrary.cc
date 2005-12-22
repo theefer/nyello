@@ -20,20 +20,18 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   //        If no matching playlist, create a new one ("current-$N") and use it?
 
   // FIXME: Let's not mess with the PL on startup for now
-  //usePlaylist("autosaved");
+  usePlaylist("autosaved");
 
   // Setup signal hooks
-  /* FIXME: segfault?
   lastRes = xmmsc_broadcast_playlist_changed(connection);
   xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistChanged>, this);
   xmmsc_result_unref(lastRes);
-  */
 
-  /* FIXME: segfault?
+  /* FIXME: Causes problems because of the way other clients load playlists
   lastRes = xmmsc_broadcast_medialib_playlist_loaded(connection);
   xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistLoaded>, this);
   xmmsc_result_unref(lastRes);
-  */
+  /* */
 }
 
 
@@ -403,21 +401,20 @@ MediaLibrary::validPlaylistName(const char* name) {
 }
 
 
+/**
+ * Save the active playlist to the medialibrary when it changes
+ * (unless we are loading a playlist).
+ */
 void
 MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res) {
   if (xmmsc_result_iserror(res)) {
-    cerr << "error: " << xmmsc_result_get_error (res) << endl;
+    cerr << "Error on playlist change: " << xmmsc_result_get_error(res) << endl;
   }
 
-  // FIXME: Ignore if playlist loaded too ?
-  // FIXME: not ALL clients should do it!
-  saveCurrentPlaylistAs(currentPlaylistName.c_str());
-
-  cout << "DEBUG: Playlist changed, saved to mlib in " 
-       << currentPlaylistName << endl;
-  xmmsc_result_unref(res);
+  if(newPlaylistName.size() == 0) {
+    saveCurrentPlaylistAs(currentPlaylistName.c_str());
+  }
 }
-
 
 void
 MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res) {
@@ -429,8 +426,6 @@ MediaLibrary::catchPlaylistLoaded(xmmsc_result_t *res) {
   // Copy name of the loaded playlist as the current playlist
   xmmsc_result_get_string(res, &loadedName);
   currentPlaylistName = loadedName;
-
-  xmmsc_result_unref(res);
 
   // DEBUG:
   cout << "DEBUG: Playlist loaded, new current playlist: "

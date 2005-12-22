@@ -66,6 +66,7 @@
   [X] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
   [X] Design proper abstraction layer (all async events, current PL, collections)
   [X] Add command to import files in mlib (import)
+  [X] PLAYLIST-LIST doesn't always display empty playlists
   ==> v0.4
 
   [ ] Develop collection handling and classes
@@ -98,4 +99,3 @@ Known bugs
   [ ] NOT and XOR not working at all
   [ ] Cannot replace song when playing the last song of the playlist
   [ ] Playlist sequences are broken (non-continuous ids in the DB)
-  [ ] PLAYLIST-LIST doesn't always display empty playlists

@@ -78,7 +78,8 @@ MediaLibrary::getPlaylists() {
                                   "FROM Playlist "
                                   "LEFT JOIN PlaylistEntries ON id=playlist_id "
                                   "WHERE substr(name, 0, 1) <> \"_\" "
-                                  "GROUP BY playlist_id");
+                                  "GROUP BY id "
+                                  "ORDER BY name");
 
   return new Delayed<RichResult*>(lastRes,
                                   new ObjectProduct<RichResult>(),

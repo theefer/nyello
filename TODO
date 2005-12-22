@@ -92,6 +92,8 @@ Unscheduled fixes (by order of importance, most important first)
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)
   [ ] REMOVE can behave wrong if the active playlist and the matching saved playlist differ
+  [ ] REMOVE actually always wrong and never working?
   [ ] NOT and XOR not working at all
   [ ] Cannot replace song when playing the last song of the playlist
   [ ] Playlist sequences are broken (non-continuous ids in the DB)
+  [ ] PLAYLIST-LIST doesn't always display empty playlists

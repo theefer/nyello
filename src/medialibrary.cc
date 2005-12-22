@@ -12,15 +12,12 @@ void runMediaLibraryMethod(xmmsc_result_t *res, void *mlib_ptr) {
 MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   connection = _connection;
   lastRes    = NULL;
-  currentPlaylistName = "autosaved";
-  newPlaylistName = "";
 
+  usePlaylist("autosaved");
 
   // FIXME: Find current playlist name or start with the autosaved playlist
   //        If no matching playlist, create a new one ("current-$N") and use it?
 
-  // FIXME: Let's not mess with the PL on startup for now
-  usePlaylist("autosaved");
 
   // Setup signal hooks
   lastRes = xmmsc_broadcast_playlist_changed(connection);

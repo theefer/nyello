@@ -85,27 +85,11 @@ void readline_callback(char* input) {
  */
 void
 Dispatcher::loop() {
-  char* prompt = new char[MAX_PROMPT_LENGTH + 1];
-  char* input = new char[MAX_COMMAND_LENGTH];
-
-  rl_callback_handler_install(NULL, &readline_callback);
-
-  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
-  cout << prompt;
-  cout.flush();
-
+  refreshPrompt();
 
   // Main event loop
   while(true) {
     async->waitForData();
-
-    // FIXME: Show prompt when needed
-    if(showprompt) {
-      snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
-      cout << prompt;
-      cout.flush();
-      showprompt = false;
-    }
   }
 
 }
@@ -137,7 +121,7 @@ Dispatcher::dispatch() {
     cerr << "Unknown command '" << command << "'!" << endl;
   }
 
-  showprompt = true;
+  refreshPrompt();
 }
 
 
@@ -222,6 +206,14 @@ Dispatcher::parseToken(char** strref) {
   return token;
 }
 
+
+void
+Dispatcher::refreshPrompt() {
+  char* prompt = new char[MAX_PROMPT_LENGTH + 1];
+  snprintf(prompt, MAX_COMMAND_LENGTH, PROMPT, medialib->getCurrentPlaylistName().c_str());
+  rl_callback_handler_install(prompt, &readline_callback);
+  delete prompt;
+}
 
 /**
  * Wait on the given Delayed pointer and destroy it.

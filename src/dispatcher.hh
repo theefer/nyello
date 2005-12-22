@@ -118,8 +118,6 @@ private:
   list<Command*> commands;
   map<const char*, Command*, charCmp> commandList;
 
-  bool showprompt;
-
 
   Dispatcher(xmmsc_connection_t* connection);
 
@@ -131,6 +129,7 @@ private:
   int parseInteger(char* ptr);
   char* parseToken(char** str);
 
+  void refreshPrompt();
   void waitAndFree(Delayed<void>* del);
 };
 

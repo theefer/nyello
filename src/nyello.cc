@@ -46,7 +46,7 @@
   * L   LIST [playlist]  Display the list of songs in the given playlist, or the currently
                          playing playlist if no playlist given.
 
--   +   IMPORT [path...] Import new files in the media-library.
+  * +   IMPORT [path...] Import new files in the media-library.
   
   * E   ENQUEUE <pattern> [IN <playlist>?]
   * E+  INSERT  <pattern>

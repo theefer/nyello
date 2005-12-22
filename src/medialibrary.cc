@@ -12,6 +12,8 @@ void runMediaLibraryMethod(xmmsc_result_t *res, void *mlib_ptr) {
 MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   connection = _connection;
   lastRes    = NULL;
+  currentPlaylistName = "autosaved";
+  newPlaylistName = "";
 
   usePlaylist("autosaved");
 
@@ -320,38 +322,37 @@ MediaLibrary::removeSongAt(unsigned int position) {
  */
 Delayed<void>*
 MediaLibrary::import(char* uri) {
-  // FIXME: todo!
-  // FIXME: handle HTTP URIs too
   Delayed<void>* res = NULL;
   string errmsg;
+  Uri location(uri);
 
-  // Make it an absolute path
-  char path[PATH_MAX];
-  if(!realpath(uri, path)) {
-    return NULL;
-  }
+  // FIXME: Do we want a more verbose output?
 
-  // FIXME: Glob it
-
-  char lastchar = path[ strlen(path) - 1 ];
-
-  // Path is a directory
-  if(lastchar == '/') {
+  // Import directory
+  if(location.isDirectory()) {
+    /*
+    cout << "Importing directory '" << location.getPath() << "'" << endl;
     errmsg = "Error: cannot import directory '";
     errmsg += uri;
     errmsg += "' into the medialib, server said: ";
 
-    lastRes = xmmsc_medialib_path_import(connection, path);
     res = new Delayed<void>(lastRes, errmsg);
+    */
+    lastRes = xmmsc_medialib_path_import(connection, location.getPath());
+    res = new Delayed<void>(lastRes);
   }
-  // Path is a file
+  // Add file entry
   else {
+    /*
+    cout << "Importing file '" << location.getPath() << "'" << endl;
     errmsg = "Error: cannot import file '";
     errmsg += uri;
     errmsg += "' into the medialib, server said: ";
 
-    lastRes = xmmsc_medialib_add_entry(connection, path);
     res = new Delayed<void>(lastRes, errmsg);
+    */
+    lastRes = xmmsc_medialib_add_entry(connection, location.getPath());
+    res = new Delayed<void>(lastRes);
   }
 
   return res;

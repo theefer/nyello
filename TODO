@@ -65,7 +65,7 @@
       [X] Free all the allocated delayed objects
   [X] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
   [X] Design proper abstraction layer (all async events, current PL, collections)
-  [ ] Add command to import files in mlib (import)
+  [X] Add command to import files in mlib (import)
   ==> v0.4
 
   [ ] Develop collection handling and classes
@@ -88,6 +88,8 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Generalize the #argument check in the dispatcher
   [ ] Templatize the STATUS output
   [ ] Allow no-network operations (e.g. help) even without a server
+  [ ] Handle import of HTTP urls
+  [ ] Use glob() to match paths to import
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)

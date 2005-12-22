@@ -20,6 +20,7 @@
 #include "patternquery.hh"
 #include "collection.hh"
 #include "delayed.hh"
+#include "uri.hh"
 
 
 

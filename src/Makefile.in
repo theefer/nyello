@@ -57,7 +57,7 @@ am_nyello_OBJECTS = nyello.$(OBJEXT) dispatcher.$(OBJEXT) \
 	patternparser.$(OBJEXT) patternnodes.$(OBJEXT) \
 	patternquery.$(OBJEXT) medialibquery.$(OBJEXT) \
 	sequence.$(OBJEXT) command.$(OBJEXT) delayed.$(OBJEXT) \
-	asynchronizer.$(OBJEXT) productmaker.$(OBJEXT)
+	asynchronizer.$(OBJEXT) productmaker.$(OBJEXT) uri.$(OBJEXT)
 nyello_OBJECTS = $(am_nyello_OBJECTS)
 nyello_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -181,7 +181,8 @@ nyello_SOURCES = nyello.cc\
 		command.cc\
 		delayed.cc\
 		asynchronizer.cc\
-		productmaker.cc
+		productmaker.cc\
+		uri.cc
 
 all: all-am
 
@@ -274,6 +275,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/selectresult.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sequence.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/songresult.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uri.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

@@ -109,6 +109,8 @@ public:
 
   AbstractDelayed<T>* wait();
 
+  static T readAndFree(Delayed<T>* del);
+
 protected:
   bool ready;
 
@@ -296,6 +298,22 @@ AbstractDelayed<T>::wait() {
   }
 
   return this;
+}
+
+
+/**
+ * Utility function to extract a result from a Delayed object and
+ * return it after deleting the object.
+ */
+template <typename T>
+T
+AbstractDelayed<T>::readAndFree(Delayed<T>* del) {
+  T value;
+  if(del != NULL) {
+    value = del->getProduct();
+    delete del;
+  }
+  return value;
 }
 
 

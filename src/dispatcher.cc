@@ -274,19 +274,25 @@ Dispatcher::actionHelp() {
 void
 Dispatcher::actionStatus() {
   if(argNumber == 0) {
-    AbstractResult* song;
-    int curr_id = playback->getCurrentId()->getProduct();
-    if(curr_id > 0 && (song = medialib->getSongById(curr_id)->getProduct()) != NULL) {
-      ResultList* rlist = new ResultList(song);
-      output->printStatus(rlist,
-                          playback->getStatus()->getProduct(),
-                          playback->getCurrentPlaytime()->getProduct(),
-                          playback->getCurrentPosition()->getProduct() + 1,
-                          medialib->getCurrentPlaylistName().c_str());
-      delete rlist;
+    AbstractResult* song = NULL;
+    int curr_id = Delayed<unsigned int>::readAndFree(playback->getCurrentId());
+    if(curr_id > 0) {
+      Delayed<RichResult*>* res = medialib->getSongById(curr_id);
+      song = Delayed<RichResult*>::readAndFree(res);
+
+      if(song != NULL) {
+        ResultList* rlist = new ResultList(song);
+        output->printStatus(rlist,
+                            Delayed<unsigned int>::readAndFree(playback->getStatus()),
+                            Delayed<unsigned int>::readAndFree(playback->getCurrentPlaytime()),
+                            Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()) + 1,
+                            medialib->getCurrentPlaylistName());
+        delete rlist;
+      }
     }
-    else {
-      output->printEmptyStatus(playback->getStatus()->getProduct(),
+
+    if(song == NULL) {
+      output->printEmptyStatus(Delayed<unsigned int>::readAndFree(playback->getStatus()),
                                medialib->getCurrentPlaylistName());
     }
   }
@@ -436,7 +442,8 @@ Dispatcher::actionList() {
     pldel = medialib->getCurrentPlaylist();
     if(pldel != NULL) {
       songList = new SelectionResultList(pldel->getProduct(),
-                                         playback->getCurrentPosition()->getProduct());
+                                         Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()));
+      delete pldel;
     }
     else {
       cerr << "Error: problem while listing the playlist!" << endl;
@@ -447,6 +454,7 @@ Dispatcher::actionList() {
     pldel = medialib->getPlaylist(arguments[0]);
     if(pldel != NULL) {
       songList = new ResultList(pldel->getProduct());
+      delete pldel;
     }
     else {
       cerr << "Error: problem while listing the playlist!" << endl;
@@ -517,7 +525,7 @@ Dispatcher::actionInsert() {
     return;
   }
 
-  position = playback->getCurrentPosition()->getProduct() + 1;
+  position = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()) + 1;
   if(position > 0) {
     medialib->insertSongs(songlist, position);
   }
@@ -540,12 +548,11 @@ Dispatcher::actionReplace() {
     return;
   }
 
-  position = playback->getCurrentPosition()->getProduct() + 1;
+  position = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()) + 1;
   if(position > 0) {
     medialib->insertSongs(songlist, position);
     waitAndFree(medialib->removeSongAt(position - 1));
-    Delayed<void>* res = playback->jumpRelative(1);
-    waitAndFree(res);
+    waitAndFree(playback->jumpRelative(1));
   }
   else {
     medialib->enqueueSongs(songlist);
@@ -560,7 +567,6 @@ Dispatcher::actionReplace() {
 AbstractResult*
 Dispatcher::findSongsFromArgs() {
   Delayed<SelectResult*>* res;
-  AbstractResult* songlist;
   PatternQuery* query;
 
   query = pparser->registerNewPattern(arguments, argNumber);
@@ -570,10 +576,7 @@ Dispatcher::findSongsFromArgs() {
   }
 
   res = medialib->searchSongs(query);
-  songlist = res->getProduct();
-  delete res;
-
-  return songlist;
+  return Delayed<SelectResult*>::readAndFree(res);
 }
 
 
@@ -585,7 +588,7 @@ void
 Dispatcher::actionRemove() {
   if(argNumber > 0) {
     Delayed<int>* res = medialib->getCurrentPlaylistSize();
-    int playlist_len = res->getProduct();
+    int playlist_len = Delayed<int>::readAndFree(res);
     PositionSequence* positions = new PositionSequence();
     for(int i = 0; i < argNumber; ++i) {
       positions->parseAdd(arguments[i]);
@@ -644,7 +647,8 @@ Dispatcher::actionPlaylistList() {
     return;
   }
 
-  AbstractResult* playlists = medialib->getPlaylists()->getProduct();
+  Delayed<RichResult*>* res = medialib->getPlaylists();
+  AbstractResult* playlists = Delayed<RichResult*>::readAndFree(res);
   if(playlists == NULL) {
     cerr << "Error: failed to get the list of playlists!" << endl;
   }

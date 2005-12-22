@@ -7,6 +7,7 @@ SongResult::SongResult(xmmsc_result_t* _res, xmmsc_connection_t* _conn)
 }
 
 SongResult::~SongResult() {
+  flushCache();
 }
 
 unsigned int
@@ -40,11 +41,7 @@ SongResult::getInt(char* key) {
 bool
 SongResult::next() {
   // Update internal state
-  if(cache != NULL) {
-    delete delay;
-    delay = NULL;
-    cache = NULL;
-  }
+  flushCache();
   ++counter;
 
   return xmmsc_result_list_next(res);
@@ -55,4 +52,13 @@ SongResult::fetchCache() {
   cache = xmmsc_medialib_get_info(conn, getId());
   delay = new Delayed<void>(cache);
   delay->wait();
+}
+
+void
+SongResult::flushCache() {
+  if(cache != NULL) {
+    delete delay;
+    delay = NULL;
+    cache = NULL;
+  }
 }

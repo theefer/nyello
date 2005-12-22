@@ -151,7 +151,7 @@ MediaLibrary::usePlaylist(const char* name) {
   }
 
   // Check that we can load that playlist
-  if(!hasPlaylist(name)->getProduct()) {
+  if(!Delayed<bool>::readAndFree(hasPlaylist(name))) {
     cerr << "Error: the playlist '" << name << "' does not exist!" << endl;
     return NULL;
   }
@@ -173,7 +173,7 @@ Delayed<void>*
 MediaLibrary::loadPlaylist(const char* name) {
   lastRes = xmmsc_medialib_playlist_load(connection, name);
   Delayed<void>* del = new Delayed<void>(lastRes,
-                                     "Error: failed while changing the playlist, server said: ");
+                                         "Error: failed while changing the playlist, server said: ");
   del->addCallback<MediaLibrary>(this, &MediaLibrary::updateCurrentPlaylistName);
   return del;
 }

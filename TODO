@@ -38,7 +38,7 @@
   [X] Fixed pattern syntax bug (now '#' matches '1#0-' indeed)
   ==> v0.3
 
-  [ ] Make readline use async, redesign main-loop, remove waits
+  [X] Make readline use async, redesign main-loop, remove waits
       [X] Clean isolation of the message-passing block of code, reuse everywhere
           * One class handles the main loop.
           * Configure which signal to listen (xmms2, readline).
@@ -54,7 +54,7 @@
                        needed if we set a callback => nice way of running a method (type problem) ?
             tests: playback->tickle(), mlib->usePlaylist()
       [X] runCallbacks() should wait (?) on callbacks returning Delayed<T> objects.
-      [ ] Use C++ features (template specialisation, overloading) to
+      [X] Use C++ features (template specialisation, overloading) to
           make the class structures simpler and cleaner, and to make
           the construction of Delayed objects straighter. Also, to unref
           results in ProductMaker cleanly.
@@ -62,8 +62,8 @@
       [X] Improve quality of Asynchronizer
             Will have to call Dispatcher::parseInput().
             Make it available without requiring the call to wait(async)
-      [ ] Free all the allocated delayed objects
-  [ ] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
+      [X] Free all the allocated delayed objects
+  [X] Brainstorm on abstraction layer, make it reliable, dynamic (broadcast, etc)
   [ ] Design proper abstraction layer (all async events, current PL, collections)
   [ ] Add command to import files in mlib (import)
   ==> v0.4

@@ -34,6 +34,7 @@ private:
   Delayed<void>* delay;
 
   void fetchCache();
+  void flushCache();
 
 };
 

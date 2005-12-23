@@ -34,7 +34,7 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   lastRes = xmmsc_broadcast_medialib_playlist_loaded(connection);
   xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistLoaded>, this);
   xmmsc_result_unref(lastRes);
-  /* */
+  */
 }
 
 

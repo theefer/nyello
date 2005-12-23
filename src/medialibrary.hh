@@ -22,13 +22,16 @@
 #include "delayed.hh"
 #include "uri.hh"
 
-
-
 using namespace std;
 
 
+/**
+ * High-level representation of the XMMS2 MediaLib.
+ *
+ * Any operation related to the medialib should be done with this
+ * class.  Results are returned as asynchroneous Delayed objects.
+ */
 class MediaLibrary {
-
 public:
 
   MediaLibrary(xmmsc_connection_t* connection);

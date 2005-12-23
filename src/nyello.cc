@@ -5,10 +5,7 @@
 
   * Program usage
 
-    Usage: nyello [options] [<host> [<port>]]
-
-      -h, --help     display this help and exit
-      -v, --version  output version information and exit
+    Usage: nyello [command]
 
 
   * Analogy
@@ -52,7 +49,8 @@
   * E+  INSERT  <pattern>
   * E-  REPLACE <pattern>
 
-    M   MOVE    ???           Move a group of song in the playlist.
+-   M   MOVE    <id-sequence> <offset>  Move a group of song in the playlist to an absolute
+                                        position or a relative offset.
 -   X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
   * O   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
@@ -142,15 +140,11 @@
 
 #include <iostream>
 
-
 #include <xmmsclient/xmmsclient.h>
-
 
 #include "dispatcher.hh"
 
-
 using namespace std;
-
 
 
 int main(int argc, char* argv[]) {

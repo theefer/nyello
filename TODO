@@ -68,7 +68,7 @@
   [X] Add command to import files in mlib (import)
   [X] PLAYLIST-LIST doesn't always display empty playlists
   [X] Cannot replace song when playing the last song of the playlist
-  [ ] When loading a playlist, jump to previous position and tickle
+  [X] When loading a playlist, jump to previous position and tickle
   ==> v0.4
 
   [ ] Develop collection handling and classes

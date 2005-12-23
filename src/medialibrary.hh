@@ -68,6 +68,7 @@ public:
   // FIXME: HACK: should be private
   void catchPlaylistChanged(xmmsc_result_t *res);
   void catchPlaylistLoaded(xmmsc_result_t *res);
+  void catchPlaylistPositionChanged(xmmsc_result_t *res);
 
 private:
   xmmsc_connection_t* connection;

@@ -26,6 +26,10 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistChanged>, this);
   xmmsc_result_unref(lastRes);
 
+  lastRes = xmmsc_broadcast_playback_current_id(connection);
+  xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistPositionChanged>, this);
+  xmmsc_result_unref(lastRes);
+
   /* FIXME: Causes problems because of the way other clients load playlists
   lastRes = xmmsc_broadcast_medialib_playlist_loaded(connection);
   xmmsc_result_notifier_set(lastRes, runMediaLibraryMethod<&MediaLibrary::catchPlaylistLoaded>, this);
@@ -124,13 +128,17 @@ MediaLibrary::getCurrentPlaylistSize() {
 
 /**
  * Save the current server playlist in the medialib under the given
- * name.
+ * name (unless we are loading a playlist).
  */
 Delayed<void>*
 MediaLibrary::saveCurrentPlaylistAs(const char* name) {
   // Invalid playlist name
   if(!validPlaylistName(name)) {
     cerr << "Error: invalid playlist name!" << endl;
+    return NULL;
+  }
+
+  if(newPlaylistName.size() > 0) {
     return NULL;
   }
 
@@ -401,8 +409,7 @@ MediaLibrary::validPlaylistName(const char* name) {
 
 
 /**
- * Save the active playlist to the medialibrary when it changes
- * (unless we are loading a playlist).
+ * Save the active playlist to the medialibrary when it changes.
  */
 void
 MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res) {
@@ -410,9 +417,20 @@ MediaLibrary::catchPlaylistChanged(xmmsc_result_t *res) {
     cerr << "Error on playlist change: " << xmmsc_result_get_error(res) << endl;
   }
 
-  if(newPlaylistName.size() == 0) {
-    saveCurrentPlaylistAs(currentPlaylistName.c_str());
+  saveCurrentPlaylistAs(currentPlaylistName.c_str());
+}
+
+/**
+ * Save the active playlist to the medialibrary when we change songs,
+ * so the pointer in the Playlist table is up-to-date.
+ */
+void
+MediaLibrary::catchPlaylistPositionChanged(xmmsc_result_t *res) {
+  if (xmmsc_result_iserror(res)) {
+    cerr << "Error on playlist position change: " << xmmsc_result_get_error(res) << endl;
   }
+
+  saveCurrentPlaylistAs(currentPlaylistName.c_str());
 }
 
 void

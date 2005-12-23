@@ -685,8 +685,8 @@ void
 Dispatcher::actionPlaylistUse() {
   // Use the given playlist
   if(argNumber == 1) {
-    Delayed<void>* del = medialib->usePlaylist(arguments[0]);
-    waitAndFree(del);
+    waitAndFree(medialib->usePlaylist(arguments[0]));
+    waitAndFree(playback->tickle());
   }
   // Missing the playlist name
   else if(argNumber == 0) {

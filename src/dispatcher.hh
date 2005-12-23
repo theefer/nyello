@@ -53,6 +53,7 @@ public:
   void loop();
   void execute(int num_args, char* args[]);
   void dispatch();
+  void refreshPrompt();
 
 
   void actionExit();
@@ -129,7 +130,6 @@ private:
   int parseInteger(char* ptr);
   char* parseToken(char** str);
 
-  void refreshPrompt();
   void waitAndFree(Delayed<void>* del);
 };
 

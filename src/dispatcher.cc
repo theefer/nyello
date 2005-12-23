@@ -77,6 +77,7 @@ void readline_callback(char* input) {
   Dispatcher* disp = Dispatcher::getInstance();
   disp->parseInput(input);
   disp->dispatch();
+  disp->refreshPrompt();
 }
 
 
@@ -120,8 +121,6 @@ Dispatcher::dispatch() {
   else if(command != NULL) {
     cerr << "Unknown command '" << command << "'!" << endl;
   }
-
-  refreshPrompt();
 }
 
 

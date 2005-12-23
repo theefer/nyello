@@ -67,11 +67,14 @@
   [X] Design proper abstraction layer (all async events, current PL, collections)
   [X] Add command to import files in mlib (import)
   [X] PLAYLIST-LIST doesn't always display empty playlists
+  [X] Cannot replace song when playing the last song of the playlist
+  [ ] When loading a playlist, jump to previous position and tickle
   ==> v0.4
 
   [ ] Develop collection handling and classes
   [ ] Save collections in a file (apply, save as, delete)
 R [ ] Handle collections internally (enter)
+  [ ] More commands (seek, exclude, filter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
 Design issues and needed improvements
@@ -81,7 +84,6 @@ Design issues and needed improvements
 
 Unscheduled fixes (by order of importance, most important first)
   [ ] Improve pattern features (comparators, limit)
-  [ ] More commands (seek, exclude, filter)
   [ ] Correct display, using wcs instead of str?
   [ ] Reference counter for the reused PatternNodes
   [ ] Free all the allocated memory, i.e. fix the leaks!
@@ -94,8 +96,5 @@ Unscheduled fixes (by order of importance, most important first)
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)
-  [ ] REMOVE can behave wrong if the active playlist and the matching saved playlist differ
-  [ ] REMOVE actually always wrong and never working?
   [ ] NOT and XOR not working at all
-  [ ] Cannot replace song when playing the last song of the playlist
   [ ] Playlist sequences are broken (non-continuous ids in the DB)

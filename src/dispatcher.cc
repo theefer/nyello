@@ -517,9 +517,9 @@ Dispatcher::actionInsert() {
     return;
   }
 
-  position = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()) + 1;
+  position = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition());
   if(position > 0) {
-    medialib->insertSongs(songlist, position);
+    medialib->insertSongs(songlist, position + 1);
   }
   else {
     medialib->enqueueSongs(songlist);
@@ -534,20 +534,25 @@ void
 Dispatcher::actionReplace() {
   AbstractResult* songlist;
   unsigned int position;
+  unsigned int playlist_size;
 
   songlist = findSongsFromArgs();
   if(songlist == NULL) {
     return;
   }
 
-  position = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()) + 1;
-  if(position > 0) {
-    medialib->insertSongs(songlist, position);
-    waitAndFree(medialib->removeSongAt(position - 1));
-    waitAndFree(playback->jumpRelative(1));
+  position = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition());
+  playlist_size = Delayed<int>::readAndFree(medialib->getCurrentPlaylistSize());
+  if(position > 0 && position < (playlist_size - 1)) {
+    medialib->insertSongs(songlist, position + 1);
   }
   else {
     medialib->enqueueSongs(songlist);
+  }
+
+  if(position > 0) {
+    waitAndFree(medialib->removeSongAt(position));
+    waitAndFree(playback->jumpRelative(1));
   }
 }
 

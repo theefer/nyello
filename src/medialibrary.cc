@@ -337,8 +337,13 @@ MediaLibrary::import(char* uri) {
 
   // FIXME: Do we want a more verbose output?
 
+  // Skip invalid location
+  if(!location.exists()) {
+    cout << "Error: location '" << uri << "' does not exist!" << endl;    
+  }
+
   // Import directory
-  if(location.isDirectory()) {
+  else if(location.isDirectory()) {
     /*
     cout << "Importing directory '" << location.getPath() << "'" << endl;
     errmsg = "Error: cannot import directory '";
@@ -347,9 +352,11 @@ MediaLibrary::import(char* uri) {
 
     res = new Delayed<void>(lastRes, errmsg);
     */
+
     lastRes = xmmsc_medialib_path_import(connection, location.getPath());
     res = new Delayed<void>(lastRes);
   }
+
   // Add file entry
   else {
     /*
@@ -360,6 +367,7 @@ MediaLibrary::import(char* uri) {
 
     res = new Delayed<void>(lastRes, errmsg);
     */
+
     lastRes = xmmsc_medialib_add_entry(connection, location.getPath());
     res = new Delayed<void>(lastRes);
   }

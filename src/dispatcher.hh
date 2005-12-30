@@ -99,7 +99,7 @@ public:
 
 private:
   static const int MAX_ARGUMENTS  = 64;
-  static const int MAX_TOKEN_SIZE = 64;
+  static const int MAX_TOKEN_SIZE = 128;
   static const int MAX_PROMPT_LENGTH = 24;
   static const int MAX_COMMAND_LENGTH = 256;
 

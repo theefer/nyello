@@ -32,6 +32,7 @@ public:
   
   Delayed<bool>* isPlaying();
   Delayed<bool>* isPaused();
+  Delayed<bool>* isStopped();
 
   Delayed<unsigned int>* getCurrentId();
   Delayed<unsigned int>* getCurrentPosition();

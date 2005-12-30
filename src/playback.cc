@@ -98,6 +98,17 @@ Playback::isPaused() {
 }
 
 /**
+ * Return whether playback is currently stopped.
+ */
+Delayed<bool>*
+Playback::isStopped() {
+  lastRes = xmmsc_playback_status(connection);
+  return new Delayed<bool>(lastRes,
+                           new ComparatorProduct<unsigned int, &xmmsc_result_get_uint>(XMMS_PLAYBACK_STATUS_STOP),
+                           "Could not get playback status: ");
+}
+
+/**
  * Return the mlib id of the song currently playing, or -1 if there is
  * no valid entry.
  */

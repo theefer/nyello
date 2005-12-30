@@ -54,6 +54,7 @@ public:
   void execute(int num_args, char* args[]);
   void dispatch();
   void refreshPrompt();
+  void stop();
 
 
   void actionExit();
@@ -111,6 +112,8 @@ private:
   PatternParser* pparser;
   Output*        output;
   Asynchronizer* async;
+
+  bool finished;
 
   char* command;
   char** arguments;

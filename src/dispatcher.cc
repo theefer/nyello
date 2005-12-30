@@ -17,6 +17,7 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
   command   = NULL;
   arguments = new char*[MAX_ARGUMENTS];
   argNumber = 0;
+  finished  = false;
 
   // Use an {alias=>command} hashlist to speed up command matching
   commands = Command::listAll();
@@ -61,9 +62,11 @@ Dispatcher::~Dispatcher() {
  * Function called whenever a full line is read by readline.
  */
 void readline_callback(char* input) {
+  Dispatcher* disp = Dispatcher::getInstance();
+
   // End of stream, quit
   if(input == NULL) {
-    cout << endl;
+    disp->stop();
     return;
   }
 
@@ -74,7 +77,6 @@ void readline_callback(char* input) {
 
   add_history(input);
 
-  Dispatcher* disp = Dispatcher::getInstance();
   disp->parseInput(input);
   disp->dispatch();
   disp->refreshPrompt();
@@ -89,7 +91,7 @@ Dispatcher::loop() {
   refreshPrompt();
 
   // Main event loop
-  while(true) {
+  while(!finished) {
     async->waitForData();
   }
 
@@ -213,6 +215,18 @@ Dispatcher::refreshPrompt() {
   rl_callback_handler_install(prompt, &readline_callback);
   delete prompt;
 }
+
+
+/**
+ * Stop the mainloop and leave the dispatcher.
+ */
+void
+Dispatcher::stop() {
+  finished = true;
+  rl_callback_handler_remove();
+  cout << endl;
+}
+
 
 /**
  * Wait on the given Delayed pointer and destroy it.

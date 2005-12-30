@@ -1,3 +1,16 @@
+Version 0.4.0
+(30 December 2005)
+
+	New features:
+	- Major refactoring to change all clientlib calls to async
+	- Active playlist now always in sync in the mlib
+	- New command: import
+
+	Bug fixes:
+	- PLAYLIST-LIST doesn't always display empty playlists
+	- Cannot replace song when playing the last song of the playlist
+	- When loading a playlist, jump to previous position and tickle
+
 Version 0.3.0
 (19 September 2005)
 

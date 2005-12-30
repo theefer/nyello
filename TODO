@@ -69,6 +69,7 @@
   [X] PLAYLIST-LIST doesn't always display empty playlists
   [X] Cannot replace song when playing the last song of the playlist
   [X] When loading a playlist, jump to previous position and tickle
+  [X] Make ^D quit the shell.
   ==> v0.4
 
   [ ] Develop collection handling and classes
@@ -93,8 +94,10 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Allow no-network operations (e.g. help) even without a server
   [ ] Handle import of HTTP urls
   [ ] Use glob() to match paths to import
+  [ ] Valgrind the app.
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)
   [ ] NOT and XOR not working at all
   [ ] Playlist sequences are broken (non-continuous ids in the DB)
+  [ ] 'info foo -o l ; enqueue #' doesn't retain ordering

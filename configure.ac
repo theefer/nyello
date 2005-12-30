@@ -3,9 +3,9 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT(nyello, 0.2.0, seb@cine7.net)
+AC_INIT(nyello, 0.4.0, seb@cine7.net)
 
-VERSION=0.2.0
+VERSION=0.4.0
 AM_INIT_AUTOMAKE($DEPS, $VERSION)
 
 AC_CONFIG_SRCDIR([config.h.in])

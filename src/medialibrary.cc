@@ -15,6 +15,7 @@ MediaLibrary::MediaLibrary(xmmsc_connection_t* _connection) {
   currentPlaylistName = "autosaved";
   newPlaylistName = "";
 
+  saveCurrentPlaylistAs("autosaved");
   usePlaylist("autosaved");
 
   // FIXME: Find current playlist name or start with the autosaved playlist

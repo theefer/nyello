@@ -72,20 +72,22 @@
   [X] Make ^D quit the shell.
   ==> v0.4
 
+  [ ] Use wchar* instead of char* for UTF-8 support
+  [ ] Correct display, using wcs instead of str?
+  [ ] Use string class whenever possible (including in the parser)
+  [ ] Adapt columns to fit window size.
+R [ ] More commands (seek, exclude, filter)
+
   [ ] Develop collection handling and classes
   [ ] Save collections in a file (apply, save as, delete)
 R [ ] Handle collections internally (enter)
-  [ ] More commands (seek, exclude, filter)
 R [ ] Randomize playlist from a collection (playlist-random)
 
 Design issues and needed improvements
   [ ] Make error message handling more flexible in Delayed<T>
-  [ ] Use wchar* instead of char* for UTF-8 support
-  [ ] Use string class whenever possible (including in the parser)
 
 Unscheduled fixes (by order of importance, most important first)
   [ ] Improve pattern features (comparators, limit)
-  [ ] Correct display, using wcs instead of str?
   [ ] Reference counter for the reused PatternNodes
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] When no metadata is present, display Title=filename
@@ -95,6 +97,7 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Handle import of HTTP urls
   [ ] Use glob() to match paths to import
   [ ] Valgrind the app.
+  [ ] Customizable prompt (can display current song, playtime, etc).
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)

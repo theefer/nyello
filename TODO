@@ -76,7 +76,8 @@
   [ ] Correct display, using wcs instead of str?
   [ ] Use string class whenever possible (including in the parser)
   [ ] Adapt columns to fit window size.
-R [ ] More commands (seek, exclude, filter)
+  [ ] No infinite loop if server disconnects.
+R [ ] More commands (seek, move, exclude, filter)
 
   [ ] Develop collection handling and classes
   [ ] Save collections in a file (apply, save as, delete)
@@ -91,13 +92,18 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Reference counter for the reused PatternNodes
   [ ] Free all the allocated memory, i.e. fix the leaks!
   [ ] When no metadata is present, display Title=filename
-  [ ] Generalize the #argument check in the dispatcher
   [ ] Templatize the STATUS output
   [ ] Allow no-network operations (e.g. help) even without a server
   [ ] Handle import of HTTP urls
   [ ] Use glob() to match paths to import
   [ ] Valgrind the app.
   [ ] Customizable prompt (can display current song, playtime, etc).
+  [ ] Do we need all those pointers anyway?
+  [ ] New Server class that handles all the existing modules.
+  [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
+  [ ] Generalize the #argument check in the dispatcher
+  [ ] Only instantiate modules (Playback, MediaLibrary) when they are needed
+      (shell-mode or required by the inline command).
 
 Known bugs
   [ ] "info 2 OR /" always returns an empty set, which is wrong (due to ORDER BY in subquery)

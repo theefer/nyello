@@ -27,11 +27,11 @@
   * P   PLAY             Start playback.
   * P   PAUSE            Pause playback.
   * S   STOP [option]    Stop playback (option: now, graceful, end)
--   K   SEEK [pos|offset] Seek to absolute position or relative offset (if +/-), in seconds.
+  * K   SEEK [pos|offset] Seek to absolute position or relative offset (if +/-), in seconds.
   
   * R   PREVIOUS [offset] Play previous song in the current playlist.
   * N   NEXT     [offset] Play next song in the current playlist.
-  * J   JUMP     [pos|offset] Jump to given position in the current playlist
++ * J   JUMP     [pos|offset] Jump to given position in the current playlist
                               or to a given offset (if starts by +/-)
   
   * I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
@@ -49,10 +49,10 @@
   * E+  INSERT  <pattern>
   * E-  REPLACE <pattern>
 
--   M   MOVE    <id-sequence> <offset>  Move a group of song in the playlist to an absolute
++   M   MOVE    <id-sequence> <offset>  Move a group of song in the playlist to an absolute
                                         position or a relative offset.
 -   X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
-  * O   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
++ * O   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
   * U   SHUFFLE [playlist]    Shuffle the playlist.
 
@@ -74,6 +74,15 @@
 
   * Q   QUIT, EXIT       Terminates nyello.
 
+-   A   ADMIN  <command>
+               q  quit                      Terminate xmms2d server.
+               s  stats                     Display stats (uptime, server version,
+                                            mlib size, unresolved ratio)
+               h  rehash [pattern]          Rehash given songs (or all mlib if no pattern).
+               o  remove <pattern>          Remove given songs from mlib.
+               p  plugins                   List all plugins loaded in the server.
+               c  config [property [value]] Set the value of a property, or display the property
+                                            (all if no arg).
 
   * Patterns
 

@@ -73,12 +73,14 @@
   ==> v0.4
 
   [X] New commands (seek)
+  [ ] Make all commands use patterns (jump, remove)
+  [ ] Adapt columns to fit window size.
   [ ] Use wchar* instead of char* for UTF-8 support
   [ ] Correct display, using wcs instead of str?
   [ ] Use string class whenever possible (including in the parser)
-  [ ] Adapt columns to fit window size.
+  [ ] New Server class that handles all the existing modules.
+  [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
   [ ] No infinite loop if server disconnects.
-  [ ] Make all commands use patterns (jump, remove)
 R [ ] More commands (move, filter)
 
   [ ] Develop collection handling and classes
@@ -101,8 +103,6 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Valgrind the app.
   [ ] Customizable prompt (can display current song, playtime, etc).
   [ ] Do we need all those pointers anyway?
-  [ ] New Server class that handles all the existing modules.
-  [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
   [ ] Generalize the #argument check in the dispatcher
   [ ] Only instantiate modules (Playback, MediaLibrary) when they are needed
       (shell-mode or required by the inline command).

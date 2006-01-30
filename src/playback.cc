@@ -55,24 +55,15 @@ Playback::jumpRelative(int offset) {
 }
 
 Delayed<void>*
-Playback::seekAbsolute(int position) {
-  lastRes = xmmsc_playback_seek_ms(connection, position);
+Playback::seekAbsolute(int pos) {
+  lastRes = xmmsc_playback_seek_ms(connection, pos);
   return new Delayed<void>(lastRes, "Couldn't seek in current song: ");
 }
 
 Delayed<void>*
 Playback::seekRelative(int offset) {
-  int position;
-  position = 0;
-  // FIXME: Compute current-time + offset
-  /*
-  position = current() + offset;
-  if(position < 0) {
-    position = 0;
-  }
-  */
-  
-  return seekAbsolute(position);
+  lastRes = xmmsc_playback_seek_ms_rel(connection, offset);
+  return new Delayed<void>(lastRes, "Couldn't seek in current song: ");
 }
 
 /**

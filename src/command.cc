@@ -75,6 +75,16 @@ Command::listAll() {
                         "a number prefixed by + or -, jump of that offset from the current position.\n");
   cmds.push_back(current);
 
+  current = new Command("seek", "k", &Dispatcher::actionSeek,
+                        "seek POSITION|OFFSET",
+                        "Seek to a position or a relative offset in the playing song.",
+                        "Seek to a position or a relative offset in the playing song.\n"
+                        "\n"
+                        "If the argument is a simple number, seek to that position.  If it is\n"
+                        "a number prefixed by + or -, jump of that offset.  In both cases,\n"
+                        "the argument is interpreted as a number of seconds.");
+  cmds.push_back(current);
+
   // Search
   current = new Command("info", "i", &Dispatcher::actionInfo,
                         "info PATTERN",

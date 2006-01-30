@@ -70,6 +70,7 @@ public:
   void actionPrevious();
   void actionNext();
   void actionJump();
+  void actionSeek();
 
   void actionInfo();
   void actionList();

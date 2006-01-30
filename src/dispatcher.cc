@@ -415,6 +415,30 @@ Dispatcher::actionJump() {
 
 
 /**
+ * Seek in the song currently playing.
+ */
+void
+Dispatcher::actionSeek() {
+  int offset;
+  if(argNumber == 1) {
+    Delayed<void>* res;
+    if((*arguments[0] == '+') || (*arguments[0] == '-')) {
+      res = playback->seekRelative(parseInteger(arguments[0]) * 1000);
+    }
+    else {
+      res = playback->seekAbsolute(parseInteger(arguments[0]) * 1000);
+    }
+
+    waitAndFree(res);
+  }
+  else {
+    cerr << "Error: jump requires one argument!" << endl;
+    return;
+  }
+}
+
+
+/**
  * Display the songs matching the given pattern.
  */
 void

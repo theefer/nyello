@@ -72,12 +72,14 @@
   [X] Make ^D quit the shell.
   ==> v0.4
 
+  [X] New commands (seek)
   [ ] Use wchar* instead of char* for UTF-8 support
   [ ] Correct display, using wcs instead of str?
   [ ] Use string class whenever possible (including in the parser)
   [ ] Adapt columns to fit window size.
   [ ] No infinite loop if server disconnects.
-R [ ] More commands (seek, move, exclude, filter)
+  [ ] Make all commands use patterns (jump, remove)
+R [ ] More commands (move, filter)
 
   [ ] Develop collection handling and classes
   [ ] Save collections in a file (apply, save as, delete)

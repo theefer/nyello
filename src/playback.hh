@@ -27,7 +27,7 @@ public:
   Delayed<void>* tickle();
   Delayed<void>* jumpAbsolute(int pos);
   Delayed<void>* jumpRelative(int offset);
-  Delayed<void>* seekAbsolute(int position);
+  Delayed<void>* seekAbsolute(int pos);
   Delayed<void>* seekRelative(int offset);
   
   Delayed<bool>* isPlaying();

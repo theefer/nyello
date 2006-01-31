@@ -395,21 +395,75 @@ Dispatcher::actionNext() {
  */
 void
 Dispatcher::actionJump() {
-  int offset;
-  if(argNumber == 1) {
-    Delayed<void>* res;
-    if((*arguments[0] == '+') || (*arguments[0] == '-')) {
-      res = playback->jumpRelative(parseInteger(arguments[0]));
+  // Get list of songs in current playlist
+  AbstractResult* playlist;
+  playlist = medialib->getCurrentPlaylist()->getProduct();
+  if(playlist == NULL) {
+    return;
+  }
+
+  // Get list of songs matching the pattern
+  AbstractResult* songlist;
+  songlist = findSongsFromArgs();
+  if(songlist == NULL) {
+    return;
+  }
+
+  // Locate current pos
+  bool playing(Delayed<bool>::readAndFree(playback->isPlaying()));
+  int currentpos(-1);
+  if(playing) {
+    currentpos = Delayed<unsigned int>::readAndFree(playback->getCurrentPosition());
+  }
+
+  // Move playlist pointer after current pos
+  int pos(0);
+  playlist->rewind();
+  while(pos <= currentpos) {
+    ++pos;
+    playlist->next();
+
+    // Out of playlist, rewind and stop
+    if(!playlist->isValid()) {
+      if(currentpos != pos) {
+        currentpos = -1;
+      }
+      playlist->rewind();
+      pos = 0;
+      break;
     }
-    else {
-      res = playback->jumpAbsolute(parseInteger(arguments[0]) - 1);
+  }
+  
+  bool found(false);
+  while(!found && pos != currentpos) {
+    // Current entry matching pattern?
+    songlist->rewind();
+    while(!found && songlist->isValid()) {
+      if(playlist->getId() == songlist->getId()) {
+        found = true;
+      }
+      songlist->next();
     }
 
-    waitAndFree(res);
+    // Move to next entry (possibly looping)
+    if(!found) {
+      ++pos;
+      playlist->next();
+      if(!playlist->isValid()) {
+        if(currentpos == -1) {
+          break;
+        }
+        playlist->rewind();
+        pos = 0;
+      }
+    }
   }
-  else {
-    cerr << "Error: jump requires one argument!" << endl;
-    return;
+
+  delete playlist;
+  delete songlist;
+
+  if(found) {
+    waitAndFree(playback->jumpAbsolute(pos));
   }
 }
 
@@ -647,7 +701,6 @@ Dispatcher::actionRemove() {
 
     songlist->rewind();
     while(!found && songlist->isValid()) {
-      unsigned int id(songlist->getId());
       if(playlist->getId() == songlist->getId()) {
         waitAndFree(medialib->removeSongAt(pos));
         found = true;

@@ -73,7 +73,10 @@
   ==> v0.4
 
   [X] New commands (seek)
-  [ ] Make all commands use patterns (jump, remove)
+  [X] Make all commands use patterns (jump, remove)
+  [ ] Make default pattern customizable (config variable).
+  [ ] Make + the default pattern.
+  [ ] New pattern symbols: _ and _N (current and N-next entries)
   [ ] Adapt columns to fit window size.
   [ ] Use wchar* instead of char* for UTF-8 support
   [ ] Correct display, using wcs instead of str?
@@ -81,6 +84,7 @@
   [ ] New Server class that handles all the existing modules.
   [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
   [ ] No infinite loop if server disconnects.
+  [ ] Support all flags (year, tracknr, genre)
 R [ ] More commands (move, filter)
 
   [ ] Develop collection handling and classes

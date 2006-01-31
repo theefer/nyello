@@ -623,22 +623,65 @@ Dispatcher::findSongsFromArgs() {
  */
 void
 Dispatcher::actionRemove() {
-  if(argNumber > 0) {
-    Delayed<int>* res = medialib->getCurrentPlaylistSize();
-    int playlist_len = Delayed<int>::readAndFree(res);
-    PositionSequence* positions = new PositionSequence();
-    for(int i = 0; i < argNumber; ++i) {
-      positions->parseAdd(arguments[i]);
-    }
-    for(int pos = playlist_len; pos > 0; --pos) {
-      if(positions->contains(pos)) {
-        Delayed<void>* resrem = medialib->removeSongAt(pos - 1);
-        waitAndFree(resrem);
-      }
-    }
+  // Get list of songs in current playlist
+  AbstractResult* playlist;
+  playlist = medialib->getCurrentPlaylist()->getProduct();
+  if(playlist == NULL) {
+    return;
   }
-  else {
-    cerr << "Error: this command requires arguments!" << endl;    
+
+  // Get list of songs matching the pattern
+  AbstractResult* songlist;
+  songlist = findSongsFromArgs();
+  if(songlist == NULL) {
+    return;
+  }
+
+  // Remove intersection of both lists
+  bool playing(Delayed<bool>::readAndFree(playback->isPlaying()));
+  unsigned int currentpos(Delayed<unsigned int>::readAndFree(playback->getCurrentPosition()));
+  unsigned int pos(0);
+  bool found(false), tickle(false);
+  playlist->rewind();
+  while(playlist->isValid()) {
+
+    songlist->rewind();
+    while(!found && songlist->isValid()) {
+      unsigned int id(songlist->getId());
+      if(playlist->getId() == songlist->getId()) {
+        waitAndFree(medialib->removeSongAt(pos));
+        found = true;
+
+        if(!tickle && playing && (pos == currentpos)) {
+          tickle = true;
+        }
+      }
+
+      songlist->next();
+    }
+
+    if(found) {
+      --currentpos;
+      found = false;
+    }
+    else {
+      ++pos;
+    }
+    playlist->next();
+  }
+
+  delete playlist;
+  delete songlist;
+
+  // Handle the mess if we removed the playing song
+  if(tickle) {
+    int plsize(Delayed<int>::readAndFree(medialib->getCurrentPlaylistSize()));
+    if(currentpos < plsize - 1) {
+      waitAndFree(playback->jumpRelative(1));
+    }
+    else {
+      waitAndFree(playback->stop());
+    }
   }
 }
 

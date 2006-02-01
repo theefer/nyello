@@ -31,8 +31,9 @@
   
   * R   PREVIOUS [offset] Play previous song in the current playlist.
   * N   NEXT     [offset] Play next song in the current playlist.
-+ * J   JUMP     [pos|offset] Jump to given position in the current playlist
-                              or to a given offset (if starts by +/-)
+
+  * J   JUMP <pattern>   Jump in the current playlist to the first song matching the
+                         pattern after the current song.
   
   * I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
                          playing song if no pattern.
@@ -51,8 +52,7 @@
 
 +   M   MOVE    <id-sequence> <offset>  Move a group of song in the playlist to an absolute
                                         position or a relative offset.
--   X   EXCLUDE <pattern>     Remove songs matching the pattern from the current playlist.
-+ * O   REMOVE  <id-sequence> Remove songs of given position from the current playlist.
+  * O   REMOVE  <pattern>     Remove songs matching the pattern from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
   * U   SHUFFLE [playlist]    Shuffle the playlist.
 

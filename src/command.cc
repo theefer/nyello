@@ -67,12 +67,15 @@ Command::listAll() {
   cmds.push_back(current);
 
   current = new Command("jump", "j", &Dispatcher::actionJump,
-                        "jump POSITION|OFFSET",
-                        "Jump to some position in the playlist or from a relative offset.",
-                        "Jump to some position in the playlist or from a relative offset.\n"
+                        "jump PATTERN",
+                        "Jump in the playlist to the first song matching a pattern.",
+                        "Jump in the playlist to the first song matching the pattern after the\n"
+                        "current song.\n"
                         "\n"
-                        "If the argument is a simple number, jump to that position.  If it is\n"
-                        "a number prefixed by + or -, jump of that offset from the current position.\n");
+                        "If no song is playing, jump starts searching at the beginning of the\n"
+                        "playlist.  Search wraps around at the end of the playlist.\n"
+                        "\n"
+                        "See 'help info' for the syntax of patterns.\n");
   cmds.push_back(current);
 
   current = new Command("seek", "k", &Dispatcher::actionSeek,
@@ -285,12 +288,11 @@ Command::listAll() {
   cmds.push_back(current);
 
   current = new Command("remove", "o", &Dispatcher::actionRemove,
-                        "remove POSITIONS",
-                        "Remove songs with given positions from the current playlist.",
-                        "Remove songs with given positions from the current playlist.\n"
+                        "remove PATTERN",
+                        "Remove songs matching the pattern from the current playlist.",
+                        "Remove songs matching the pattern from the current playlist.\n"
                         "\n"
-                        "The arguments are position sequences (see 'help info' for a description\n"
-                        "of the syntax of sequences).\n");
+                        "See 'help info' for the syntax of patterns.\n");
   cmds.push_back(current);
 
   current = new Command("clear", "c", &Dispatcher::actionClear,

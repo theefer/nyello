@@ -22,6 +22,7 @@ class PatternParser {
 public:
   static const char CHAR_PATTERNREF = '+';
   static const char CHAR_MATCHFLAGS = '-';
+  static const char CHAR_CURRENTSEQ = '_';
 
   static const int MAX_HISTORY_LEN  = 10;
 
@@ -64,6 +65,7 @@ private:
   PatternNode* parsePlaylistSequence();
   PatternNode* parseHistorySequence();
   PatternNode* parseMLibSequence();
+  PatternNode* parseCurrentPosSequence();
 
   PatternOrderBy* parseOrderBy(char* orderstr);
 

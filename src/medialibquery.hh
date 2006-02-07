@@ -23,8 +23,10 @@ public:
   void appendStartGroup();
   void appendEndGroup();
 
+  void appendString(const string& str);
   void appendString(char* str);
   void appendString(unsigned int i);
+  void appendProtectedString(const string& str);
   void appendProtectedString(char* str);
 
   void appendExactMatch(char* value);

@@ -25,6 +25,11 @@ MedialibQuery::appendEndGroup() {
 }
 
 void
+MedialibQuery::appendString(const string& str) {
+  conditions += str;
+}
+
+void
 MedialibQuery::appendString(char* str) {
   conditions += str;
 }
@@ -34,6 +39,13 @@ MedialibQuery::appendString(unsigned int i) {
   stringstream buffer;
   buffer << i;
   conditions += buffer.str();
+}
+
+void
+MedialibQuery::appendProtectedString(const string& str) {
+  char* prep_str = xmmsc_sqlite_prepare_string(str.c_str());
+  conditions += prep_str;
+  delete prep_str;
 }
 void
 MedialibQuery::appendProtectedString(char* str) {

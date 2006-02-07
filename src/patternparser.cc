@@ -220,6 +220,11 @@ PatternParser::parseCondition() {
       cond = parseShortMatchFlags();
   }
 
+  // If contains an '_': sequence relative to current position
+  else if(strrchr(currArg, CHAR_CURRENTSEQ) != NULL) {
+    cond = parseCurrentPosSequence();
+  }
+
   // If contains a '/': playlist position sequence
   else if(strrchr(currArg, '/') != NULL) {
     cond = parsePlaylistSequence();
@@ -353,19 +358,13 @@ PatternParser::parsePatternReference() {
 PatternNode*
 PatternParser::parsePlaylistSequence() {
   PatternNode* playlistSeq;
-  char* pos     = strrchr(currArg, '/');
-  char* seq_str = pos + 1;
-  int name_len  = pos - currArg;
-  char* plname;
-  if(name_len > 0) {
-    plname = makeCopy(currArg, name_len);
-  }
-  // No playlist name, use current playlist
-  else {
-    // FIXME: Use makeCopy() despite the const ?
-    const char* buffer = medialib->getCurrentPlaylistName().c_str();
-    plname = new char[ strlen(buffer) + 1 ];
-    strcpy(plname, buffer);
+  char* seq_str = strrchr(currArg, '/') + 1;
+
+  // Find playlist name (default to current playlist)
+  string plname(currArg);
+  plname.erase(plname.rfind('/'));
+  if(plname.size() <= 0) {
+    plname = medialib->getCurrentPlaylistName();
   }
 
   IdSequence* seq = new IdSequence();
@@ -434,6 +433,48 @@ PatternParser::parseMLibSequence() {
   }
 
   return mlibSeq;
+}
+
+
+/**
+ * Parse the current argument as a sequence relative to the current
+ * playing position, return the PatternNode* if parsing valid, NULL
+ * otherwise.
+ */
+PatternNode*
+PatternParser::parseCurrentPosSequence() {
+  PatternNode* currposSeq;
+  char* to_str = strrchr(currArg, CHAR_CURRENTSEQ) + 1;
+
+  Delayed<unsigned int>* res = playback->getCurrentPosition();
+  unsigned int current(Delayed<unsigned int>::readAndFree(res));
+
+  // Read bounds (default to 0)
+  unsigned int from(charToId(currArg));
+  unsigned int to(charToId(to_str));
+
+  // If no bounds, optimize by only inserting the current id
+  if((from == 0) && (to == 0)) {
+    Delayed<unsigned int>* res = playback->getCurrentId();
+    IdSequence* seq = new IdSequence();
+    seq->addValue(res->getProduct());
+    delete res;
+    
+    currposSeq = new PatternMLibSequence(seq);
+  }
+
+  // Otherwise, return a PlaylistSequence relative to current pos
+  else {
+    // FIXME: Disabled for now as they DO NOT WORK !
+    /*
+    IdSequence* seq = new IdSequence();
+    seq->addRange(current - from, current + to);
+    currposSeq = new PatternPlaylistSequence(medialib->getCurrentPlaylistName(), seq);
+    */
+    currposSeq = NULL;
+  }
+
+  return currposSeq;
 }
 
 

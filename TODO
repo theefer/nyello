@@ -76,7 +76,7 @@
   [X] Make all commands use patterns (jump, remove)
   [ ] Make default pattern customizable (config variable).
   [ ] Make + the default pattern.
-  [ ] New pattern symbols: _ and _N (current and N-next entries)
+  [X] New pattern symbols: _ and FROM_TO (current and surrounding entries)
   [ ] Adapt columns to fit window size.
   [ ] Use wchar* instead of char* for UTF-8 support
   [ ] Correct display, using wcs instead of str?

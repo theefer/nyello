@@ -34,7 +34,7 @@ PatternMatchCondition::PatternMatchCondition(char* _field, char* _value, bool _e
 PatternMLibSequence::PatternMLibSequence(IdSequence* _seq) : seq(_seq) {
 }
 
-PatternPlaylistSequence::PatternPlaylistSequence(char* _plname, IdSequence* _seq) 
+PatternPlaylistSequence::PatternPlaylistSequence(const string& _plname, IdSequence* _seq) 
   : plname(_plname), seq(_seq) {
 }
 
@@ -80,7 +80,6 @@ PatternMLibSequence::~PatternMLibSequence() {
   delete seq;
 }
 PatternPlaylistSequence::~PatternPlaylistSequence() {
-  delete plname;
   delete seq;
 }
 

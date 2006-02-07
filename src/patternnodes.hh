@@ -110,13 +110,13 @@ private:
 
 class PatternPlaylistSequence : public PatternCondition {
 public:
-  PatternPlaylistSequence(char* plname, IdSequence* seq);
+  PatternPlaylistSequence(const string& plname, IdSequence* seq);
   ~PatternPlaylistSequence();
 
   virtual void appendToQuery(MedialibQuery* query);
 
 private:
-  char* plname;
+  string plname;
   IdSequence* seq;
 };
 

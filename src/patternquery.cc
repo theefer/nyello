@@ -33,7 +33,7 @@ PatternQuery::saveResults(SelectResult* songlist) {
 }
 
 
-char*
+string
 PatternQuery::getSql() {
   return queryCache->getQuery();
 }

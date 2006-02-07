@@ -7,8 +7,9 @@ MedialibQuery::MedialibQuery() {
   orderCount = 0;
   conditions = "";
 
-  // FIXME: Add all; and can't we do it in a clean way?
-  ANY_FIELDS = "('artist','album','title')";
+  anyFieldList.push_back("artist");
+  anyFieldList.push_back("album");
+  anyFieldList.push_back("title");
 }
 
 MedialibQuery::~MedialibQuery() {
@@ -35,7 +36,6 @@ MedialibQuery::appendString(char* str) {
 }
 void
 MedialibQuery::appendString(unsigned int i) {
-  // FIXME: Other way to append int?
   stringstream buffer;
   buffer << i;
   conditions += buffer.str();
@@ -208,11 +208,10 @@ MedialibQuery::appendOrderBy(char* field, bool asc) {
 }
 
 
-char*
+string
 MedialibQuery::getQuery() {
   int i;
   stringstream query;
-  char* query_ret;
 
   // Append select
   query << "SELECT DISTINCT m0.id FROM Media as m0";
@@ -240,18 +239,22 @@ MedialibQuery::getQuery() {
     query << " ORDER BY " << orderby;
   }
 
-  // FIXME: Cleaner way?
-  query_ret = new char[ query.str().length() + 1 ];
-  strcpy(query_ret, query.str().c_str());
-  return query_ret;
+  return query.str();
 }
 
 
 void
 MedialibQuery::appendAnyField() {
-  appendCurrentKey();
-  appendString(" IN ");
-  appendString(ANY_FIELDS);
+  list<string>::iterator fieldIt;
+
+  appendStartGroup();
+  for(fieldIt = anyFieldList.begin(); fieldIt != anyFieldList.end(); ++fieldIt) {
+    if(fieldIt != anyFieldList.begin()) {
+      appendString(" OR ");
+    }
+    appendThisField(*fieldIt);
+  }
+  appendEndGroup();
 }
 
 void
@@ -261,6 +264,13 @@ MedialibQuery::appendThisOrderField(char* field) {
         << " ON m0.id=j" << orderCount << ".id"
         << " AND j" << orderCount << ".key = " << prep_field;
   delete prep_field;
+}
+
+void
+MedialibQuery::appendThisField(const string& field) {
+  appendCurrentKey();
+  appendString(" = ");
+  appendProtectedString(field);
 }
 
 void
@@ -305,7 +315,6 @@ MedialibQuery::appendCurrentValue() {
 
 void
 MedialibQuery::appendCurrentField(char* field) {
-  // FIXME: Other way to append int?
   stringstream buffer;
   buffer << "m" << aliasCount << "." << field;
   conditions += buffer.str();

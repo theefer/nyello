@@ -22,7 +22,7 @@ public:
 
   void saveResults(SelectResult* songlist);
 
-  char* getSql();
+  string getSql();
   IdSequence* getIds();
   IdSequence* getIdsFromSequence(IdSequence* seq);
 

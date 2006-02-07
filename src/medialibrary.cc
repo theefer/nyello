@@ -392,14 +392,14 @@ MediaLibrary::getCurrentPlaylistName() {
 Delayed<SelectResult*>*
 MediaLibrary::searchSongs(PatternQuery* query) {
   Delayed<SelectResult*>* del;
-  char* sql = query->getSql();
+  string sql(query->getSql());
 
 // FIXME: Remove this when queries are stable
 #ifdef MLIB_QUERY_DEBUG
   cout << "QUERY: " << query->getSql() << endl;
 #endif
 
-  lastRes = xmmsc_medialib_select(connection, sql);
+  lastRes = xmmsc_medialib_select(connection, sql.c_str());
   del = new Delayed<SelectResult*>(lastRes,
                                    new ComplexObjectProduct<SelectResult, xmmsc_connection_t*>(connection));
   del->addCallback<PatternQuery>(query, &PatternQuery::saveResults);

@@ -39,10 +39,11 @@ public:
   void appendOrderField(char* field, bool asc);
   void appendOrderFunction(char* function);
 
-  char* getQuery();
+  string getQuery();
 
 private:
-  char* ANY_FIELDS;
+  // Lists all fields searched when no key selected
+  list<string> anyFieldList;
 
   int aliasCount;
   int orderCount;
@@ -54,6 +55,7 @@ private:
   void appendThisOrderField(char* field);
 
   void appendAnyField();
+  void appendThisField(const string& field);
   void appendThisField(char* field);
   void appendApproxValue(char* value);
   void appendExactValue(char* value);

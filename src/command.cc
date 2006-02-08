@@ -20,8 +20,10 @@
 #include "command.hh"
 
 Command::Command(char* _name, char* _shortName, DispFnPtr _action,
-                 char* _usage, char* _description, char* _help)
-  : action(_action), usage(_usage), description(_description), help(_help) {
+                 char* _usage, char* _description, char* _help,
+                 bool _needConnex)
+  : action(_action), usage(_usage), description(_description), help(_help),
+    needConnex(_needConnex) {
   aliases.push_back(_name);
   aliases.push_back(_shortName);
 }
@@ -377,7 +379,8 @@ Command::listAll() {
                         "help [COMMAND]",
                         "Display the help for all or a specific command.",
                         "Display the summary of all commands, or the help for a specific command\n"
-                        "if one is given in argument.\n");
+                        "if one is given in argument.\n",
+                        false);
   current->addAlias("?");
   cmds.push_back(current);
 

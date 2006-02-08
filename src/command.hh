@@ -32,7 +32,8 @@ class Command {
 public:
 
   Command(char* name, char* shortName, DispFnPtr action,
-          char* usage, char* description, char* help);
+          char* usage, char* description, char* help,
+          bool needConnection = false);
   ~Command();
 
   inline void addAlias(char* alias) { aliases.push_back(alias); }
@@ -44,6 +45,7 @@ public:
   inline char* getDescription() { return description; }
   inline char* getHelp()        { return help; }
   inline vector<char*> getAliases() { return aliases; }
+  inline bool needsConnection() { return needConnex; }
 
   static list<Command*> listAll();
 
@@ -54,6 +56,7 @@ private:
   char* usage;
   char* description;
   char* help;
+  bool needConnex;
 };
 
 #endif  // __COMMAND_HH__

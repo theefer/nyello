@@ -74,16 +74,17 @@
 
   [X] New commands (seek)
   [X] Make all commands use patterns (jump, remove)
+  [X] Fixed problem with SQLite (very slow queries using IN)
+  [X] New pattern symbols: _ and FROM_TO (current and surrounding entries)
+  [ ] New Server class that handles all the existing modules.
   [ ] Make default pattern customizable (config variable).
   [ ] Make + the default pattern.
-  [X] New pattern symbols: _ and FROM_TO (current and surrounding entries)
+  [ ] No infinite loop if server disconnects.
   [ ] Adapt columns to fit window size.
   [ ] Use wchar* instead of char* for UTF-8 support
   [ ] Correct display, using wcs instead of str?
   [ ] Use string class whenever possible (including in the parser)
-  [ ] New Server class that handles all the existing modules.
   [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
-  [ ] No infinite loop if server disconnects.
   [ ] Support all flags (year, tracknr, genre)
 R [ ] More commands (move, filter)
 

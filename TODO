@@ -72,6 +72,9 @@
   [X] Make ^D quit the shell.
   ==> v0.4
 
+  [ ] Add License and Copyright in all files!
+  [ ] Context-sensitive completion
+  [ ] manpage
   [X] New commands (seek)
   [X] Make all commands use patterns (jump, remove)
   [X] Fixed problem with SQLite (very slow queries using IN)
@@ -97,6 +100,7 @@ Design issues and needed improvements
   [ ] Make error message handling more flexible in Delayed<T>
 
 Unscheduled fixes (by order of importance, most important first)
+  [ ] Sync with API changes, e.g. userconf_dir location function
   [ ] Improve pattern features (comparators, limit)
   [ ] Reference counter for the reused PatternNodes
   [ ] Free all the allocated memory, i.e. fix the leaks!
@@ -107,6 +111,7 @@ Unscheduled fixes (by order of importance, most important first)
   [ ] Use glob() to match paths to import
   [ ] Valgrind the app.
   [ ] Customizable prompt (can display current song, playtime, etc).
+  [ ] Colors in output
   [ ] Do we need all those pointers anyway?
   [ ] Generalize the #argument check in the dispatcher
   [ ] Only instantiate modules (Playback, MediaLibrary) when they are needed

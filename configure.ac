@@ -21,7 +21,6 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 
 dnl Check for xmms2 (check in /usr/local too)
-export PKG_CONFIG_PATH=:$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
 pkg_modules="xmms2-client"
 PKG_CHECK_MODULES(XMMS2, [$pkg_modules])
 AC_SUBST(XMMS2_CFLAGS)

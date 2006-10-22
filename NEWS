@@ -1,3 +1,5 @@
+2006-10-23: v0.5.0  -  New command (seek), improved commands (remove, jump) and other fixes.
+2006-01-02: v0.4.1  -  Minor fix of the autosaved autoload on nyello startup.
 2005-12-30: v0.4.0  -  Major refactoring (all async now), new command (import) and bug fixes.
 2005-09-19: v0.3.0  -  New features (configure, new commands, etc) and bug fixes.
 2005-09-13: v0.2.0  -  New features (orderby, command help) and bug fixes.

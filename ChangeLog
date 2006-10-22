@@ -1,3 +1,24 @@
+Version 0.5.0
+(23 October 2006)
+
+	New features:
+	- Added a seek command (absolute and relative).
+	- Made 'remove' and 'jump' use a pattern instead of positions in the playlist.
+	- New pattern symbol '_' (matches currently playing song, see 'help INFO')
+
+	Bug fixes:
+	- Changed query generator to work around a possible SQLite bug with IN (...).
+
+	Misc fixes:
+	- Added Copyright and License notices in all source files.
+	- Cleanup the configure.ac file.
+	
+Version 0.4.1
+(2 January 2006)
+
+	Bug fixes:
+	- Fix of the autosaved autoload on nyello startup
+
 Version 0.4.0
 (30 December 2005)
 

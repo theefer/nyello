@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.50)
 
 AC_INIT(nyello, 0.4.0, seb@cine7.net)
 

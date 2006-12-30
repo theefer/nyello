@@ -52,18 +52,11 @@ Dispatcher::Dispatcher(xmmsc_connection_t* connection) {
 
 
 Dispatcher*
-Dispatcher::getInstance(xmmsc_connection_t* connection) {
-  if(instance != NULL) {
-    delete instance;
+Dispatcher::getInstance() {
+  if(instance == NULL) {
+    instance = new Dispatcher();
   }
 
-  instance = new Dispatcher(connection);
-  return instance;
-}
-
-
-Dispatcher*
-Dispatcher::getInstance() {
   return instance;
 }
 

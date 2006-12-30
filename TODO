@@ -72,30 +72,36 @@
   [X] Make ^D quit the shell.
   ==> v0.4
 
-  [ ] Add License and Copyright in all files!
-  [ ] Context-sensitive completion
-  [ ] manpage
-  [ ] Add a VERSION command
   [X] New commands (seek)
   [X] Make all commands use patterns (jump, remove)
   [X] Fixed problem with SQLite (very slow queries using IN)
   [X] New pattern symbols: _ and FROM_TO (current and surrounding entries)
-  [ ] New Server class that handles all the existing modules.
-  [ ] Make default pattern customizable (config variable).
-  [ ] Make + the default pattern.
+  [X] Add License and Copyright in all files!
+  ==> v0.5
+
+  [X] Support composer flag 
+  [ ] Add a VERSION command
+  [ ] Allow to view HELP without a connection
   [ ] No infinite loop if server disconnects.
-  [ ] Adapt columns to fit window size.
+  [ ] Support collections (apply, save as, delete)
+  [ ] Handle collections internally (enter)
+R [ ] Full rewrite, using the new C++ API, collections, etc
+
+  [ ] Support nyello-specific pattern syntax and symbols
+  [ ] Make + the default pattern.
   [ ] Use wchar* instead of char* for UTF-8 support
   [ ] Correct display, using wcs instead of str?
-  [ ] Use string class whenever possible (including in the parser)
+R [ ] Use string class whenever possible (including in the parser)
+
+  [ ] Context-sensitive completion
+  [ ] manpage
+  [ ] New Server class that handles all the existing modules.
+  [ ] Adapt columns to fit window size.
+  [ ] Make default pattern customizable (config variable).
   [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
   [ ] Support all flags (year, tracknr, genre)
 R [ ] More commands (move, filter)
 
-  [ ] Develop collection handling and classes
-  [ ] Save collections in a file (apply, save as, delete)
-R [ ] Handle collections internally (enter)
-R [ ] Randomize playlist from a collection (playlist-random)
 
 Design issues and needed improvements
   [ ] Make error message handling more flexible in Delayed<T>

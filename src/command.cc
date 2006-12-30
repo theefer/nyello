@@ -141,6 +141,7 @@ Command::listAll() {
                         "    -y, --year   <year>\n"
                         "    -g, --genre  <genre>\n"
                         "    -n, --track  <track>\n"
+                        "    -p, --composer <composer>\n"
                         "    -z, --any    <any>\n"
                         "\n"
                         "  Examples:  -A Air          All songs by Air (exact artist match).\n"

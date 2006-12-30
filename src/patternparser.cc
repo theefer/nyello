@@ -522,6 +522,8 @@ PatternParser::parseOrderBy(char* _orderstr) {
       orderby->addOrder(new PatternOrderField("genre", true));
     else if(token.compare("y") == 0 || token.compare("year") == 0)
       orderby->addOrder(new PatternOrderField("year", true));
+    else if(token.compare("p") == 0 || token.compare("composer") == 0)
+      orderby->addOrder(new PatternOrderField("composer", true));
 
     // Special value: random
     else if(token.compare("r") == 0 || token.compare("random") == 0)
@@ -545,6 +547,9 @@ PatternParser::parseOrderBy(char* _orderstr) {
     else if(token.compare("Y") == 0
             || token.compare("Year") == 0 || token.compare("YEAR") == 0)
       orderby->addOrder(new PatternOrderField("year", false));
+    else if(token.compare("P") == 0
+            || token.compare("Composer") == 0 || token.compare("COMPOSER") == 0)
+      orderby->addOrder(new PatternOrderField("composer", false));
   }
 
   return orderby;
@@ -564,6 +569,9 @@ PatternParser::buildMatchCondition(char flag, char* value) {
 
   case 't':  cond = new PatternMatchCondition("title", makeCopy(value));         break;
   case 'T':  cond = new PatternMatchCondition("title", makeCopy(value), true);   break;
+
+  case 'p':  cond = new PatternMatchCondition("composer", makeCopy(value));        break;
+  case 'P':  cond = new PatternMatchCondition("composer", makeCopy(value), true);  break;
 
     /* FIXME: Special attributes
   case 'g':
@@ -609,6 +617,11 @@ PatternParser::buildMatchCondition(char* flag, char* value) {
     cond = new PatternMatchCondition("title", makeCopy(value));
   else if(strcmp(flag, "Title") == 0 || strcmp(flag, "TITLE") == 0)
     cond = new PatternMatchCondition("title", makeCopy(value), true);
+
+  else if(strcmp(flag, "composer") == 0)
+    cond = new PatternMatchCondition("composer", makeCopy(value));
+  else if(strcmp(flag, "Composer") == 0 || strcmp(flag, "COMPOSER") == 0)
+    cond = new PatternMatchCondition("composer", makeCopy(value), true);
 
   /* FIXME: special attributes
      genre, year, track

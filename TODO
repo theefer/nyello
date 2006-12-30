@@ -75,6 +75,7 @@
   [ ] Add License and Copyright in all files!
   [ ] Context-sensitive completion
   [ ] manpage
+  [ ] Add a VERSION command
   [X] New commands (seek)
   [X] Make all commands use patterns (jump, remove)
   [X] Fixed problem with SQLite (very slow queries using IN)

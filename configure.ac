@@ -28,6 +28,7 @@ AC_SUBST(XMMS2_LIBS)
 
 dnl Check for readline
 AC_CHECK_LIB(readline, readline)
+AC_CHECK_HEADER([readline/readline.h],, AC_MSG_ERROR([libreadline is missing]))
 READLINE_LIBS="-lreadline"
 AC_SUBST(READLINE_LIBS)
 

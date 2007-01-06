@@ -17,6 +17,7 @@
  */
 
 #include "signature.h"
+#include "argument.h"
 
 namespace cmd_parser {
 
@@ -33,7 +34,14 @@ namespace cmd_parser {
 	_signature::run( const std::string& input ) const
 	{
 		// FIXME: first try to match the arguments ; if works, execute() it
-
+		std::list< boost::shared_ptr< _argument > >::const_iterator it;
+		for( it = arguments.begin(); it != arguments.end(); ++it ) {
+			if( (*it)->match( input ) ) {
+				if( (*it)->takes_value() ) {
+					// FIXME: well, extract and record it, and advance input
+				}
+			}
+		}
 		return false;
 	}
 

@@ -31,7 +31,11 @@ namespace cmd_parser {
 
 	command::~command()
 	{
-		// FIXME: delete signatures
+		// Delete signatures
+		std::list< _signature* >::iterator it;
+		for( it = signatures.begin(); it != signatures.end(); ++it ) {
+			delete *it;
+		}
 	}
 
 	command&
@@ -73,13 +77,13 @@ namespace cmd_parser {
 	bool
 	command::match_command( const std::string& input ) const
 	{
-		if( match_command( name, input ) ) {
+		if( match_string( name, input ) ) {
 			return true;
 		}
 		else {
 			std::list< std::string >::const_iterator it;
-			for( it = aliases.begin(); !matched && it != aliases.end(); ++it ) {
-				if( match_command( *it, input ) ) {
+			for( it = aliases.begin(); it != aliases.end(); ++it ) {
+				if( match_string( *it, input ) ) {
 					return true;
 				}
 			}

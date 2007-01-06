@@ -22,6 +22,9 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+#include <boost/algorithm/string.hpp>
+namespace ba = boost::algorithm;
+
 
 namespace cmd_parser {
 
@@ -34,12 +37,17 @@ namespace cmd_parser {
 	class _argument
 	{
 		public:
-			~_argument();
+			virtual ~_argument();
 			
-		protected:
-			_argument();
+			virtual bool match( const std::string& input ) const = 0;
+			bool takes_value() const;
 
-			// FIXME: bool match( const string& tk );
+		protected:
+			_argument( bool has_val );
+
+		private:
+			bool has_val;
+
 	};
 
 
@@ -54,6 +62,8 @@ namespace cmd_parser {
 			static boost::shared_ptr< argument< T > > make( const std::string& name );
 			static boost::shared_ptr< argument< T > > make( const std::string& name,
 			                                                const T& def_val );
+
+			virtual bool match( const std::string& input ) const;
 
 		private:
 			std::string name;
@@ -72,6 +82,8 @@ namespace cmd_parser {
 
 			static kw_argument_ptr make( const std::string& kw );
 
+			virtual bool match( const std::string& input ) const;
+
 		private:
 			std::string keyword;
 
@@ -83,13 +95,13 @@ namespace cmd_parser {
 
 	template< typename T >
 	argument< T >::argument( const std::string& n )
-		: name( n ), optional( false )
+		: _argument( true ), name( n ), optional( false )
 	{
 	}
 
 	template< typename T >
 	argument< T >::argument( const std::string& n, const T& def_val )
-		: name ( n ), optional( true ), default_value( def_val )
+		: _argument( true ), name ( n ), optional( true ), default_value( def_val )
 	{
 	}
 
@@ -109,7 +121,15 @@ namespace cmd_parser {
 	boost::shared_ptr< argument< T > >
 	argument< T >::make( const std::string& name, const T& def_val )
 	{
-		return 	boost::shared_ptr< argument< T > >( new argument< T >( name, def_val ) );
+		return boost::shared_ptr< argument< T > >( new argument< T >( name, def_val ) );
+	}
+
+	template< typename T >
+	bool
+	argument< T >::match( const std::string& input ) const
+	{
+		// FIXME: don't match the full input? better, faster start detection!
+		return ( ba::equals( name, input ) || ba::istarts_with( name + " ", input ) );
 	}
 
 }

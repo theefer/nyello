@@ -21,12 +21,20 @@
 namespace cmd_parser {
 
 	_signature::_signature( const std::string& desc )
-		: description( desc )
+		: arguments(), description( desc )
 	{
 	}
 
 	_signature::~_signature()
 	{
+	}
+
+	bool
+	_signature::run( const std::string& input ) const
+	{
+		// FIXME: first try to match the arguments ; if works, execute() it
+
+		return false;
 	}
 
 }

@@ -17,6 +17,10 @@
  */
 
 #include "command.h"
+#include "signature.h"
+
+#include <boost/algorithm/string.hpp>
+namespace ba = boost::algorithm;
 
 namespace cmd_parser {
 
@@ -46,4 +50,48 @@ namespace cmd_parser {
 		return *this;
 	}
 
+	bool
+	command::match( const std::string& input ) const
+	{
+		// FIXME: Try to match command name or aliases
+		// If no match, abort, if failed match, throw, else great!
+		if( match_command( input ) ) {
+			std::list< _signature* >::const_iterator it;
+			for( it = signatures.begin(); it != signatures.end(); ++it ) {
+				if( (*it)->run( input ) ) {
+					return true;
+				}
+			}
+
+			// FIXME: throw misformat command exception!
+			throw "misformatted command!";
+		}
+
+		return false;
+	}
+
+	bool
+	command::match_command( const std::string& input ) const
+	{
+		if( match_command( name, input ) ) {
+			return true;
+		}
+		else {
+			std::list< std::string >::const_iterator it;
+			for( it = aliases.begin(); !matched && it != aliases.end(); ++it ) {
+				if( match_command( *it, input ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool
+	command::match_string( const std::string& cmd, const std::string& input ) const
+	{
+		// FIXME: better, faster start detection!
+		return ( ba::equals( cmd, input ) || ba::istarts_with( cmd + " ", input ) );
+	}
 }

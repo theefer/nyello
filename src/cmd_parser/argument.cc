@@ -20,6 +20,15 @@
 
 namespace cmd_parser {
 
+	_argument::_argument()
+	{
+	}
+
+	_argument::~_argument()
+	{
+	}
+
+
 	kw_argument::kw_argument( const std::string& kw )
 		: keyword( kw )
 	{

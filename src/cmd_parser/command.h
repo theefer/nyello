@@ -27,9 +27,18 @@
 namespace cmd_parser {
 
 	class _signature;
-
+/*
 	template< typename R, typename A1 = void, typename A2 = void, typename A3 = void >
 	class signature;
+*/
+	template< typename R, typename A1, typename A2, typename A3 >
+	class signature3;
+
+	template< typename R, typename A1, typename A2 >
+	class signature2;
+
+	template< typename R, typename A1 >
+	class signature1;
 
 	class command
 	{
@@ -41,9 +50,19 @@ namespace cmd_parser {
 			command& add_alias( const std::string& alias );
 			command& set_help( const std::string& help );
 
+			template< typename R, typename A1 >
+			signature1< R, A1 >& add_signature( const std::string& description,
+			                                    boost::function1<R, A1> f );
+
+			template< typename R, typename A1, typename A2 >
+			signature2< R, A1, A2 >& add_signature( const std::string& description,
+			                                        boost::function2<R, A1, A2> f );
+
 			template< typename R, typename A1, typename A2, typename A3 >
-			signature< R, A1, A2, A3 >& add_signature( const std::string& description,
-			                                           boost::function3<R, A1, A2, A3> f );
+			signature3< R, A1, A2, A3 >& add_signature( const std::string& description,
+			                                            boost::function3<R, A1, A2, A3> f );
+
+			bool match( const std::string& input ) const;
 
 		private:
 			std::string name;
@@ -54,15 +73,40 @@ namespace cmd_parser {
 
 			std::list< _signature* > signatures;
 
+			bool match_command( const std::string& input ) const;
+			bool match_string( const std::string& cmd, const std::string& input ) const;
+
 	};
 
 
 
 	template< typename R, typename A1, typename A2, typename A3 >
-	signature< R, A1, A2, A3 >&
+	signature3< R, A1, A2, A3 >&
 	command::add_signature( const std::string& description, boost::function3<R, A1, A2, A3> f )
 	{
-		signature< R, A1, A2, A3 >* sig( new signature< R, A1, A2, A3 >( description, f ) );
+		signature3< R, A1, A2, A3 >* sig( new signature3< R, A1, A2, A3 >( description, f ) );
+
+		signatures.push_back( sig );
+
+		return *sig;
+	}
+
+	template< typename R, typename A1, typename A2 >
+	signature2< R, A1, A2 >&
+	command::add_signature( const std::string& description, boost::function2<R, A1, A2> f )
+	{
+		signature2< R, A1, A2 >* sig( new signature2< R, A1, A2 >( description, f ) );
+
+		signatures.push_back( sig );
+
+		return *sig;
+	}
+
+	template< typename R, typename A1 >
+	signature1< R, A1 >&
+	command::add_signature( const std::string& description, boost::function1<R, A1> f )
+	{
+		signature1< R, A1 >* sig( new signature1< R, A1 >( description, f ) );
 
 		signatures.push_back( sig );
 

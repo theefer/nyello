@@ -58,7 +58,7 @@ public:
 };
 
 
-int main()
+int main(int argc, char* argv[])
 {
 	using namespace cmd_parser;
 
@@ -88,6 +88,13 @@ int main()
 
 	inter.gen_help(std::cout);
 	inter.gen_help("seek", std::cout);
+
+	string input;
+	for( int i( 1 ); i < argc; ++i ) {
+		input += argv[i];
+	}
+
+	inter.run( input );
 
 	return 0;
 }

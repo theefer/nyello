@@ -28,13 +28,24 @@ namespace cmd_parser {
 
 	interpreter::~interpreter()
 	{
-		// FIXME: delete commands
+		// Delete commands
+		std::list< command* >::iterator it;
+		for( it = commands.begin(); it != commands.end(); ++it ) {
+			delete *it;
+		}
 	}
 
 	void
 	interpreter::run( const std::string& input ) const
 	{
-		// FIXME: code
+		std::list< command* >::const_iterator it;
+		for( it = commands.begin(); it != commands.end(); ++it ) {
+			if( (*it)->match( input ) ) {
+				return;
+			}
+		}
+
+		// FIXME: throw an exception, unmatched command
 	}
 
 	void

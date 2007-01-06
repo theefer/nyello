@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#ifndef __ARGUMENT_H__
-#define __ARGUMENT_H__
+#ifndef CMD_PARSER_ARGUMENT_H
+#define CMD_PARSER_ARGUMENT_H
 
 #include <string>
 #include <boost/shared_ptr.hpp>
@@ -134,4 +134,4 @@ namespace cmd_parser {
 
 }
 
-#endif  // __ARGUMENT_H__
+#endif  // CMD_PARSER_ARGUMENT_H

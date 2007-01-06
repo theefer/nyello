@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#ifndef __INTERPRETER_H__
-#define __INTERPRETER_H__
+#ifndef CMD_PARSER_INTERPRETER_H
+#define CMD_PARSER_INTERPRETER_H
 
 #include <string>
 #include <list>
@@ -49,4 +49,4 @@ namespace cmd_parser {
 
 }
 
-#endif  // __INTERPRETER_H__
+#endif  // CMD_PARSER_INTERPRETER_H

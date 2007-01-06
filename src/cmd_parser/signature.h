@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#ifndef __SIGNATURE_H__
-#define __SIGNATURE_H__
+#ifndef CMD_PARSER_SIGNATURE_H
+#define CMD_PARSER_SIGNATURE_H
 
 #include <string>
 #include <list>
@@ -303,4 +303,4 @@ namespace cmd_parser {
 */
 }
 
-#endif  // __SIGNATURE_H__
+#endif  // CMD_PARSER_SIGNATURE_H

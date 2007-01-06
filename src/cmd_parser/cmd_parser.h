@@ -16,12 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#ifndef __CMD_PARSER_H__
-#define __CMD_PARSER_H__
+#ifndef CMD_PARSER_CMD_PARSER_H
+#define CMD_PARSER_CMD_PARSER_H
 
 #include "interpreter.h"
 #include "command.h"
 #include "signature.h"
 #include "argument.h"
 
-#endif  // __CMD_PARSER_H__
+#endif  // CMD_PARSER_CMD_PARSER_H

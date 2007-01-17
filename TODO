@@ -98,6 +98,7 @@ R [ ] Use string class whenever possible (including in the parser)
   [ ] New Server class that handles all the existing modules.
   [ ] Adapt columns to fit window size.
   [ ] Make default pattern customizable (config variable).
+  [ ] Make default searched properties customizable (config variable)
   [ ] Special admin commands (server [quit|rehash|config|plugin|stats])
   [ ] Support all flags (year, tracknr, genre)
 R [ ] More commands (move, filter)

@@ -21,7 +21,7 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 
 dnl Check for xmms2 (check in /usr/local too)
-pkg_modules="xmms2-client"
+pkg_modules="xmms2-client xmms2-client-cpp xmms2-client-cpp-glib"
 PKG_CHECK_MODULES(XMMS2, [$pkg_modules])
 AC_SUBST(XMMS2_CFLAGS)
 AC_SUBST(XMMS2_LIBS)

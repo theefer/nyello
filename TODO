@@ -80,6 +80,7 @@
   ==> v0.5
 
   [X] Support composer flag 
+  [ ] configure.ac should check for STL, boost, etc
   [ ] Add a VERSION command
   [ ] Allow to view HELP without a connection
   [ ] No infinite loop if server disconnects.

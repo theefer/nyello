@@ -18,6 +18,9 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_MAKE_SET
 
+# For cmd_parser
+AC_PROG_LIBTOOL
+
 # Checks for libraries.
 
 dnl Check for xmms2 (check in /usr/local too)
@@ -41,4 +44,4 @@ AC_C_INLINE
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([strtol])
-AC_OUTPUT([Makefile src/Makefile])
+AC_OUTPUT([Makefile src/Makefile src/cmd_parser/Makefile])

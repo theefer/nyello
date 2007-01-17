@@ -51,7 +51,15 @@ namespace cmd_parser {
 	void
 	interpreter::gen_help( std::ostream& os ) const
 	{
-		// FIXME: code
+		os << "Available commands:" << std::endl;
+
+		std::list< command* >::const_iterator it;
+		for( it = commands.begin(); it != commands.end(); ++it ) {
+			os << "   ";
+			os.width( (*it)->get_max_name_length() );
+			os << (*it)->get_name() << "   "
+			   << (*it)->get_description() << std::endl;
+		}
 	}
 
 	void

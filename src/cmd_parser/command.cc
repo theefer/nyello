@@ -24,9 +24,14 @@ namespace ba = boost::algorithm;
 
 namespace cmd_parser {
 
+	std::string::size_type command::max_name_length = 0;
+
 	command::command( const std::string& n, const std::string& desc )
 		: name( n ), aliases(), description( desc ), help(), signatures()
 	{
+		if( name.size() > max_name_length ) {
+			max_name_length = name.size();
+		}
 	}
 
 	command::~command()
@@ -67,8 +72,8 @@ namespace cmd_parser {
 				}
 			}
 
-			// FIXME: throw misformat command exception!
-			throw "misformatted command!";
+			throw wrong_signature_error("no matching signature for command '"
+			                            + name + "'");
 		}
 
 		return false;

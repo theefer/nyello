@@ -34,9 +34,19 @@ namespace cmd_parser {
 
 	class kw_argument;
 	typedef boost::shared_ptr< kw_argument > kw_argument_ptr;
+
 /*
-	template< typename S1, typename S2, typename S3 >
-	class sig_arg;
+	template< typename R >
+	class sig_arg0;
+
+	template< typename R, typename S1 >
+	class sig_arg1;
+
+	template< typename R, typename S1, typename S2 >
+	class sig_arg2;
+
+	template< typename R, typename S1, typename S2, typename S3 >
+	class sig_arg3;
 */
 
 	class _signature
@@ -67,15 +77,18 @@ namespace cmd_parser {
 			A3 p3;
 		};
 
+
 		public:
 			signature3( const std::string& description, boost::function3<R, A1, A2, A3> f );
 			~signature3();
 
 			signature3< R, A1, A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
 			signature3< R, A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
+
+			// FIXME: *NOT* type safe at the moment
 /*
-			sig_arg< A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg< A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
+			sig_arg2< R, A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			sig_arg3< R, A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
 */
 
 		protected:
@@ -97,8 +110,8 @@ namespace cmd_parser {
 			signature2< R, A1, A2 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
 			signature2< R, A1, A2 > operator <<( const kw_argument_ptr& arg );
 /*
-			sig_arg< A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg< A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
+			sig_arg1< R, A2 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			sig_arg2< R, A1, A2 > operator <<( const kw_argument_ptr& arg );
 */
 
 		protected:
@@ -120,8 +133,8 @@ namespace cmd_parser {
 			signature1< R, A1 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
 			signature1< R, A1 > operator <<( const kw_argument_ptr& arg );
 /*
-			sig_arg< A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg< A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
+			sig_arg0< R > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			sig_arg1< R, A1 > operator <<( const kw_argument_ptr& arg );
 */
 
 		protected:
@@ -132,19 +145,42 @@ namespace cmd_parser {
 
 	};
 
-/*
-	template< typename S1, typename S2, typename S3 >
-	class sig_arg
+	template< typename R >
+	class signature0 : public _signature
 	{
-		public:
-			sig_arg( signature< S1, S2, S3 >& sig );
-			~sig_arg();
 
-			sig_arg< S2, S3 > operator <<( const boost::shared_ptr< argument< S1 > >& arg );
-			sig_arg< S1, S2, S3 > operator << ( const kw_argument_ptr& arg );
+		public:
+			signature0( const std::string& description, boost::function0<R> f );
+			~signature0();
+
+//			signature0< R > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+//			signature0< R > operator <<( const kw_argument_ptr& arg );
+/*
+//			sig_arg< R > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			sig_arg0< R > operator <<( const kw_argument_ptr& arg );
+*/
+
+		protected:
+			void execute() const;
 
 		private:
-			signature< S1, S2, S3 >& sig;
+			boost::function0<R> func;
+
+	};
+
+/*
+	template< typename R, typename S1, typename S2, typename S3 >
+	class sig_arg3
+	{
+		public:
+			sig_arg3( signature3< R, S1, S2, S3 >& sig_ );
+			~sig_arg3();
+
+			sig_arg2< R, S2, S3 > operator <<( const boost::shared_ptr< argument< S1 > >& arg );
+			sig_arg3< R, S1, S2, S3 > operator << ( const kw_argument_ptr& arg );
+
+		private:
+			signature3< R, S1, S2, S3 >& sig;
 	};
 */
 
@@ -182,7 +218,21 @@ namespace cmd_parser {
 	void
 	signature3< R, A1, A2, A3 >::execute() const// parameters params )
 	{
+		std::list< boost::shared_ptr< _argument > >::const_iterator it( arguments.begin() );
+		A1 = extract< A1 >( it, input );
+
 		//func( params.p1, params.p2, params.p3 );
+	}
+
+	template< typename T >
+	template< typename R, typename A1, typename A2, typename A3 >
+	T
+	signature3< R, A1, A2, A3 >::extract( std::list< boost::shared_ptr< _argument > >::const_iterator& it )
+	{
+		while( !(*it)->takes_value() ) {
+			++it;
+		}
+
 	}
 
 
@@ -255,6 +305,26 @@ namespace cmd_parser {
 	template< typename R, typename A1 >
 	void
 	signature1< R, A1 >::execute() const
+	{
+	}
+
+
+	template< typename R >
+	signature0< R >::signature0( const std::string& desc,
+	                             boost::function0<R> f )
+		: _signature( desc ), func( f )
+	{
+	}
+
+	template< typename R >
+	signature0< R >::~signature0()
+	{
+	}
+
+
+	template< typename R >
+	void
+	signature0< R >::execute() const
 	{
 	}
 

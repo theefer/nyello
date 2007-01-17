@@ -42,6 +42,7 @@ namespace cmd_parser {
 				}
 			}
 		}
+
 		return false;
 	}
 

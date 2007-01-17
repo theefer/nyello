@@ -64,7 +64,13 @@ namespace cmd_parser {
 
 			bool match( const std::string& input ) const;
 
+			inline const std::string& get_name() const;
+			inline const std::string& get_description() const;
+			inline std::string::size_type get_max_name_length() const;
+
 		private:
+			static std::string::size_type max_name_length;
+
 			std::string name;
 			std::list< std::string > aliases;
 
@@ -78,6 +84,24 @@ namespace cmd_parser {
 
 	};
 
+
+	inline const std::string&
+	command::get_name() const
+	{
+		return name;
+	}
+
+	inline const std::string&
+	command::get_description() const
+	{
+		return description;
+	}
+
+	inline std::string::size_type
+	command::get_max_name_length() const
+	{
+		return max_name_length;
+	}
 
 
 	template< typename R, typename A1, typename A2, typename A3 >

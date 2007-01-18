@@ -35,6 +35,16 @@ namespace cmd_parser {
 
 	};
 
+	/** @class command_not_found_error
+	 *  @brief Thrown if the input does not match any command.
+	 */
+	class command_not_found_error : public std::runtime_error
+	{
+		public:
+			explicit command_not_found_error( const std::string& what_arg );
+
+	};
+
 }
 
 #endif  // CMD_PARSER_EXCEPTIONS_H

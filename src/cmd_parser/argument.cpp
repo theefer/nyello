@@ -20,8 +20,7 @@
 
 namespace cmd_parser {
 
-	_argument::_argument( bool val )
-		: has_val( val )
+	_argument::_argument()
 	{
 	}
 
@@ -29,15 +28,9 @@ namespace cmd_parser {
 	{
 	}
 
-	bool
-	_argument::takes_value() const
-	{
-		return has_val;
-	}
-
 
 	kw_argument::kw_argument( const std::string& kw )
-		: _argument( false ), keyword( kw )
+		: _argument(), keyword( kw )
 	{
 	}
 
@@ -52,10 +45,17 @@ namespace cmd_parser {
 	}
 
 	bool
-	kw_argument::match( const std::string& input ) const
+	kw_argument::parse( tokeniter& start, const tokeniter& end,
+	                    std::vector< std::string >& arglist ) const
 	{
-		// FIXME: don't match the full input? better, faster start detection!
-		return ( ba::equals( keyword, input ) || ba::istarts_with( keyword + " ", input ) );
+		// FIXME: custom case-sensitivity!
+		if( keyword == *start ) {
+			++start;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }

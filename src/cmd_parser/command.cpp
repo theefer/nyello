@@ -18,6 +18,7 @@
 
 #include "command.h"
 #include "signature.h"
+#include "exceptions.h"
 
 #include <boost/algorithm/string.hpp>
 namespace ba = boost::algorithm;
@@ -60,14 +61,16 @@ namespace cmd_parser {
 	}
 
 	bool
-	command::match( const std::string& input ) const
+	command::match( const tokeniter& start, const tokeniter& end ) const
 	{
-		// FIXME: Try to match command name or aliases
 		// If no match, abort, if failed match, throw, else great!
-		if( match_command( input ) ) {
+		if( match_command( *start ) ) {
+			tokeniter args( start );
+			++args;
+
 			std::list< _signature* >::const_iterator it;
 			for( it = signatures.begin(); it != signatures.end(); ++it ) {
-				if( (*it)->run( input ) ) {
+				if( (*it)->run( args, end ) ) {
 					return true;
 				}
 			}
@@ -80,15 +83,15 @@ namespace cmd_parser {
 	}
 
 	bool
-	command::match_command( const std::string& input ) const
+	command::match_command( const std::string& cmd ) const
 	{
-		if( match_string( name, input ) ) {
+		if( match_string( name, cmd ) ) {
 			return true;
 		}
 		else {
 			std::list< std::string >::const_iterator it;
 			for( it = aliases.begin(); it != aliases.end(); ++it ) {
-				if( match_string( *it, input ) ) {
+				if( match_string( *it, cmd ) ) {
 					return true;
 				}
 			}
@@ -98,9 +101,9 @@ namespace cmd_parser {
 	}
 
 	bool
-	command::match_string( const std::string& cmd, const std::string& input ) const
+	command::match_string( const std::string& name, const std::string& cmd ) const
 	{
-		// FIXME: better, faster start detection!
-		return ( ba::equals( cmd, input ) || ba::istarts_with( cmd + " ", input ) );
+		// FIXME: custom case-sensitivity!
+		return name == cmd;
 	}
 }

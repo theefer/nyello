@@ -23,5 +23,6 @@
 #include "command.h"
 #include "signature.h"
 #include "argument.h"
+#include "exceptions.h"
 
 #endif  // CMD_PARSER_CMD_PARSER_H

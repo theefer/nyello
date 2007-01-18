@@ -30,4 +30,9 @@ namespace cmd_parser {
 	{
 	}
 
+	command_not_found_error::command_not_found_error( const string& what_arg ) :
+		runtime_error( what_arg )
+	{
+	}
+
 }

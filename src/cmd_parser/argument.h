@@ -20,10 +20,12 @@
 #define CMD_PARSER_ARGUMENT_H
 
 #include <string>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
-#include <boost/algorithm/string.hpp>
-namespace ba = boost::algorithm;
+#include <boost/lexical_cast.hpp>
+
+#include "typedefs.h"
 
 
 namespace cmd_parser {
@@ -39,14 +41,11 @@ namespace cmd_parser {
 		public:
 			virtual ~_argument();
 			
-			virtual bool match( const std::string& input ) const = 0;
-			bool takes_value() const;
+			virtual bool parse( tokeniter& start, const tokeniter& end,
+			                    std::vector< std::string >& arglist ) const = 0;
 
 		protected:
-			_argument( bool has_val );
-
-		private:
-			bool has_val;
+			_argument();
 
 	};
 
@@ -63,7 +62,10 @@ namespace cmd_parser {
 			static boost::shared_ptr< argument< T > > make( const std::string& name,
 			                                                const T& def_val );
 
-			virtual bool match( const std::string& input ) const;
+			virtual bool parse( tokeniter& start, const tokeniter& end,
+			                    std::vector< std::string >& arglist ) const;
+
+			T extract( const std::string& strval ) const;
 
 		private:
 			std::string name;
@@ -82,7 +84,8 @@ namespace cmd_parser {
 
 			static kw_argument_ptr make( const std::string& kw );
 
-			virtual bool match( const std::string& input ) const;
+			virtual bool parse( tokeniter& start, const tokeniter& end,
+			                    std::vector< std::string >& arglist ) const;
 
 		private:
 			std::string keyword;
@@ -95,13 +98,13 @@ namespace cmd_parser {
 
 	template< typename T >
 	argument< T >::argument( const std::string& n )
-		: _argument( true ), name( n ), optional( false )
+		: _argument(), name( n ), optional( false )
 	{
 	}
 
 	template< typename T >
 	argument< T >::argument( const std::string& n, const T& def_val )
-		: _argument( true ), name ( n ), optional( true ), default_value( def_val )
+		: _argument(), name ( n ), optional( true ), default_value( def_val )
 	{
 	}
 
@@ -126,12 +129,48 @@ namespace cmd_parser {
 
 	template< typename T >
 	bool
-	argument< T >::match( const std::string& input ) const
+	argument< T >::parse( tokeniter& start, const tokeniter& end,
+	                      std::vector< std::string >& arglist ) const
 	{
-		// FIXME: don't match the full input? better, faster start detection!
-		return ( ba::equals( name, input ) || ba::istarts_with( name + " ", input ) );
+		try {
+			// FIXME: support multi-token values?
+			boost::lexical_cast< T >( *start );
+
+			// Success: save token and advance token iterator
+			arglist.push_back( *start );
+			++start;
+		}
+		catch( boost::bad_lexical_cast& ) {
+			// FIXME: Find a proper way to handle optional values
+// 			if( optional ) {
+// 				arglist.push_back( default_value ); // FIXME: shit, we want a token!
+// 			}
+// 			else {
+				// Could not extract non-optional value, fail!
+				return false;
+//			}
+		}
+
+		return true;
 	}
 
+
+	template< typename T >
+	T
+	argument< T >::extract( const std::string& strval ) const
+	{
+		T value;
+
+		try {
+			value = boost::lexical_cast< T >( strval );
+		}
+		catch( boost::bad_lexical_cast& ) {
+			// FIXME: Should not happen?
+			throw;
+		}
+
+		return value;
+	}
 }
 
 #endif  // CMD_PARSER_ARGUMENT_H

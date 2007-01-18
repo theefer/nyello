@@ -49,7 +49,7 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libcmd_parser_a_AR = $(AR) $(ARFLAGS)
 libcmd_parser_a_LIBADD =
-am_libcmd_parser_a_OBJECTS = cmd_parser.$(OBJEXT) command.$(OBJEXT) \
+am_libcmd_parser_a_OBJECTS = argument.$(OBJEXT) command.$(OBJEXT) \
 	exceptions.$(OBJEXT) interpreter.$(OBJEXT) signature.$(OBJEXT)
 libcmd_parser_a_OBJECTS = $(am_libcmd_parser_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -179,7 +179,8 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 noinst_LIBRARIES = libcmd_parser.a
-libcmd_parser_a_SOURCES = cmd_parser.h cmd_parser.cpp\
+libcmd_parser_a_SOURCES = cmd_parser.h\
+			  argument.h argument.cpp\
 			  command.h command.cpp\
 			  exceptions.h exceptions.cpp\
 			  interpreter.h interpreter.cpp\
@@ -232,7 +233,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmd_parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/argument.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exceptions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpreter.Po@am__quote@

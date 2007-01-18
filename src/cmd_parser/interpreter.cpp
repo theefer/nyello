@@ -18,6 +18,11 @@
 
 #include "interpreter.h"
 #include "command.h"
+#include "exceptions.h"
+
+#include <iostream>
+using namespace std;
+
 
 namespace cmd_parser {
 
@@ -38,14 +43,18 @@ namespace cmd_parser {
 	void
 	interpreter::run( const std::string& input ) const
 	{
+		// Pass tokens to the commands
+		tokenizer tok( input );
+
 		std::list< command* >::const_iterator it;
 		for( it = commands.begin(); it != commands.end(); ++it ) {
-			if( (*it)->match( input ) ) {
+			if( (*it)->match( tok.begin(), tok.end() ) ) {
 				return;
 			}
 		}
 
-		// FIXME: throw an exception, unmatched command
+		throw command_not_found_error("no command matches input: "
+		                              + input);
 	}
 
 	void

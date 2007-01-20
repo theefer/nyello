@@ -22,10 +22,12 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <typeinfo>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "typedefs.h"
+#include "exceptions.h"
 
 
 namespace cmd_parser {
@@ -38,19 +40,6 @@ namespace cmd_parser {
 	class kw_argument;
 	typedef boost::shared_ptr< kw_argument > kw_argument_ptr;
 
-/*
-	template< typename R >
-	class sig_arg0;
-
-	template< typename R, typename S1 >
-	class sig_arg1;
-
-	template< typename R, typename S1, typename S2 >
-	class sig_arg2;
-
-	template< typename R, typename S1, typename S2, typename S3 >
-	class sig_arg3;
-*/
 
 	class _signature
 	{
@@ -65,6 +54,11 @@ namespace cmd_parser {
 		protected:
 			std::list< boost::shared_ptr< _argument > > arguments;
 
+			// Count value arguments
+			int argcount;
+
+			// FIXME: Check if the signature contains all the required argument objects
+
 		private:
 			std::string description;
 	};
@@ -77,14 +71,8 @@ namespace cmd_parser {
 			signature3( const std::string& description, boost::function3<R, A1, A2, A3> f );
 			~signature3();
 
-			signature3< R, A1, A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			signature3< R, A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
-
-			// FIXME: *NOT* type safe at the moment
-/*
-			sig_arg2< R, A2, A3 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg3< R, A1, A2, A3 > operator <<( const kw_argument_ptr& arg );
-*/
+			signature3< R, A1, A2, A3 >& operator <<( const boost::shared_ptr< _argument >& arg );
+			signature3< R, A1, A2, A3 >& operator <<( const kw_argument_ptr& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
@@ -105,12 +93,8 @@ namespace cmd_parser {
 			signature2( const std::string& description, boost::function2<R, A1, A2> f );
 			~signature2();
 
-			signature2< R, A1, A2 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			signature2< R, A1, A2 > operator <<( const kw_argument_ptr& arg );
-/*
-			sig_arg1< R, A2 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg2< R, A1, A2 > operator <<( const kw_argument_ptr& arg );
-*/
+			signature2< R, A1, A2 >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			signature2< R, A1, A2 >& operator <<( const kw_argument_ptr& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
@@ -130,17 +114,10 @@ namespace cmd_parser {
 			signature1( const std::string& description, boost::function1<R, A1> f );
 			~signature1();
 
-			signature1< R, A1 > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			signature1< R, A1 > operator <<( const kw_argument_ptr& arg );
-/*
-			sig_arg0< R > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg1< R, A1 > operator <<( const kw_argument_ptr& arg );
-*/
+			signature1< R, A1 >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			signature1< R, A1 >& operator <<( const kw_argument_ptr& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
-
-			// FIXME: Hack
-			int argnum;
 
 		private:
 			boost::function1<R, A1> func;
@@ -157,12 +134,7 @@ namespace cmd_parser {
 			signature0( const std::string& description, boost::function0<R> f );
 			~signature0();
 
-//			signature0< R > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-//			signature0< R > operator <<( const kw_argument_ptr& arg );
-/*
-//			sig_arg< R > operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			sig_arg0< R > operator <<( const kw_argument_ptr& arg );
-*/
+			signature0< R >& operator <<( const kw_argument_ptr& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
@@ -171,21 +143,6 @@ namespace cmd_parser {
 
 	};
 
-/*
-	template< typename R, typename S1, typename S2, typename S3 >
-	class sig_arg3
-	{
-		public:
-			sig_arg3( signature3< R, S1, S2, S3 >& sig_ );
-			~sig_arg3();
-
-			sig_arg2< R, S2, S3 > operator <<( const boost::shared_ptr< argument< S1 > >& arg );
-			sig_arg3< R, S1, S2, S3 > operator << ( const kw_argument_ptr& arg );
-
-		private:
-			signature3< R, S1, S2, S3 >& sig;
-	};
-*/
 
 
 	template< typename R, typename A1, typename A2, typename A3 >
@@ -200,18 +157,44 @@ namespace cmd_parser {
 	{
 	}
 
-	// FIXME: we need to record val args in argN !
 
 	template< typename R, typename A1, typename A2, typename A3 >
-	signature3< R, A1, A2, A3 >
-	signature3< R, A1, A2, A3 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
+	signature3< R, A1, A2, A3 >&
+	signature3< R, A1, A2, A3 >::operator <<( const boost::shared_ptr< _argument >& arg )
 	{
+		// Check type by casting and storing it
+		try {
+			switch( argcount ) {
+			case 0:
+				arg1 = dynamic_cast< const boost::shared_ptr< argument< A1 > >& >( arg );
+				break;
+			case 1:
+				arg2 = dynamic_cast< const boost::shared_ptr< argument< A2 > >& >( arg );
+				break;
+			case 2:
+				arg3 = dynamic_cast< const boost::shared_ptr< argument< A3 > >& >( arg );
+				break;
+			default:
+				throw too_many_arguments_error( "cannot add more arguments" );
+				break;
+			}
+		}
+		catch( std::bad_cast& e ) {
+			throw incompatible_argument_error( "argument object incompatible with signature" );
+		}
+		// Forward too many arguments error
+		catch( too_many_arguments_error& ) {
+			throw;
+		}
+
+		++argcount;
+
 		arguments.push_back( arg );
 		return *this;
 	}
 
 	template< typename R, typename A1, typename A2, typename A3 >
-	signature3< R, A1, A2, A3 >
+	signature3< R, A1, A2, A3 >&
 	signature3< R, A1, A2, A3 >::operator <<( const kw_argument_ptr& arg )
 	{
 		arguments.push_back( arg );
@@ -222,8 +205,6 @@ namespace cmd_parser {
 	void
 	signature3< R, A1, A2, A3 >::execute( const std::vector< std::string >& arglist ) const
 	{
-		// FIXME: check if arglist.size() == 3 ?
-
 		A1 v1( arg1->extract( arglist[0] ) );
 		A2 v2( arg2->extract( arglist[1] ) );
 		A3 v3( arg3->extract( arglist[2] ) );
@@ -247,15 +228,39 @@ namespace cmd_parser {
 
 
 	template< typename R, typename A1, typename A2 >
-	signature2< R, A1, A2 >
+	signature2< R, A1, A2 >&
 	signature2< R, A1, A2 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
 	{
+		// Check type by casting and storing it
+		try {
+			switch( argcount ) {
+			case 0:
+				arg1 = dynamic_cast< const boost::shared_ptr< argument< A1 > >& >( arg );
+				break;
+			case 1:
+				arg2 = dynamic_cast< const boost::shared_ptr< argument< A2 > >& >( arg );
+				break;
+			default:
+				throw too_many_arguments_error( "cannot add more arguments" );
+				break;
+			}
+		}
+		catch( std::bad_cast& e ) {
+			throw incompatible_argument_error( "argument object incompatible with signature" );
+		}
+		// Forward too many arguments error
+		catch( too_many_arguments_error& ) {
+			throw;
+		}
+
+		++argcount;
+
 		arguments.push_back( arg );
 		return *this;
 	}
 
 	template< typename R, typename A1, typename A2 >
-	signature2< R, A1, A2 >
+	signature2< R, A1, A2 >&
 	signature2< R, A1, A2 >::operator <<( const kw_argument_ptr& arg )
 	{
 		arguments.push_back( arg );
@@ -266,8 +271,6 @@ namespace cmd_parser {
 	void
 	signature2< R, A1, A2 >::execute( const std::vector< std::string >& arglist ) const
 	{
-		// FIXME: check if arglist.size() == 2 ?
-
 		A1 v1( arg1->extract( arglist[0] ) );
 		A2 v2( arg2->extract( arglist[1] ) );
 
@@ -280,8 +283,6 @@ namespace cmd_parser {
 	                                 boost::function1<R, A1> f )
 		: _signature( desc ), func( f )
 	{
-		// FIXME: hack!
-		argnum = 0;
 	}
 
 	template< typename R, typename A1 >
@@ -291,21 +292,36 @@ namespace cmd_parser {
 
 
 	template< typename R, typename A1 >
-	signature1< R, A1 >
+	signature1< R, A1 >&
 	signature1< R, A1 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
 	{
-		// FIXME: Horrible hack ; we need a type-safe way to do that!
-		switch( argnum ) {
-		case 0:  arg1 = arg; ++argnum;                 break;
-		default: throw "woops, too many arguments";    break;
+		// Check type by casting and storing it
+		try {
+			switch( argcount ) {
+			case 0:
+				arg1 = dynamic_cast< const boost::shared_ptr< argument< A1 > >& >( arg );
+				break;
+			default:
+				throw too_many_arguments_error( "cannot add more arguments" );
+				break;
+			}
 		}
+		catch( std::bad_cast& e ) {
+			throw incompatible_argument_error( "argument object incompatible with signature" );
+		}
+		// Forward too many arguments error
+		catch( too_many_arguments_error& ) {
+			throw;
+		}
+
+		++argcount;
 
 		arguments.push_back( arg );
 		return *this;
 	}
 
 	template< typename R, typename A1 >
-	signature1< R, A1 >
+	signature1< R, A1 >&
 	signature1< R, A1 >::operator <<( const kw_argument_ptr& arg )
 	{
 		arguments.push_back( arg );
@@ -316,8 +332,6 @@ namespace cmd_parser {
 	void
 	signature1< R, A1 >::execute( const std::vector< std::string >& arglist ) const
 	{
-		// FIXME: check if arglist.size() == 1 ?
-
 		A1 v1( arg1->extract( arglist[0] ) );
 
 		func( v1 );
@@ -337,57 +351,20 @@ namespace cmd_parser {
 	}
 
 	template< typename R >
+	signature0< R >&
+	signature0< R >::operator <<( const kw_argument_ptr& arg )
+	{
+		arguments.push_back( arg );
+		return *this;
+	}
+
+	template< typename R >
 	void
 	signature0< R >::execute( const std::vector< std::string >& arglist ) const
 	{
-		// FIXME: check if arglist.size() == 0 ?
-
 		func();
 	}
 
-/*
-
-	template< typename R, typename A1, typename A2, typename A3 >
-	sig_arg< A2, A3 >
-	signature< R, A1, A2, A3 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
-	{
-		arguments.push_back( arg );
-		return sig_arg< A2, A3 >( *this );
-	}
-
-	template< typename R, typename A1, typename A2, typename A3 >
-	sig_arg< A1, A2, A3 >
-	signature< R, A1, A2, A3 >::operator <<( const kw_argument_ptr& arg )
-	{
-		arguments.push_back( arg );
-		return sig_arg< A1, A2, A3 >( *this );
-	}
-
-	template< typename S1, typename S2, typename S3 >
-	sig_arg< S1, S2, S3 >::sig_arg( signature< S1, S2, S3 >& s )
-		: sig( s )
-	{
-	}
-
-	template< typename S1, typename S2, typename S3 >
-	sig_arg< S1, S2, S3 >::~sig_arg()
-	{
-	}
-
-	template< typename S1, typename S2, typename S3 >
-	sig_arg< S2, S3 >
-	sig_arg< S1, S2, S3 >::operator <<( const boost::shared_ptr< argument< S1 > >& arg )
-	{
-		return (sig << arg );
-	}
-
-	template< typename S1, typename S2, typename S3 >
-	sig_arg< S1, S2, S3 >
-	sig_arg< S1, S2, S3 >::operator << ( const kw_argument_ptr& arg )
-	{
-		return (sig << arg);
-	}
-*/
 }
 
 #endif  // CMD_PARSER_SIGNATURE_H

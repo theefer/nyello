@@ -133,7 +133,6 @@ namespace cmd_parser {
 	                      std::vector< std::string >& arglist ) const
 	{
 		try {
-			// FIXME: support multi-token values?
 			boost::lexical_cast< T >( *start );
 
 			// Success: save token and advance token iterator
@@ -141,14 +140,14 @@ namespace cmd_parser {
 			++start;
 		}
 		catch( boost::bad_lexical_cast& ) {
-			// FIXME: Find a proper way to handle optional values
-// 			if( optional ) {
-// 				arglist.push_back( default_value ); // FIXME: shit, we want a token!
-// 			}
-// 			else {
+			// Empty value will force using the default value
+			if( optional ) {
+				arglist.push_back( "" );
+			}
+			else {
 				// Could not extract non-optional value, fail!
 				return false;
-//			}
+			}
 		}
 
 		return true;
@@ -161,12 +160,18 @@ namespace cmd_parser {
 	{
 		T value;
 
-		try {
-			value = boost::lexical_cast< T >( strval );
+		if( strval.size() > 0 ) {
+			try {
+				value = boost::lexical_cast< T >( strval );
+			}
+			catch( boost::bad_lexical_cast& ) {
+				// Should not happen
+				throw;
+			}
 		}
-		catch( boost::bad_lexical_cast& ) {
-			// FIXME: Should not happen?
-			throw;
+		// Empty value, use the default value
+		else {
+			value = default_value;
 		}
 
 		return value;

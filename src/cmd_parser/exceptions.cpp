@@ -25,13 +25,23 @@ using std::string;
 
 namespace cmd_parser {
 
-	wrong_signature_error::wrong_signature_error( const string& what_arg ) :
-		runtime_error( what_arg )
+	wrong_signature_error::wrong_signature_error( const string& what_arg )
+		: runtime_error( what_arg )
 	{
 	}
 
-	command_not_found_error::command_not_found_error( const string& what_arg ) :
-		runtime_error( what_arg )
+	command_not_found_error::command_not_found_error( const string& what_arg )
+		: runtime_error( what_arg )
+	{
+	}
+
+	too_many_arguments_error::too_many_arguments_error( const string& what_arg )
+		: runtime_error( what_arg )
+	{
+	}
+
+	incompatible_argument_error::incompatible_argument_error( const string& what_arg )
+		: runtime_error( what_arg )
 	{
 	}
 

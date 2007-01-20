@@ -43,22 +43,22 @@ namespace cmd_parser {
 	void
 	interpreter::run( const std::string& input ) const
 	{
-		// Pass tokens to the commands
+		command* cmd;
+
 		tokenizer tok( input );
+		cmd = find_command( tok );
 
-		std::list< command* >::const_iterator it;
-		for( it = commands.begin(); it != commands.end(); ++it ) {
-			if( (*it)->match( tok.begin(), tok.end() ) ) {
-				return;
-			}
+		if( cmd != NULL ) {
+			cmd->run( tok.begin(), tok.end() );
 		}
-
-		throw command_not_found_error("no command matches input: "
-		                              + input);
+		else {
+			throw command_not_found_error("no command matches input: "
+		                                  + input);
+		}
 	}
 
 	void
-	interpreter::gen_help( std::ostream& os ) const
+	interpreter::help( std::ostream& os ) const
 	{
 		os << "Available commands:" << std::endl;
 
@@ -72,9 +72,21 @@ namespace cmd_parser {
 	}
 
 	void
-	interpreter::gen_help( const std::string& cmd, std::ostream& os ) const
+	interpreter::help( const std::string& cmd_name, std::ostream& os ) const
 	{
-		// FIXME: code
+		command* cmd;
+
+		tokenizer tok( cmd_name );
+		cmd = find_command( tok );
+
+		if( cmd != NULL ) {
+			cmd->help( os );
+		}
+		else {
+			// FIXME: error?
+			os << "no command named: " << cmd_name << std::endl;
+		}
+
 	}
 
 	command&
@@ -87,4 +99,17 @@ namespace cmd_parser {
 		return *cmd;
 	}
 
+	command*
+	interpreter::find_command( const tokenizer& tokens ) const
+	{
+
+		std::list< command* >::const_iterator it;
+		for( it = commands.begin(); it != commands.end(); ++it ) {
+			if( (*it)->match( tokens.begin(), tokens.end() ) ) {
+				return *it;
+			}
+		}
+
+		return NULL;
+	}
 }

@@ -28,7 +28,7 @@ namespace cmd_parser {
 	std::string::size_type command::max_name_length = 0;
 
 	command::command( const std::string& n, const std::string& desc )
-		: name( n ), aliases(), description( desc ), help(), signatures()
+		: name( n ), aliases(), description( desc ), helptext(), signatures()
 	{
 		if( name.size() > max_name_length ) {
 			max_name_length = name.size();
@@ -55,49 +55,77 @@ namespace cmd_parser {
 	command&
 	command::set_help( const std::string& h )
 	{
-		help = h;
+		helptext = h;
 
 		return *this;
+	}
+
+	void
+	command::help( std::ostream& os ) const
+	{
+		os << name;
+
+		if( aliases.size() > 0 ) {
+			os << " (";
+			std::list< std::string >::const_iterator it;
+			for( it = aliases.begin(); it != aliases.end(); ++it ) {
+				os << *it;
+				if( it != aliases.begin() ) {
+					os << ", ";
+				}
+			}
+			os << ")";
+		}
+
+		os << ": " << description << std::endl;
+		os << "usage: " << name;
+
+		// FIXME: arguments, possibly several signatures
+
+		os << std::endl;
+
+		// FIXME: format?
+		os << helptext;
+
+		os << std::endl;
+
+		return;
 	}
 
 	bool
 	command::match( const tokeniter& start, const tokeniter& end ) const
 	{
-		// If no match, abort, if failed match, throw, else great!
-		if( match_command( *start ) ) {
-			tokeniter args( start );
-			++args;
-
-			std::list< _signature* >::const_iterator it;
-			for( it = signatures.begin(); it != signatures.end(); ++it ) {
-				if( (*it)->run( args, end ) ) {
-					return true;
-				}
-			}
-
-			throw wrong_signature_error("no matching signature for command '"
-			                            + name + "'");
-		}
-
-		return false;
-	}
-
-	bool
-	command::match_command( const std::string& cmd ) const
-	{
-		if( match_string( name, cmd ) ) {
+		if( match_string( name, *start ) ) {
 			return true;
 		}
 		else {
 			std::list< std::string >::const_iterator it;
 			for( it = aliases.begin(); it != aliases.end(); ++it ) {
-				if( match_string( *it, cmd ) ) {
+				if( match_string( *it, *start ) ) {
 					return true;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	void
+	command::run( const tokeniter& start, const tokeniter& end ) const
+	{
+		// If failed match, throw, else great!
+		tokeniter args( start );
+		++args;
+
+		std::list< _signature* >::const_iterator it;
+		for( it = signatures.begin(); it != signatures.end(); ++it ) {
+			if( (*it)->run( args, end ) ) {
+				return;
+			}
+		}
+
+		throw wrong_signature_error("no matching signature for command '"
+		                            + name + "'");
 	}
 
 	bool

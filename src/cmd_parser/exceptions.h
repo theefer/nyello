@@ -45,6 +45,27 @@ namespace cmd_parser {
 
 	};
 
+	/** @class too_many_arguments_error
+	 *  @brief Thrown if too many argument objects are added to a signature.
+	 */
+	class too_many_arguments_error : public std::runtime_error
+	{
+		public:
+			explicit too_many_arguments_error( const std::string& what_arg );
+
+	};
+
+	/** @class incompatible_argument_error
+	 *  @brief Thrown if the argument object added to a signature does
+	 *         not match the expected type.
+	 */
+	class incompatible_argument_error : public std::runtime_error
+	{
+		public:
+			explicit incompatible_argument_error( const std::string& what_arg );
+
+	};
+
 }
 
 #endif  // CMD_PARSER_EXCEPTIONS_H

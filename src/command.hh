@@ -57,6 +57,7 @@ private:
   char* description;
   char* help;
   bool needConnex;
+  bool usableInline;
 };
 
 #endif  // __COMMAND_HH__

@@ -16,10 +16,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-
 #ifndef __DISPATCHER_HH__
 #define __DISPATCHER_HH__
 
+#include <xmmsclient/xmmsclient++.h>
+using namespace Xmms;
+
+#include <string>
+using std::string;
+
+#include "readlinelistener.hh"
+
+
+class Dispatcher
+{
+public:
+  static Dispatcher* getInstance();
+
+  ~Dispatcher();
+
+  void execute( const string& input );
+  void loop();
+
+  void stop();
+  const string getPrompt() const;
+
+private:
+  static Dispatcher* instance;
+
+  Client client;
+
+  ReadlineListener* readlineListener;
+
+  Dispatcher();
+  void initConnection();
+};
+
+/*
 // FIXME: Should be dynamic and customizable
 #define PROMPT "nyello:%s $ "
 
@@ -30,7 +63,6 @@ typedef void (Dispatcher::*DispFnPtr)();
 #include <iostream>
 #include <map>
 
-#include <xmmsclient/xmmsclient.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -54,7 +86,7 @@ using namespace std;
 /**
  * Wrapper for the comparison function between two char*, needed for
  * the member map.
- */
+ *
 struct charCmp {
   bool operator() (const char* s1, const char* s2) const {
     return strcmp(s1, s2) < 0;
@@ -64,7 +96,6 @@ struct charCmp {
 
 class Dispatcher {
 public:
-  static Dispatcher* getInstance(xmmsc_connection_t* connection);
   static Dispatcher* getInstance();
 
   ~Dispatcher();
@@ -118,14 +149,14 @@ public:
   bool parseInput(char* input);
 
 private:
+  Client& client;
+
   static const int MAX_ARGUMENTS  = 64;
   static const int MAX_TOKEN_SIZE = 128;
   static const int MAX_PROMPT_LENGTH = 24;
   static const int MAX_COMMAND_LENGTH = 256;
 
   static Dispatcher* instance;
-
-  xmmsc_connection_t* conn;
 
   Playback*      playback;
   MediaLibrary*  medialib;
@@ -143,7 +174,7 @@ private:
   map<const char*, Command*, charCmp> commandList;
 
 
-  Dispatcher(xmmsc_connection_t* connection);
+  Dispatcher();
 
   void parsePattern(char* ptr, int num);
   void parsePatternFromArgs();
@@ -155,6 +186,6 @@ private:
 
   void waitAndFree(Delayed<void>* del);
 };
-
+*/
 
 #endif  // __DISPATCHER_HH__

@@ -45,7 +45,7 @@
   
   * P   PLAY             Start playback.
   * P   PAUSE            Pause playback.
-  * S   STOP [option]    Stop playback (option: now, graceful, end)
+  * S   STOP [num]       Stop playback (option: in num songs)
   * K   SEEK [pos|offset] Seek to absolute position or relative offset (if +/-), in seconds.
   
   * R   PREVIOUS [offset] Play previous song in the current playlist.
@@ -57,19 +57,24 @@
   * I   INFO <pattern>   Display info on the songs matched by the pattern, or the currently
                          playing song if no pattern.
 
--   F   FILTER <pattern> Display the current (i.e. latest) pattern filter used, and set 
-                         it to the given pattern.
+-   F   FILTER <pattern> Display the structure of the given pattern filter.
 
   * L   LIST [playlist]  Display the list of songs in the given playlist, or the currently
                          playing playlist if no playlist given.
 
-  * +   IMPORT [path...] Import new files in the media-library.
+  * +   IMPORT <path>*   Import new files in the media-library.
   
   * E   ENQUEUE <pattern> [IN <playlist>?]
   * E+  INSERT  <pattern>
   * E-  REPLACE <pattern>
 
-+   M   MOVE    <id-sequence> <offset>  Move a group of song in the playlist to an absolute
++   M   MOVE <pos|offset> <pattern>  Move a group of song in the playlist to an absolute
+                                     position or a relative offset.
++   M   MOVE <pattern> AFTER <pattern>  Move a group of song in the playlist after the
+                                        last song matching the pattern.
++   M   MOVE <pattern> BEFORE <pattern> Move a group of song in the playlist before the
+                                        last song matching the pattern.
++   M   MOVE <pattern> TO <pos|offset>  Move a group of song in the playlist to an absolute
                                         position or a relative offset.
   * O   REMOVE  <pattern>     Remove songs matching the pattern from the current playlist.
   * C   CLEAR   [playlist]    Clear the playlist (equivalent to REMOVE *)
@@ -86,10 +91,11 @@
                                        flag of the playlist.
 
     CL  COLLECTION-LIST               List the collection tree.
+    CC  COLLECTION-CURRENT            Show current active collection.
     CA  COLLECTION-APPLY   <pattern>  Apply the pattern to the current collection.
-    CS  COLLECTION-SAVE-AS <path> <pattern>  Save the given pattern as a new collection.
-    CE  COLLECTION-ENTER   <path>     Enter the given collection.
-    CR  COLLECTION-REMOVE  <path>     Delete the given collection.
+    CS  COLLECTION-SAVE-AS <name> <pattern>  Save the given pattern as a new collection.
+    CE  COLLECTION-ENTER   <name>     Enter the given collection ("All Media" if no argument).
+    CR  COLLECTION-REMOVE  <name>     Delete the given collection.
 
   * Q   QUIT, EXIT       Terminates nyello.
 
@@ -103,107 +109,42 @@
                c  config [property [value]] Set the value of a property, or display the property
                                             (all if no arg).
 
-  * Patterns
-
-    Flags:
-      -a, --artist <artist>
-      -l, --album  <album>
-      -t, --title  <title>
-      -y, --year   <year>
-      -g, --genre  <genre>
-      -n, --track  <track>
-      -z, --any    <any>    (default if no flag given)
-
-      · with uppercase equivalent: exact match (case, string)
-      · supports comparators (>, >=, etc) for year, track
-      · use parentheses to group conditions
-      · no parsing is done on the match values (replaces escaping):
-          -z AND -z - -a &
-      · can have several fields per flag:
-          -at pink AND -lG Soundtrack <=> (-a pink OR -t pink) AND ...
-      · whitespace separated tokens, thus:
-          -a Air Femme argent <=> -a Air AND -z Femme AND -z argent
-
-      -o, --orderby <fieldlist>
-
-      · fieldlist a comma-separated list of fields to order by, either
-        in short or long form
-      · reverse ordering is done by using uppercase:
-          -o a,-year,L,track
-
-    Combinators:
-
-      Short or long versions (case-sensitive!) can be used:
-        &, AND (default if omitted)
-        |, OR
-        %, XOR
-        ^, NOT
-
-    Wildcards:
-
-      +   previous pattern  (equivalent to +1)
-      +N  N-th previous pattern, with N >= 1 and N <= arbitrary limit
-
-    Identifiers:
-
-      rocklist/7 7-th song of the "rocklist" playlist
-      /7         7-th song of the current playlist (equivalent to currentpl/7)
-      N#7        7-th song matched by the N-th previous pattern
-      7          song with id 7 in the medialib
-
-      · ranges and lists can be provided, too:
-        #7-13    7-th to 13-th songs matched by the last pattern
-        /7,13    7-th and 13-th song of the current playlist
-        #-13     First to 13-th song matched by the last pattern
-        rock/7-  All songs from the 7th of the rock playlist
-        2#       All songs matched by the pattern before the last
-
-        (note: unbounded ranges are not possible with medialib ids)
-
-     Default rules:
-
-       · If no pattern is given at all, the result of the pattern is
-         the current song
  */
 
-#include <iostream>
+#include "config.h"
 
-#include <xmmsclient/xmmsclient.h>
-
+#include "nyello.hh"
 #include "dispatcher.hh"
 
-using namespace std;
+#include <string>
+using std::string;
 
 
-int main(int argc, char* argv[]) {
-  int retval = 0;
-  char* path = getenv("XMMS_PATH");
+/* Initialize program constants */
+const string Nyello::CLIENT_NAME    = PACKAGE_NAME;
+const string Nyello::CLIENT_VERSION = PACKAGE_VERSION;
 
-  // Init xmms2 connection
-  xmmsc_connection_t* connection;
-  connection = xmmsc_init("nyello");
-  if(!connection) {
-    cerr << "Could not init xmmsc_connection!" << endl;
-    retval = 1;
-  }
 
-  else if(!xmmsc_connect(connection, path)) {
-    cerr << "Could not connect to server: "
-         << xmmsc_get_last_error(connection) << endl;
-    retval = 1;
-  }
+int main (int argc, char* argv[])
+{
+  try {
+    Dispatcher* disp = Dispatcher::getInstance();
+    if(argc > 1) {
+      string input;
+      for( int i = 1; i < argc; ++i ) {
+        if( i > 1 ) input += " ";
 
-  // Everything is fine, we can run the dispatcher
-  else {
-    Dispatcher* disp = Dispatcher::getInstance(connection);
-    if(argc > 1)
-      disp->execute(argc - 1, argv + 1);
-    else
+        input += argv[i];
+      }
+      disp->execute( input );
+    }
+    else {
       disp->loop();
+    }
+  }
+  catch (...) {
+    return 1;
   }
 
-
-  xmmsc_unref(connection);
-
-  return retval;
+  return 0;
 }

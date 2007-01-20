@@ -23,6 +23,7 @@
 #include <list>
 #include <iostream>
 
+#include "typedefs.h"
 
 namespace cmd_parser {
 
@@ -37,13 +38,15 @@ namespace cmd_parser {
 
 			void run( const std::string& input ) const;
 
-			void gen_help( std::ostream& os ) const;
-			void gen_help( const std::string& cmd, std::ostream& os ) const;
+			void help( std::ostream& os ) const;
+			void help( const std::string& cmd, std::ostream& os ) const;
 
 			command& add_command( const std::string& cmd_name, const std::string& cmd_desc );
 
 		private:
 			std::list< command* > commands;
+
+			command* find_command( const tokenizer& tokens ) const;
 
 	};
 

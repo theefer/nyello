@@ -29,6 +29,16 @@ namespace cmd_parser {
 	}
 
 
+	val_argument::val_argument( const std::string& n )
+		: _argument(), name( n )
+	{
+	}
+
+	val_argument::~val_argument()
+	{
+	}
+
+
 	kw_argument::kw_argument( const std::string& kw )
 		: _argument(), keyword( kw )
 	{

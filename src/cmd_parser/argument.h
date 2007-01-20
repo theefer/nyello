@@ -50,31 +50,16 @@ namespace cmd_parser {
 	};
 
 
-	template< typename T >
-	class argument : public _argument
+	class val_argument : public _argument
 	{
 		public:
-			argument( const std::string& name );
-			argument( const std::string& name, const T& def_val );
-			~argument();
+			val_argument( const std::string& name );
+			~val_argument();
 
-			static boost::shared_ptr< argument< T > > make( const std::string& name );
-			static boost::shared_ptr< argument< T > > make( const std::string& name,
-			                                                const T& def_val );
-
-			virtual bool parse( tokeniter& start, const tokeniter& end,
-			                    std::vector< std::string >& arglist ) const;
-
-			T extract( const std::string& strval ) const;
-
-		private:
+		protected:
 			std::string name;
-			bool optional;
-			T default_value;
 
-			// FIXME: list< T > possible_values();
 	};
-
 
 	class kw_argument : public _argument
 	{
@@ -93,18 +78,44 @@ namespace cmd_parser {
 	};
 
 
+	template< typename T >
+	class argument : public val_argument
+	{
+		public:
+			argument( const std::string& name );
+			argument( const std::string& name, const T& def_val );
+			~argument();
+
+			static boost::shared_ptr< argument< T > > make( const std::string& name );
+			static boost::shared_ptr< argument< T > > make( const std::string& name,
+			                                                const T& def_val );
+
+			virtual bool parse( tokeniter& start, const tokeniter& end,
+			                    std::vector< std::string >& arglist ) const;
+
+			T extract( const std::string& strval ) const;
+
+		protected:
+			std::string name;
+			bool optional;
+			T default_value;
+
+			// FIXME: list< T > possible_values();
+	};
+
+
 
 
 
 	template< typename T >
 	argument< T >::argument( const std::string& n )
-		: _argument(), name( n ), optional( false )
+		: val_argument( n ), optional( false )
 	{
 	}
 
 	template< typename T >
 	argument< T >::argument( const std::string& n, const T& def_val )
-		: _argument(), name ( n ), optional( true ), default_value( def_val )
+		: val_argument( n ), optional( true ), default_value( def_val )
 	{
 	}
 

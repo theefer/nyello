@@ -37,7 +37,9 @@ namespace cmd_parser {
 	template< typename T >
 	class argument;
 
+	class val_argument;
 	class kw_argument;
+	typedef boost::shared_ptr< val_argument > val_argument_ptr;
 	typedef boost::shared_ptr< kw_argument > kw_argument_ptr;
 
 
@@ -71,8 +73,11 @@ namespace cmd_parser {
 			signature3( const std::string& description, boost::function3<R, A1, A2, A3> f );
 			~signature3();
 
-			signature3< R, A1, A2, A3 >& operator <<( const boost::shared_ptr< _argument >& arg );
-			signature3< R, A1, A2, A3 >& operator <<( const kw_argument_ptr& arg );
+			// FIXME: conflicting overloading -- temp hack using simple pointers, probably not safe
+//			signature3< R, A1, A2, A3 >& operator <<( const val_argument_ptr& arg );
+//			signature3< R, A1, A2, A3 >& operator <<( const kw_argument_ptr& arg );
+			signature3< R, A1, A2, A3 >& operator <<( val_argument* arg );
+			signature3< R, A1, A2, A3 >& operator <<( kw_argument* arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
@@ -160,7 +165,44 @@ namespace cmd_parser {
 
 	template< typename R, typename A1, typename A2, typename A3 >
 	signature3< R, A1, A2, A3 >&
-	signature3< R, A1, A2, A3 >::operator <<( const boost::shared_ptr< _argument >& arg )
+	signature3< R, A1, A2, A3 >::operator <<( val_argument* arg )
+	{
+		// Check type by casting and storing it
+		try {
+			switch( argcount ) {
+			case 0:
+				arg1 = boost::shared_ptr< argument< A1 > >( dynamic_cast< argument< A1 >* >( arg ) );
+				arguments.push_back( arg1 );
+				break;
+			case 1:
+				arg2 = boost::shared_ptr< argument< A2 > >( dynamic_cast< argument< A2 >* >( arg ) );
+				arguments.push_back( arg2 );
+				break;
+			case 2:
+				arg3 = boost::shared_ptr< argument< A3 > >( dynamic_cast< argument< A3 >* >( arg ) );
+				arguments.push_back( arg3 );
+				break;
+			default:
+				throw too_many_arguments_error( "cannot add more arguments" );
+				break;
+			}
+		}
+		catch( std::bad_cast& e ) {
+			throw incompatible_argument_error( "argument object incompatible with signature" );
+		}
+		// Forward too many arguments error
+		catch( too_many_arguments_error& ) {
+			throw;
+		}
+
+		++argcount;
+
+		return *this;
+	}
+/*
+	template< typename R, typename A1, typename A2, typename A3 >
+	signature3< R, A1, A2, A3 >&
+	signature3< R, A1, A2, A3 >::operator <<( const val_argument_ptr& arg )
 	{
 		// Check type by casting and storing it
 		try {
@@ -192,12 +234,12 @@ namespace cmd_parser {
 		arguments.push_back( arg );
 		return *this;
 	}
-
+*/
 	template< typename R, typename A1, typename A2, typename A3 >
 	signature3< R, A1, A2, A3 >&
-	signature3< R, A1, A2, A3 >::operator <<( const kw_argument_ptr& arg )
+	signature3< R, A1, A2, A3 >::operator <<( kw_argument* arg )
 	{
-		arguments.push_back( arg );
+		arguments.push_back( boost::shared_ptr< kw_argument >( arg ) );
 		return *this;
 	}
 

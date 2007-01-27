@@ -30,6 +30,11 @@ namespace cmd_parser {
 	{
 	}
 
+	incomplete_signature_error::incomplete_signature_error( const string& what_arg )
+		: runtime_error( what_arg )
+	{
+	}
+
 	command_not_found_error::command_not_found_error( const string& what_arg )
 		: runtime_error( what_arg )
 	{

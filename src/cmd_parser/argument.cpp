@@ -45,11 +45,10 @@ namespace cmd_parser {
 	}
 
 	bool
-	kw_argument::parse( tokeniter& start, const tokeniter& end,
-	                    std::vector< std::string >& arglist ) const
+	kw_argument::match( tokeniter& start, const tokeniter& end ) const
 	{
 		// FIXME: custom case-sensitivity!
-		if( keyword == *start ) {
+		if( start != end && keyword == *start ) {
 			++start;
 			return true;
 		}

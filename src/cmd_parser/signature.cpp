@@ -22,7 +22,7 @@
 namespace cmd_parser {
 
 	_signature::_signature( const std::string& desc )
-		: arguments(), description( desc )
+		: description( desc )
 	{
 	}
 
@@ -30,6 +30,7 @@ namespace cmd_parser {
 	{
 	}
 
+	/* FIXME: We will use that of the sub-classes
 	bool
 	_signature::run( const tokeniter& start, const tokeniter& end ) const
 	{
@@ -62,5 +63,6 @@ namespace cmd_parser {
 
 		return true;
 	}
+	*/
 
 }

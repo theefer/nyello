@@ -41,9 +41,6 @@ namespace cmd_parser {
 		public:
 			virtual ~_argument();
 			
-			virtual bool parse( tokeniter& start, const tokeniter& end,
-			                    std::vector< std::string >& arglist ) const = 0;
-
 		protected:
 			_argument();
 
@@ -58,8 +55,7 @@ namespace cmd_parser {
 
 			static kw_argument_ptr make( const std::string& kw );
 
-			virtual bool parse( tokeniter& start, const tokeniter& end,
-			                    std::vector< std::string >& arglist ) const;
+			virtual bool match( tokeniter& start, const tokeniter& end ) const;
 
 		private:
 			std::string keyword;
@@ -79,10 +75,7 @@ namespace cmd_parser {
 			static boost::shared_ptr< argument< T > > make( const std::string& name,
 			                                                const T& def_val );
 
-			virtual bool parse( tokeniter& start, const tokeniter& end,
-			                    std::vector< std::string >& arglist ) const;
-
-			T extract( const std::string& strval ) const;
+			virtual T extract( tokeniter& start, const tokeniter& end ) const;
 
 		protected:
 			std::string name;
@@ -128,50 +121,37 @@ namespace cmd_parser {
 	}
 
 	template< typename T >
-	bool
-	argument< T >::parse( tokeniter& start, const tokeniter& end,
-	                      std::vector< std::string >& arglist ) const
-	{
-		try {
-			boost::lexical_cast< T >( *start );
-
-			// Success: save token and advance token iterator
-			arglist.push_back( *start );
-			++start;
-		}
-		catch( boost::bad_lexical_cast& ) {
-			// Empty value will force using the default value
-			if( optional ) {
-				arglist.push_back( "" );
-			}
-			else {
-				// Could not extract non-optional value, fail!
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-
-	template< typename T >
 	T
-	argument< T >::extract( const std::string& strval ) const
+	argument< T >::extract( tokeniter& start, const tokeniter& end ) const
 	{
+		// FIXME: Too many copies!?
 		T value;
 
-		if( strval.size() > 0 ) {
+		if( start != end ) {
 			try {
-				value = boost::lexical_cast< T >( strval );
+				value = boost::lexical_cast< T >( *start );
+				++start;
 			}
 			catch( boost::bad_lexical_cast& ) {
-				// Should not happen
-				throw;
+				// Invalid value, use default value is argument optional
+				if( optional ) {
+					value = default_value;
+				}
+				else {
+					throw;
+				}
 			}
 		}
 		// Empty value, use the default value
 		else {
-			value = default_value;
+			// FIXME: duplicated!
+			// Invalid value, use default value is argument optional
+			if( optional ) {
+				value = default_value;
+			}
+			else {
+				throw;
+			}
 		}
 
 		return value;

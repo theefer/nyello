@@ -35,6 +35,18 @@ namespace cmd_parser {
 
 	};
 
+	/** @class incomplete_signature_error
+	 *  @brief Thrown if the signature is not fully defined,
+	 *          i.e. it does not contain all the advertised argument
+	 *          objects.
+	 */
+	class incomplete_signature_error : public std::runtime_error
+	{
+		public:
+			explicit incomplete_signature_error( const std::string& what_arg );
+
+	};
+
 	/** @class command_not_found_error
 	 *  @brief Thrown if the input does not match any command.
 	 */

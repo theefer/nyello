@@ -50,17 +50,6 @@ namespace cmd_parser {
 	};
 
 
-	class val_argument : public _argument
-	{
-		public:
-			val_argument( const std::string& name );
-			~val_argument();
-
-		protected:
-			std::string name;
-
-	};
-
 	class kw_argument : public _argument
 	{
 		public:
@@ -79,7 +68,7 @@ namespace cmd_parser {
 
 
 	template< typename T >
-	class argument : public val_argument
+	class argument : public _argument
 	{
 		public:
 			argument( const std::string& name );
@@ -109,13 +98,13 @@ namespace cmd_parser {
 
 	template< typename T >
 	argument< T >::argument( const std::string& n )
-		: val_argument( n ), optional( false )
+		: _argument(), name( n ), optional( false )
 	{
 	}
 
 	template< typename T >
 	argument< T >::argument( const std::string& n, const T& def_val )
-		: val_argument( n ), optional( true ), default_value( def_val )
+		: _argument(), name( n ), optional( true ), default_value( def_val )
 	{
 	}
 

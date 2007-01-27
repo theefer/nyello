@@ -37,10 +37,7 @@ namespace cmd_parser {
 	template< typename T >
 	class argument;
 
-	class val_argument;
 	class kw_argument;
-	typedef boost::shared_ptr< val_argument > val_argument_ptr;
-	typedef boost::shared_ptr< kw_argument > kw_argument_ptr;
 
 
 	class _signature
@@ -56,11 +53,6 @@ namespace cmd_parser {
 		protected:
 			std::list< boost::shared_ptr< _argument > > arguments;
 
-			// Count value arguments
-			int argcount;
-
-			// FIXME: Check if the signature contains all the required argument objects
-
 		private:
 			std::string description;
 	};
@@ -70,23 +62,20 @@ namespace cmd_parser {
 	{
 
 		public:
-			signature3( const std::string& description, boost::function3<R, A1, A2, A3> f );
+			signature3( const std::string& description, boost::function3< R, A1, A2, A3 > f );
 			~signature3();
 
-			// FIXME: conflicting overloading -- temp hack using simple pointers, probably not safe
-//			signature3< R, A1, A2, A3 >& operator <<( const val_argument_ptr& arg );
-//			signature3< R, A1, A2, A3 >& operator <<( const kw_argument_ptr& arg );
-			signature3< R, A1, A2, A3 >& operator <<( val_argument* arg );
-			signature3< R, A1, A2, A3 >& operator <<( kw_argument* arg );
+			// FIXME: Before run, check if the signature contains all the required argument objects
+			signature2< R, A2, A3 >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			signature3< R, A1, A2, A3 >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
 		private:
-			boost::function3<R, A1, A2, A3> func;
+			boost::function3< R, A1, A2, A3 > func;
 
-			boost::shared_ptr< argument< A1 > > arg1;
-			boost::shared_ptr< argument< A2 > > arg2;
-			boost::shared_ptr< argument< A3 > > arg3;
+			boost::shared_ptr< argument< A1 > > currarg;
+			boost::shared_ptr< signature2< R, A2, A3 > > nextargs;
 
 	};
 
@@ -95,19 +84,19 @@ namespace cmd_parser {
 	{
 
 		public:
-			signature2( const std::string& description, boost::function2<R, A1, A2> f );
+			signature2( const std::string& description, boost::function2< R, A1, A2 > f );
 			~signature2();
 
-			signature2< R, A1, A2 >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			signature2< R, A1, A2 >& operator <<( const kw_argument_ptr& arg );
+			signature1< R, A1 >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			signature2< R, A1, A2 >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
 		private:
-			boost::function2<R, A1, A2> func;
+			boost::function2< R, A1, A2 > func;
 
-			boost::shared_ptr< argument< A1 > > arg1;
-			boost::shared_ptr< argument< A2 > > arg2;
+			boost::shared_ptr< argument< A1 > > currarg;
+			boost::shared_ptr< signature1< R, A2 > > nextargs;
 
 	};
 
@@ -116,18 +105,19 @@ namespace cmd_parser {
 	{
 
 		public:
-			signature1( const std::string& description, boost::function1<R, A1> f );
+			signature1( const std::string& description, boost::function1< R, A1 > f );
 			~signature1();
 
-			signature1< R, A1 >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
-			signature1< R, A1 >& operator <<( const kw_argument_ptr& arg );
+			signature0< R >& operator <<( const boost::shared_ptr< argument< A1 > >& arg );
+			signature1< R, A1 >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
 		private:
-			boost::function1<R, A1> func;
+			boost::function1< R, A1 > func;
 
-			boost::shared_ptr< argument< A1 > > arg1;
+			boost::shared_ptr< argument< A1 > > currarg;
+			boost::shared_ptr< signature0< R > > nextargs;
 
 	};
 
@@ -136,15 +126,15 @@ namespace cmd_parser {
 	{
 
 		public:
-			signature0( const std::string& description, boost::function0<R> f );
+			signature0( const std::string& description, boost::function0< R > f );
 			~signature0();
 
-			signature0< R >& operator <<( const kw_argument_ptr& arg );
+			signature0< R >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			void execute( const std::vector< std::string >& arglist ) const;
 
 		private:
-			boost::function0<R> func;
+			boost::function0< R > func;
 
 	};
 
@@ -164,82 +154,33 @@ namespace cmd_parser {
 
 
 	template< typename R, typename A1, typename A2, typename A3 >
-	signature3< R, A1, A2, A3 >&
-	signature3< R, A1, A2, A3 >::operator <<( val_argument* arg )
+	signature2< R, A2, A3 >&
+	signature3< R, A1, A2, A3 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
 	{
-		// Check type by casting and storing it
-		try {
-			switch( argcount ) {
-			case 0:
-				arg1 = boost::shared_ptr< argument< A1 > >( dynamic_cast< argument< A1 >* >( arg ) );
-				arguments.push_back( arg1 );
-				break;
-			case 1:
-				arg2 = boost::shared_ptr< argument< A2 > >( dynamic_cast< argument< A2 >* >( arg ) );
-				arguments.push_back( arg2 );
-				break;
-			case 2:
-				arg3 = boost::shared_ptr< argument< A3 > >( dynamic_cast< argument< A3 >* >( arg ) );
-				arguments.push_back( arg3 );
-				break;
-			default:
-				throw too_many_arguments_error( "cannot add more arguments" );
-				break;
-			}
+		// FIXME: why a pointer?
+		if( !nextargs ) {
+			arguments.push_back( arg );
+			currarg.reset( arg );
+			nextargs.reset( new signature2< R, A2, A3 >() );
 		}
-		catch( std::bad_cast& e ) {
-			throw incompatible_argument_error( "argument object incompatible with signature" );
-		}
-		// Forward too many arguments error
-		catch( too_many_arguments_error& ) {
-			throw;
+		else {
+			*nextargs << arg;
 		}
 
-		++argcount;
-
-		return *this;
+		return *nextargs; 
 	}
-/*
+
 	template< typename R, typename A1, typename A2, typename A3 >
 	signature3< R, A1, A2, A3 >&
-	signature3< R, A1, A2, A3 >::operator <<( const val_argument_ptr& arg )
+	signature3< R, A1, A2, A3 >::operator <<( const boost::shared_ptr< kw_argument >& arg )
 	{
-		// Check type by casting and storing it
-		try {
-			switch( argcount ) {
-			case 0:
-				arg1 = dynamic_cast< const boost::shared_ptr< argument< A1 > >& >( arg );
-				break;
-			case 1:
-				arg2 = dynamic_cast< const boost::shared_ptr< argument< A2 > >& >( arg );
-				break;
-			case 2:
-				arg3 = dynamic_cast< const boost::shared_ptr< argument< A3 > >& >( arg );
-				break;
-			default:
-				throw too_many_arguments_error( "cannot add more arguments" );
-				break;
-			}
+		if( !nextargs ) {
+			arguments.push_back( arg );
 		}
-		catch( std::bad_cast& e ) {
-			throw incompatible_argument_error( "argument object incompatible with signature" );
-		}
-		// Forward too many arguments error
-		catch( too_many_arguments_error& ) {
-			throw;
+		else {
+			*nextargs << arg;
 		}
 
-		++argcount;
-
-		arguments.push_back( arg );
-		return *this;
-	}
-*/
-	template< typename R, typename A1, typename A2, typename A3 >
-	signature3< R, A1, A2, A3 >&
-	signature3< R, A1, A2, A3 >::operator <<( kw_argument* arg )
-	{
-		arguments.push_back( boost::shared_ptr< kw_argument >( arg ) );
 		return *this;
 	}
 
@@ -247,7 +188,7 @@ namespace cmd_parser {
 	void
 	signature3< R, A1, A2, A3 >::execute( const std::vector< std::string >& arglist ) const
 	{
-		A1 v1( arg1->extract( arglist[0] ) );
+		A1 v1( currarg->extract( arglist[0] ) );
 		A2 v2( arg2->extract( arglist[1] ) );
 		A3 v3( arg3->extract( arglist[2] ) );
 
@@ -270,42 +211,32 @@ namespace cmd_parser {
 
 
 	template< typename R, typename A1, typename A2 >
-	signature2< R, A1, A2 >&
+	signature1< R, A1 >&
 	signature2< R, A1, A2 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
 	{
-		// Check type by casting and storing it
-		try {
-			switch( argcount ) {
-			case 0:
-				arg1 = dynamic_cast< const boost::shared_ptr< argument< A1 > >& >( arg );
-				break;
-			case 1:
-				arg2 = dynamic_cast< const boost::shared_ptr< argument< A2 > >& >( arg );
-				break;
-			default:
-				throw too_many_arguments_error( "cannot add more arguments" );
-				break;
-			}
+		if( !nextargs ) {
+			arguments.push_back( arg );
+			currarg.reset( arg );
+			nextargs.reset( new signature1< R, A2 >() );
 		}
-		catch( std::bad_cast& e ) {
-			throw incompatible_argument_error( "argument object incompatible with signature" );
-		}
-		// Forward too many arguments error
-		catch( too_many_arguments_error& ) {
-			throw;
+		else {
+			*nextargs << arg;
 		}
 
-		++argcount;
-
-		arguments.push_back( arg );
-		return *this;
+		return *nextargs; 
 	}
 
 	template< typename R, typename A1, typename A2 >
 	signature2< R, A1, A2 >&
-	signature2< R, A1, A2 >::operator <<( const kw_argument_ptr& arg )
+	signature2< R, A1, A2 >::operator <<( const boost::shared_ptr< kw_argument >& arg )
 	{
-		arguments.push_back( arg );
+		if( !nextargs ) {
+			arguments.push_back( arg );
+		}
+		else {
+			*nextargs << arg;
+		}
+
 		return *this;
 	}
 
@@ -313,7 +244,7 @@ namespace cmd_parser {
 	void
 	signature2< R, A1, A2 >::execute( const std::vector< std::string >& arglist ) const
 	{
-		A1 v1( arg1->extract( arglist[0] ) );
+		A1 v1( currarg->extract( arglist[0] ) );
 		A2 v2( arg2->extract( arglist[1] ) );
 
 		func( v1, v2 );
@@ -334,39 +265,32 @@ namespace cmd_parser {
 
 
 	template< typename R, typename A1 >
-	signature1< R, A1 >&
+	signature0< R >&
 	signature1< R, A1 >::operator <<( const boost::shared_ptr< argument< A1 > >& arg )
 	{
-		// Check type by casting and storing it
-		try {
-			switch( argcount ) {
-			case 0:
-				arg1 = dynamic_cast< const boost::shared_ptr< argument< A1 > >& >( arg );
-				break;
-			default:
-				throw too_many_arguments_error( "cannot add more arguments" );
-				break;
-			}
+		if( !nextargs ) {
+			arguments.push_back( arg );
+			currarg.reset( arg );
+			nextargs.reset( new signature0< R >() );
 		}
-		catch( std::bad_cast& e ) {
-			throw incompatible_argument_error( "argument object incompatible with signature" );
-		}
-		// Forward too many arguments error
-		catch( too_many_arguments_error& ) {
-			throw;
+		else {
+			*nextargs << arg;
 		}
 
-		++argcount;
-
-		arguments.push_back( arg );
-		return *this;
+		return *nextargs; 
 	}
 
 	template< typename R, typename A1 >
 	signature1< R, A1 >&
-	signature1< R, A1 >::operator <<( const kw_argument_ptr& arg )
+	signature1< R, A1 >::operator <<( const boost::shared_ptr< kw_argument >& arg )
 	{
-		arguments.push_back( arg );
+		if( !nextargs ) {
+			arguments.push_back( arg );
+		}
+		else {
+			*nextargs << arg;
+		}
+
 		return *this;
 	}
 
@@ -374,7 +298,7 @@ namespace cmd_parser {
 	void
 	signature1< R, A1 >::execute( const std::vector< std::string >& arglist ) const
 	{
-		A1 v1( arg1->extract( arglist[0] ) );
+		A1 v1( currarg->extract( arglist[0] ) );
 
 		func( v1 );
 	}
@@ -394,7 +318,7 @@ namespace cmd_parser {
 
 	template< typename R >
 	signature0< R >&
-	signature0< R >::operator <<( const kw_argument_ptr& arg )
+	signature0< R >::operator <<( const boost::shared_ptr< kw_argument >& arg )
 	{
 		arguments.push_back( arg );
 		return *this;

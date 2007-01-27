@@ -22,7 +22,7 @@
 namespace cmd_parser {
 
 	_signature::_signature( const std::string& desc )
-		: arguments(), argcount( 0 ), description( desc )
+		: arguments(), description( desc )
 	{
 	}
 

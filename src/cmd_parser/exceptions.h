@@ -69,7 +69,7 @@ namespace cmd_parser {
 
 	/** @class incompatible_argument_error
 	 *  @brief Thrown if the argument object added to a signature does
-	 *         not match the expected type.
+	 *         not match the expected type or keyword.
 	 */
 	class incompatible_argument_error : public std::runtime_error
 	{

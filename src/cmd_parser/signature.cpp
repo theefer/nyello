@@ -30,39 +30,4 @@ namespace cmd_parser {
 	{
 	}
 
-	/* FIXME: We will use that of the sub-classes
-	bool
-	_signature::run( const tokeniter& start, const tokeniter& end ) const
-	{
-		// First try to parse the arguments ; if works, execute() it
-		tokeniter pos( start );
-		std::vector< std::string > strarglist;
-		std::list< boost::shared_ptr< _argument > >::const_iterator it;
-		for( it = arguments.begin(); it != arguments.end(); ++it ) {
-
-			// End of input and we still have arguments to parse!
-			if( pos == end ) {
-				// FIXME: Error => too few argument values!
-				return false;
-			}
-
-			if( !(*it)->parse( pos, end, strarglist ) ) {
-				// Signature mismatch, failed to parse an argument
-				return false;
-			}
-
-		}
-
-		// Argument values still remain
-		if( pos != end ) {
-			// FIXME: error => too many argument values!
-			return false;
-		}
-
-		execute( strarglist );
-
-		return true;
-	}
-	*/
-
 }

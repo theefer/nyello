@@ -115,6 +115,7 @@ namespace cmd_parser {
 	{
 		// If failed match, throw, else great!
 		tokeniter args( start );
+
 		++args;
 
 		std::list< _signature* >::const_iterator it;

@@ -45,7 +45,8 @@ namespace cmd_parser {
 	{
 		command* cmd;
 
-		tokenizer tok( input );
+		boost::char_separator<char> sep( " " );
+		tokenizer tok( input, sep );
 		cmd = find_command( tok );
 
 		if( cmd != NULL ) {
@@ -76,7 +77,8 @@ namespace cmd_parser {
 	{
 		command* cmd;
 
-		tokenizer tok( cmd_name );
+		boost::char_separator<char> sep( " " );
+		tokenizer tok( cmd_name, sep );
 		cmd = find_command( tok );
 
 		if( cmd != NULL ) {

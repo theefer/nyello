@@ -27,7 +27,6 @@
 
 #include "typedefs.h"
 
-
 namespace cmd_parser {
 
 	template< typename T >
@@ -148,9 +147,6 @@ namespace cmd_parser {
 			// Invalid value, use default value is argument optional
 			if( optional ) {
 				value = default_value;
-			}
-			else {
-				throw;
 			}
 		}
 

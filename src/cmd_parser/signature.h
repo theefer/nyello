@@ -298,22 +298,6 @@ namespace cmd_parser {
 		}
 	}
 
-	/* FIXME: We need that for all signatures, but partial spec seems to fail
-	template<>
-	bool
-	signature0< void >::run( const tokeniter& start, const tokeniter& end ) const
-	{
-		try {
-			arguments.apply( func, start, end );
-			return true;
-		}
-		// FIXME: only catch "mismatching sig" exception!
-		catch(...) {
-			return false;
-		}
-	}
-	*/
-
 }
 
 #endif  // CMD_PARSER_SIGNATURE_H

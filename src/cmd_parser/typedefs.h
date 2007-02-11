@@ -23,7 +23,7 @@
 
 namespace cmd_parser {
 
-	typedef boost::tokenizer<> tokenizer;
+	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 	typedef tokenizer::iterator tokeniter;
 
 }

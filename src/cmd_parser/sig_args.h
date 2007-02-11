@@ -177,9 +177,13 @@ namespace cmd_parser {
 		for( it = keywords.begin(); it != keywords.end(); ++it ) {
 			if( !(*it)->match( pos, end ) ) {
 				// Signature mismatch, failed to parse an argument
-				// FIXME: including "too few argument values!"
-				// FIXME: throw?
+				throw incompatible_argument_error( "keyword mismatch" );
 			}
+		}
+
+		// Remaining arguments, too many arguments!
+		if( pos != end ) {
+			throw incompatible_argument_error( "too many arguments" );
 		}
 
 		// End of recursion, call the function
@@ -237,9 +241,13 @@ namespace cmd_parser {
 		for( it = keywords.begin(); it != keywords.end(); ++it ) {
 			if( !(*it)->match( pos, end ) ) {
 				// Signature mismatch, failed to parse an argument
-				// FIXME: including "too few argument values!"
-				// FIXME: throw?
+				throw incompatible_argument_error( "keyword mismatch" );
 			}
+		}
+
+		// End of argument list, too few arguments!
+		if( start == end ) {
+			throw incompatible_argument_error( "too few arguments" );
 		}
 
 		// Extract value
@@ -301,9 +309,13 @@ namespace cmd_parser {
 		for( it = keywords.begin(); it != keywords.end(); ++it ) {
 			if( !(*it)->match( pos, end ) ) {
 				// Signature mismatch, failed to parse an argument
-				// FIXME: including "too few argument values!"
-				// FIXME: throw?
+				throw incompatible_argument_error( "keyword mismatch" );
 			}
+		}
+
+		// End of argument list, too few arguments!
+		if( start == end ) {
+			throw incompatible_argument_error( "too few arguments" );
 		}
 
 		// Extract value
@@ -367,8 +379,13 @@ namespace cmd_parser {
 			if( !(*it)->match( pos, end ) ) {
 				// Signature mismatch, failed to parse an argument
 				// FIXME: including "too few argument values!"
-				// FIXME: throw?
+				throw incompatible_argument_error( "keyword mismatch" );
 			}
+		}
+
+		// End of argument list, too few arguments!
+		if( start == end ) {
+			throw incompatible_argument_error( "too few arguments" );
 		}
 
 		// Extract value
@@ -378,8 +395,6 @@ namespace cmd_parser {
 		return next_args.apply( boost::bind( callback, value, _1, _2 ), pos, end );
 	}
 
-
-	// FIXME: in sig_args0, match keywords and then run func!
 }
 
 #endif  // CMD_PARSER_SIG_ARGS_H

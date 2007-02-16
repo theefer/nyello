@@ -123,7 +123,7 @@ namespace cmd_parser {
 	T
 	argument< T >::extract( tokeniter& start, const tokeniter& end ) const
 	{
-		// FIXME: Too many copies!?
+		// FIXME: Too many copies!? - not initialised?
 		T value;
 
 		if( start != end ) {

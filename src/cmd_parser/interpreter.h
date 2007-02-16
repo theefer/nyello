@@ -43,6 +43,8 @@ namespace cmd_parser {
 
 			command& add_command( const std::string& cmd_name, const std::string& cmd_desc );
 
+			const std::list< command* >& get_commands() const { return commands; }
+
 		private:
 			std::list< command* > commands;
 

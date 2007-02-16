@@ -106,9 +106,11 @@ namespace cmd_parser {
 	{
 
 		std::list< command* >::const_iterator it;
-		for( it = commands.begin(); it != commands.end(); ++it ) {
-			if( (*it)->match( tokens.begin(), tokens.end() ) ) {
-				return *it;
+		if( tokens.begin() != tokens.end() ) {
+			for( it = commands.begin(); it != commands.end(); ++it ) {
+				if( (*it)->match( tokens.begin(), tokens.end() ) ) {
+					return *it;
+				}
 			}
 		}
 

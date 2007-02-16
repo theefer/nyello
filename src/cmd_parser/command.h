@@ -71,6 +71,8 @@ namespace cmd_parser {
 
 			bool match( const tokeniter& start, const tokeniter& end ) const;
 			void run( const tokeniter& start, const tokeniter& end ) const;
+			void complete( const tokeniter& start, const tokeniter& end,
+			               std::list< std::string >& alternatives ) const;
 
 			inline const std::string& get_name() const;
 			inline const std::string& get_description() const;

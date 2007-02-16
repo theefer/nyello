@@ -57,4 +57,10 @@ namespace cmd_parser {
 		}
 	}
 
+	void
+	kw_argument::complete( std::list< std::string >& alternatives ) const
+	{
+		alternatives.push_back( keyword );
+	}
+
 }

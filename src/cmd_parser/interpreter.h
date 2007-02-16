@@ -37,6 +37,8 @@ namespace cmd_parser {
 			~interpreter();
 
 			void run( const std::string& input ) const;
+			void complete( const std::string& input,
+			               std::list< std::string >& alternatives ) const;
 
 			void help( std::ostream& os ) const;
 			void help( const std::string& cmd, std::ostream& os ) const;
@@ -49,7 +51,7 @@ namespace cmd_parser {
 			std::list< command* > commands;
 
 			command* find_command( const tokenizer& tokens ) const;
-
+			void appendCommandNames( std::list< std::string >& l ) const;
 	};
 
 }

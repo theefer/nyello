@@ -47,6 +47,8 @@ namespace cmd_parser {
 			virtual ~_signature();
 
 			virtual bool run( const tokeniter& start, const tokeniter& end ) const = 0;
+			virtual void complete( const tokeniter& start, const tokeniter& end,
+			                       std::list< std::string >& alternatives ) const = 0;
 
 		private:
 			std::string description;
@@ -66,6 +68,8 @@ namespace cmd_parser {
 			sig_args3< R, A1, A2, A3 >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			bool run( const tokeniter& start, const tokeniter& end ) const;
+			void complete( const tokeniter& start, const tokeniter& end,
+			               std::list< std::string >& alternatives ) const;
 
 		private:
 			boost::function3< R, A1, A2, A3 > func;
@@ -86,6 +90,8 @@ namespace cmd_parser {
 			sig_args2< R, A1, A2 >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			bool run( const tokeniter& start, const tokeniter& end ) const;
+			void complete( const tokeniter& start, const tokeniter& end,
+			               std::list< std::string >& alternatives ) const;
 
 		private:
 			boost::function2< R, A1, A2 > func;
@@ -106,6 +112,8 @@ namespace cmd_parser {
 			sig_args1< R, A1 >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			bool run( const tokeniter& start, const tokeniter& end ) const;
+			void complete( const tokeniter& start, const tokeniter& end,
+			               std::list< std::string >& alternatives ) const;
 
 		private:
 			boost::function1< R, A1 > func;
@@ -125,6 +133,8 @@ namespace cmd_parser {
 			sig_args0< R >& operator <<( const boost::shared_ptr< kw_argument >& arg );
 
 			bool run( const tokeniter& start, const tokeniter& end ) const;
+			void complete( const tokeniter& start, const tokeniter& end,
+			               std::list< std::string >& alternatives ) const;
 
 		private:
 			boost::function0< R > func;
@@ -177,6 +187,13 @@ namespace cmd_parser {
 		}
 	}
 
+	template< typename R, typename A1, typename A2, typename A3 >
+	void
+	signature3< R, A1, A2, A3 >::complete( const tokeniter& start, const tokeniter& end,
+	                                       std::list< std::string >& alternatives ) const
+	{
+		arguments.complete( start, end, alternatives );
+	}
 
 
 	template< typename R, typename A1, typename A2 >
@@ -221,6 +238,14 @@ namespace cmd_parser {
 		}
 	}
 
+	template< typename R, typename A1, typename A2 >
+	void
+	signature2< R, A1, A2 >::complete( const tokeniter& start, const tokeniter& end,
+	                                   std::list< std::string >& alternatives ) const
+	{
+		arguments.complete( start, end, alternatives );
+	}
+
 
 	template< typename R, typename A1 >
 	signature1< R, A1 >::signature1( const std::string& desc,
@@ -263,6 +288,14 @@ namespace cmd_parser {
 		}
 	}
 
+	template< typename R, typename A1 >
+	void
+	signature1< R, A1 >::complete( const tokeniter& start, const tokeniter& end,
+	                               std::list< std::string >& alternatives ) const
+	{
+		arguments.complete( start, end, alternatives );
+	}
+
 
 	template< typename R >
 	signature0< R >::signature0( const std::string& desc,
@@ -296,6 +329,14 @@ namespace cmd_parser {
 		catch(...) {
 			return false;
 		}
+	}
+
+	template< typename R >
+	void
+	signature0< R >::complete( const tokeniter& start, const tokeniter& end,
+	                           std::list< std::string >& alternatives ) const
+	{
+		arguments.complete( start, end, alternatives );
 	}
 
 }

@@ -20,12 +20,14 @@
 #define CMD_PARSER_ARGUMENT_H
 
 #include <string>
+#include <list>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
 #include <boost/lexical_cast.hpp>
 
 #include "typedefs.h"
+#include "exceptions.h"
 
 namespace cmd_parser {
 
@@ -39,6 +41,8 @@ namespace cmd_parser {
 	{
 		public:
 			virtual ~_argument();
+
+			virtual void complete( std::list< std::string >& alternatives ) const = 0;
 			
 		protected:
 			_argument();
@@ -55,6 +59,7 @@ namespace cmd_parser {
 			static kw_argument_ptr make( const std::string& kw );
 
 			virtual bool match( tokeniter& start, const tokeniter& end ) const;
+			void complete( std::list< std::string >& alternatives ) const;
 
 		private:
 			std::string keyword;
@@ -75,6 +80,8 @@ namespace cmd_parser {
 			                                                const T& def_val );
 
 			virtual T extract( tokeniter& start, const tokeniter& end ) const;
+
+			void complete( std::list< std::string >& alternatives ) const;
 
 		protected:
 			std::string name;
@@ -137,7 +144,7 @@ namespace cmd_parser {
 					value = default_value;
 				}
 				else {
-					throw;
+					throw incompatible_argument_error( "value extraction failed" );
 				}
 			}
 		}
@@ -151,6 +158,15 @@ namespace cmd_parser {
 		}
 
 		return value;
+	}
+
+
+	template< typename T >
+	void
+	argument< T >::complete( std::list< std::string >& alternatives ) const
+	{
+		// Workaround to signal we're waiting for some data
+		alternatives.push_back( "" );
 	}
 }
 

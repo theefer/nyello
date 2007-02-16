@@ -91,7 +91,24 @@ namespace cmd_parser {
 			// FIXME: list< T > possible_values();
 	};
 
+	/**
+	 * Argument that eats everything until the end of the input.
+	 */
+	template< typename T >
+	class tail_argument : public argument< T >
+	{
+		public:
+			tail_argument( const std::string& name );
+			tail_argument( const std::string& name, const T& def_val );
+			~tail_argument();
 
+			static boost::shared_ptr< argument< T > > make( const std::string& name );
+			static boost::shared_ptr< argument< T > > make( const std::string& name,
+			                                                const T& def_val );
+
+			virtual T extract( tokeniter& start, const tokeniter& end ) const;
+
+	};
 
 
 
@@ -167,6 +184,83 @@ namespace cmd_parser {
 	{
 		// Workaround to signal we're waiting for some data
 		alternatives.push_back( "" );
+	}
+
+
+
+	template< typename T >
+	tail_argument< T >::tail_argument( const std::string& n )
+		: argument< T >( n )
+	{
+	}
+
+	template< typename T >
+	tail_argument< T >::tail_argument( const std::string& n, const T& def_val )
+		: argument< T >( n, def_val )
+	{
+	}
+
+	template< typename T >
+	tail_argument< T >::~tail_argument()
+	{
+	}
+
+	template< typename T >
+	boost::shared_ptr< argument< T > >
+	tail_argument< T >::make( const std::string& name )
+	{
+		return boost::shared_ptr< argument< T > >( new tail_argument< T >( name ) );
+	}
+
+	template< typename T >
+	boost::shared_ptr< argument< T > >
+	tail_argument< T >::make( const std::string& name, const T& def_val )
+	{
+		return boost::shared_ptr< argument< T > >( new tail_argument< T >( name, def_val ) );
+	}
+
+	template< typename T >
+	T
+	tail_argument< T >::extract( tokeniter& start, const tokeniter& end ) const
+	{
+		// FIXME: Too many copies!? - not initialised?
+		T value;
+
+		if( start != end ) {
+			tokeniter pos( start );
+			try {
+				std::string fullvalue;
+				while( pos != end ) {
+					if( pos != start ) {
+						// FIXME: append could be nicer
+						fullvalue.append( " " );
+					}
+					fullvalue.append( *pos );
+					++pos;
+				}
+				value = boost::lexical_cast< T >( fullvalue );
+				start = pos;
+			}
+			catch( boost::bad_lexical_cast& ) {
+				// Invalid value, use default value is argument optional
+				if( this->optional ) {
+					value = this->default_value;
+				}
+				else {
+					throw incompatible_argument_error( "value extraction failed" );
+				}
+			}
+		}
+		// Empty value, use the default value
+		else {
+			// FIXME: duplicated!
+			// Invalid value, use default value is argument optional
+			if( this->optional ) {
+				value = this->default_value;
+			}
+		}
+
+		return value;
 	}
 }
 

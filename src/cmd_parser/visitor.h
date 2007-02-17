@@ -16,56 +16,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "argument.h"
+#ifndef CMD_PARSER_VISITOR_H
+#define CMD_PARSER_VISITOR_H
 
 namespace cmd_parser {
 
-	_argument::_argument()
-	{
-	}
+	class interpreter;
+	class command;
+	class _signature;
+	class sig_args;
+	class sig_args_val;
+	class kw_argument;
 
-	_argument::~_argument()
-	{
-	}
+//	template< typename > class argument;
+	class _argument;
 
 
-	kw_argument::kw_argument( const std::string& kw )
-		: _argument(), keyword( kw )
+	class visitor
 	{
-	}
+		public:
+			virtual ~visitor() {}
 
-	kw_argument::~kw_argument()
-	{
-	}
+			virtual void visit( const interpreter& obj ) = 0;
+			virtual void visit( const command& obj ) = 0;
+			virtual void visit( const _signature& obj ) = 0;
+			virtual void visit( const sig_args& obj ) = 0;
+			virtual void visit( const sig_args_val& obj ) = 0;
 
-	kw_argument_ptr
-	kw_argument::make( const std::string& kw )
-	{
-		return kw_argument_ptr( new kw_argument( kw ) );
-	}
+			virtual void visit( const kw_argument& obj ) = 0;
 
-	bool
-	kw_argument::match( tokeniter& start, const tokeniter& end ) const
-	{
-		// FIXME: custom case-sensitivity!
-		if( start != end && keyword == *start ) {
-			advance( start, end );
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+//			template< typename T >
+//			virtual void visit( const argument< T >& obj ) = 0;
+			virtual void visit( const _argument& obj ) = 0;
 
-	void
-	kw_argument::complete( std::list< std::string >& alternatives ) const
-	{
-		alternatives.push_back( keyword );
-	}
+	};
 
-	void
-	kw_argument::advance( tokeniter& start, const tokeniter& end ) const
-	{
-		++start;
-	}
 }
+
+#endif  // CMD_PARSER_VISITOR_H

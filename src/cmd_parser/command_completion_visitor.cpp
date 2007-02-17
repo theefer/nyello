@@ -16,56 +16,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "argument.h"
+#include "command_completion_visitor.h"
+
+#include "interpreter.h"
+#include "command.h"
 
 namespace cmd_parser {
 
-	_argument::_argument()
+	command_completion_visitor::command_completion_visitor()
 	{
 	}
 
-	_argument::~_argument()
+	command_completion_visitor::~command_completion_visitor()
 	{
 	}
 
-
-	kw_argument::kw_argument( const std::string& kw )
-		: _argument(), keyword( kw )
+	void
+	command_completion_visitor::visit( const interpreter& obj )
 	{
-	}
-
-	kw_argument::~kw_argument()
-	{
-	}
-
-	kw_argument_ptr
-	kw_argument::make( const std::string& kw )
-	{
-		return kw_argument_ptr( new kw_argument( kw ) );
-	}
-
-	bool
-	kw_argument::match( tokeniter& start, const tokeniter& end ) const
-	{
-		// FIXME: custom case-sensitivity!
-		if( start != end && keyword == *start ) {
-			advance( start, end );
-			return true;
-		}
-		else {
-			return false;
+		const std::list< command* >& cmds( obj.get_commands() );
+		std::list< command* >::const_iterator it;
+		for( it = cmds.begin(); it != cmds.end(); ++it ) {
+			(*it)->accept( *this );
 		}
 	}
 
 	void
-	kw_argument::complete( std::list< std::string >& alternatives ) const
+	command_completion_visitor::visit( const command& obj )
 	{
-		alternatives.push_back( keyword );
+		// FIXME: push aliases too?
+		alternatives.push_back( obj.get_name() );
 	}
 
-	void
-	kw_argument::advance( tokeniter& start, const tokeniter& end ) const
-	{
-		++start;
-	}
 }

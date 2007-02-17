@@ -26,6 +26,7 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "visitor.h"
 #include "typedefs.h"
 #include "exceptions.h"
 
@@ -43,6 +44,13 @@ namespace cmd_parser {
 			virtual ~_argument();
 
 			virtual void complete( std::list< std::string >& alternatives ) const = 0;
+
+			virtual void accept( visitor& v ) const
+			{
+				v.visit( *this );
+			}
+
+			virtual void advance( tokeniter& start, const tokeniter& end ) const = 0;
 			
 		protected:
 			_argument();
@@ -60,6 +68,16 @@ namespace cmd_parser {
 
 			virtual bool match( tokeniter& start, const tokeniter& end ) const;
 			void complete( std::list< std::string >& alternatives ) const;
+
+			void accept( visitor& v ) const
+			{
+				v.visit( *this );
+			}
+
+			void advance( tokeniter& start, const tokeniter& end ) const;
+
+			const std::string& get_keyword() const
+			{ return keyword; }
 
 		private:
 			std::string keyword;
@@ -80,6 +98,8 @@ namespace cmd_parser {
 			                                                const T& def_val );
 
 			virtual T extract( tokeniter& start, const tokeniter& end ) const;
+
+			void advance( tokeniter& start, const tokeniter& end ) const;
 
 			void complete( std::list< std::string >& alternatives ) const;
 
@@ -107,6 +127,8 @@ namespace cmd_parser {
 			                                                const T& def_val );
 
 			virtual T extract( tokeniter& start, const tokeniter& end ) const;
+
+			void advance( tokeniter& start, const tokeniter& end ) const;
 
 	};
 
@@ -153,7 +175,7 @@ namespace cmd_parser {
 		if( start != end ) {
 			try {
 				value = boost::lexical_cast< T >( *start );
-				++start;
+				advance( start, end );
 			}
 			catch( boost::bad_lexical_cast& ) {
 				// Invalid value, use default value is argument optional
@@ -186,6 +208,12 @@ namespace cmd_parser {
 		alternatives.push_back( "" );
 	}
 
+	template< typename T >
+	void
+	argument< T >::advance( tokeniter& start, const tokeniter& end ) const
+	{
+		++start;
+	}
 
 
 	template< typename T >
@@ -239,7 +267,7 @@ namespace cmd_parser {
 					++pos;
 				}
 				value = boost::lexical_cast< T >( fullvalue );
-				start = pos;
+				advance( start, end );
 			}
 			catch( boost::bad_lexical_cast& ) {
 				// Invalid value, use default value is argument optional
@@ -261,6 +289,13 @@ namespace cmd_parser {
 		}
 
 		return value;
+	}
+
+	template< typename T >
+	void
+	tail_argument< T >::advance( tokeniter& start, const tokeniter& end ) const
+	{
+		start = end;
 	}
 }
 

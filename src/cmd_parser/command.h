@@ -24,6 +24,7 @@
 #include <iostream>
 #include <boost/function.hpp>
 
+#include "visitor.h"
 #include "typedefs.h"
 
 
@@ -74,9 +75,17 @@ namespace cmd_parser {
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
 
+			void accept( visitor& v ) const
+			{
+				v.visit( *this );
+			}
+
 			inline const std::string& get_name() const;
 			inline const std::string& get_description() const;
 			inline std::string::size_type get_max_name_length() const;
+
+			const std::list< _signature* >& get_signatures() const
+			{ return signatures; }
 
 			void help( std::ostream& os ) const;
 

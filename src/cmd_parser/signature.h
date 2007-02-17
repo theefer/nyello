@@ -26,6 +26,7 @@
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "visitor.h"
 #include "typedefs.h"
 #include "exceptions.h"
 #include "sig_args.h"
@@ -50,6 +51,13 @@ namespace cmd_parser {
 			virtual void complete( const tokeniter& start, const tokeniter& end,
 			                       std::list< std::string >& alternatives ) const = 0;
 
+			void accept( visitor& v ) const
+			{
+				v.visit( *this );
+			}
+
+			virtual const sig_args& get_arguments() const = 0;
+
 		private:
 			std::string description;
 	};
@@ -70,6 +78,9 @@ namespace cmd_parser {
 			bool run( const tokeniter& start, const tokeniter& end ) const;
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
+
+			const sig_args& get_arguments() const
+			{ return arguments; }
 
 		private:
 			boost::function3< R, A1, A2, A3 > func;
@@ -93,6 +104,9 @@ namespace cmd_parser {
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
 
+			const sig_args& get_arguments() const
+			{ return arguments; }
+
 		private:
 			boost::function2< R, A1, A2 > func;
 
@@ -115,6 +129,9 @@ namespace cmd_parser {
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
 
+			const sig_args& get_arguments() const
+			{ return arguments; }
+
 		private:
 			boost::function1< R, A1 > func;
 
@@ -135,6 +152,9 @@ namespace cmd_parser {
 			bool run( const tokeniter& start, const tokeniter& end ) const;
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
+
+			const sig_args& get_arguments() const
+			{ return arguments; }
 
 		private:
 			boost::function0< R > func;

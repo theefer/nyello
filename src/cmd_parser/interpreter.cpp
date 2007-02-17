@@ -43,19 +43,11 @@ namespace cmd_parser {
 	void
 	interpreter::run( const std::string& input ) const
 	{
-		command* cmd;
-
 		boost::char_separator<char> sep( " " );
 		tokenizer tok( input, sep );
-		cmd = find_command( tok );
+		const command& cmd( find_command( tok ) );
 
-		if( cmd != NULL ) {
-			cmd->run( tok.begin(), tok.end() );
-		}
-		else {
-			throw command_not_found_error("no command matches input: "
-		                                  + input);
-		}
+		cmd.run( tok.begin(), tok.end() );
 	}
 
 	// FIXME: handle smart completion (incomplete tokens)
@@ -63,19 +55,14 @@ namespace cmd_parser {
 	interpreter::complete( const std::string& input,
 	                       std::list< std::string >& alternatives ) const
 	{
-		command* cmd;
-
-		boost::char_separator<char> sep( " " );
-		tokenizer tok( input, sep );
-		cmd = find_command( tok );
-
-		// Run command completion
-		if( cmd != NULL ) {
-			cmd->complete( tok.begin(), tok.end(), alternatives );
-		}
-		// Complete on commands
-		else if( input.size() == 0 ) {
+		if( input.size() == 0 ) {
 			appendCommandNames( alternatives );
+		}
+		else {
+			boost::char_separator<char> sep( " " );
+			tokenizer tok( input, sep );
+			const command& cmd( find_command( tok ) );
+			cmd.complete( tok.begin(), tok.end(), alternatives );
 		}
 	}
 
@@ -96,20 +83,16 @@ namespace cmd_parser {
 	void
 	interpreter::help( const std::string& cmd_name, std::ostream& os ) const
 	{
-		command* cmd;
-
-		boost::char_separator<char> sep( " " );
-		tokenizer tok( cmd_name, sep );
-		cmd = find_command( tok );
-
-		if( cmd != NULL ) {
-			cmd->help( os );
+		try {
+			boost::char_separator<char> sep( " " );
+			tokenizer tok( cmd_name, sep );
+			const command& cmd( find_command( tok ) );
+			cmd.help( os );
 		}
-		else {
+		catch( command_not_found_error& ) {
 			// FIXME: error?
 			os << "no command named: " << cmd_name << std::endl;
 		}
-
 	}
 
 	command&
@@ -122,19 +105,19 @@ namespace cmd_parser {
 		return *cmd;
 	}
 
-	command*
+	const command&
 	interpreter::find_command( const tokenizer& tokens ) const
 	{
 		std::list< command* >::const_iterator it;
 		if( tokens.begin() != tokens.end() ) {
 			for( it = commands.begin(); it != commands.end(); ++it ) {
 				if( (*it)->match( tokens.begin(), tokens.end() ) ) {
-					return *it;
+					return **it;
 				}
 			}
 		}
 
-		return NULL;
+		throw command_not_found_error("no matching command");
 	}
 
 	void

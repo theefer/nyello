@@ -24,5 +24,8 @@
 #include "signature.h"
 #include "argument.h"
 #include "exceptions.h"
+#include "visitor.h"
+#include "command_completion_visitor.h"
+#include "argument_completion_visitor.h"
 
 #endif  // CMD_PARSER_CMD_PARSER_H

@@ -16,50 +16,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#ifndef CMD_PARSER_INTERPRETER_H
-#define CMD_PARSER_INTERPRETER_H
+#ifndef CMD_PARSER_ARGUMENT_COMPLETION_VISITOR_H
+#define CMD_PARSER_ARGUMENT_COMPLETION_VISITOR_H
 
-#include <string>
 #include <list>
-#include <iostream>
+#include <string>
 
 #include "visitor.h"
 #include "typedefs.h"
 
 namespace cmd_parser {
 
-	class command;
-
-	class interpreter
+	class argument_completion_visitor : public visitor
 	{
-
 		public:
-			interpreter();
-			~interpreter();
+			argument_completion_visitor( const std::string& input_ );
+			~argument_completion_visitor();
 
-			void run( const std::string& input ) const;
-			void complete( const std::string& input,
-			               std::list< std::string >& alternatives ) const;
+			const std::list< std::string >& get_completions() const
+			{ return alternatives; }
 
-			void accept( visitor& v ) const
-			{
-				v.visit( *this );
-			}
+			void visit( const interpreter& obj );
+			void visit( const command& obj );
+			void visit( const _signature& obj );
+			void visit( const sig_args& obj );
+			void visit( const sig_args_val& obj );
+			void visit( const kw_argument& obj );
 
-			void help( std::ostream& os ) const;
-			void help( const std::string& cmd, std::ostream& os ) const;
+			void visit( const _argument& obj );
 
-			command& add_command( const std::string& cmd_name, const std::string& cmd_desc );
-
-			const command& find_command( const tokenizer& tokens ) const;
-			const std::list< command* >& get_commands() const { return commands; }
-
-		private:
-			std::list< command* > commands;
-
-			void appendCommandNames( std::list< std::string >& l ) const;
+		protected:
+			const std::string input;
+			tokeniter start, pos, end;
+			std::list< std::string > alternatives;
 	};
 
 }
 
-#endif  // CMD_PARSER_INTERPRETER_H
+#endif  // CMD_PARSER_ARGUMENT_COMPLETION_VISITOR_H

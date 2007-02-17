@@ -25,12 +25,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/static_assert.hpp>
 
+#include "visitor.h"
 #include "typedefs.h"
 #include "exceptions.h"
 #include "argument.h"
-
-#include <iostream>
-
 
 namespace cmd_parser {
 
@@ -50,9 +48,43 @@ namespace cmd_parser {
 	template< typename, typename, typename > class sig_args2;
 	template< typename, typename, typename, typename > class sig_args3;
 
+	class sig_args
+	{
+		public:
+			virtual ~sig_args() {}
+
+			virtual void accept( visitor& v ) const
+			{
+				v.visit( *this );
+			}
+
+			const std::list< boost::shared_ptr< kw_argument > >& get_keywords() const
+			{ return keywords; }
+
+		protected:
+			std::list< boost::shared_ptr< kw_argument > > keywords;
+
+	};
+
+	class sig_args_val : public sig_args
+	{
+		public:
+			virtual ~sig_args_val() {}
+
+			void accept( visitor& v ) const
+			{
+				v.visit( *this );
+			}
+
+			virtual const boost::shared_ptr< _argument >
+			get_value_arg() const = 0;
+
+			virtual const sig_args& get_next_args() const = 0;
+
+	};
 
 	template< typename R >
-	class sig_args0
+	class sig_args0 : public sig_args
 	{
 		public:
 			// FIXME: Should be private ideally
@@ -70,12 +102,10 @@ namespace cmd_parser {
 		private:
 			friend class ::cmd_parser::signature0< R >;
 
-			std::list< boost::shared_ptr< kw_argument > > keywords;
-
 	};
 
 	template< typename R, typename A1 >
-	class sig_args1
+	class sig_args1 : public sig_args_val
 	{
 		public:
 			// FIXME: Should be private ideally
@@ -91,18 +121,24 @@ namespace cmd_parser {
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
 
+			const boost::shared_ptr< _argument >
+			get_value_arg() const
+			{ return value_arg; }
+
+			const sig_args& get_next_args() const
+			{ return next_args; }
+
 		private:
 			friend class ::cmd_parser::signature0< R >;
 			friend class ::cmd_parser::signature1< R, A1 >;
 
-			std::list< boost::shared_ptr< kw_argument > > keywords;
 			boost::shared_ptr< argument< A1 > > value_arg;
 			sig_args0< R > next_args;
 
 	};
 
 	template< typename R, typename A1, typename A2 >
-	class sig_args2
+	class sig_args2 : public sig_args_val
 	{
 		public:
 			// FIXME: Should be private ideally
@@ -118,19 +154,25 @@ namespace cmd_parser {
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
 
+			const boost::shared_ptr< _argument >
+			get_value_arg() const
+			{ return value_arg; }
+
+			const sig_args& get_next_args() const
+			{ return next_args; }
+
 		private:
 			friend class ::cmd_parser::signature0< R >;
 			friend class ::cmd_parser::signature1< R, A1 >;
 			friend class ::cmd_parser::signature2< R, A1, A2 >;
 
-			std::list< boost::shared_ptr< kw_argument > > keywords;
 			boost::shared_ptr< argument< A1 > > value_arg;
 			sig_args1< R, A2 > next_args;
 
 	};
 
 	template< typename R, typename A1, typename A2, typename A3 >
-	class sig_args3
+	class sig_args3 : public sig_args_val
 	{
 		public:
 			// FIXME: Should be private ideally
@@ -146,13 +188,19 @@ namespace cmd_parser {
 			void complete( const tokeniter& start, const tokeniter& end,
 			               std::list< std::string >& alternatives ) const;
 
+			const boost::shared_ptr< _argument >
+			get_value_arg() const
+			{ return value_arg; }
+
+			const sig_args& get_next_args() const
+			{ return next_args; }
+
 		private:
 			friend class ::cmd_parser::signature0< R >;
 			friend class ::cmd_parser::signature1< R, A1 >;
 			friend class ::cmd_parser::signature2< R, A1, A2 >;
 			friend class ::cmd_parser::signature3< R, A1, A2, A3 >;
 
-			std::list< boost::shared_ptr< kw_argument > > keywords;
 			boost::shared_ptr< argument< A1 > > value_arg;
 			sig_args2< R, A2, A3 > next_args;
 
@@ -163,7 +211,6 @@ namespace cmd_parser {
 
 	template< typename R >
 	sig_args0< R >::sig_args0()
-		: keywords()
 	{
 	}
 
@@ -232,7 +279,7 @@ namespace cmd_parser {
 
 	template< typename R, typename A1 >
 	sig_args1< R, A1 >::sig_args1()
-		: keywords(), value_arg(), next_args()
+		: value_arg(), next_args()
 	{
 	}
 
@@ -339,7 +386,7 @@ namespace cmd_parser {
 
 	template< typename R, typename A1, typename A2 >
 	sig_args2< R, A1, A2 >::sig_args2()
-		: keywords(), value_arg(), next_args()
+		: value_arg(), next_args()
 	{
 	}
 
@@ -448,7 +495,7 @@ namespace cmd_parser {
 
 	template< typename R, typename A1, typename A2, typename A3 >
 	sig_args3< R, A1, A2, A3 >::sig_args3()
-		: keywords(), value_arg(), next_args()
+		: value_arg(), next_args()
 	{
 	}
 

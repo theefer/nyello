@@ -16,56 +16,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "argument.h"
+#ifndef CMD_PARSER_COMMAND_COMPLETION_VISITOR_H
+#define CMD_PARSER_COMMAND_COMPLETION_VISITOR_H
+
+#include <list>
+#include <string>
+
+#include "visitor.h"
 
 namespace cmd_parser {
 
-	_argument::_argument()
+	class command_completion_visitor : public visitor
 	{
-	}
 
-	_argument::~_argument()
-	{
-	}
+		public:
+			command_completion_visitor();
+			~command_completion_visitor();
 
+			const std::list< std::string >& get_completions() const
+			{ return alternatives; }
 
-	kw_argument::kw_argument( const std::string& kw )
-		: _argument(), keyword( kw )
-	{
-	}
+			void visit( const interpreter& obj );
+			void visit( const command& obj );
+			void visit( const _signature& obj ) {}
+			void visit( const sig_args& obj ) {}
+			void visit( const sig_args_val& obj ) {}
+			void visit( const kw_argument& obj ) {}
+			void visit( const _argument& obj ) {}
 
-	kw_argument::~kw_argument()
-	{
-	}
+		protected:
+			std::list< std::string > alternatives;
+	};
 
-	kw_argument_ptr
-	kw_argument::make( const std::string& kw )
-	{
-		return kw_argument_ptr( new kw_argument( kw ) );
-	}
-
-	bool
-	kw_argument::match( tokeniter& start, const tokeniter& end ) const
-	{
-		// FIXME: custom case-sensitivity!
-		if( start != end && keyword == *start ) {
-			advance( start, end );
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	void
-	kw_argument::complete( std::list< std::string >& alternatives ) const
-	{
-		alternatives.push_back( keyword );
-	}
-
-	void
-	kw_argument::advance( tokeniter& start, const tokeniter& end ) const
-	{
-		++start;
-	}
 }
+
+#endif  // CMD_PARSER_COMMAND_COMPLETION_VISITOR_H

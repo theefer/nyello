@@ -62,7 +62,7 @@ namespace cmd_parser {
 	{
 		public:
 			kw_argument( const std::string& kw );
-			~kw_argument();
+			virtual ~kw_argument();
 
 			static kw_argument_ptr make( const std::string& kw );
 
@@ -91,7 +91,7 @@ namespace cmd_parser {
 		public:
 			argument( const std::string& name );
 			argument( const std::string& name, const T& def_val );
-			~argument();
+			virtual ~argument();
 
 			static boost::shared_ptr< argument< T > > make( const std::string& name );
 			static boost::shared_ptr< argument< T > > make( const std::string& name,
@@ -120,7 +120,7 @@ namespace cmd_parser {
 		public:
 			tail_argument( const std::string& name );
 			tail_argument( const std::string& name, const T& def_val );
-			~tail_argument();
+			virtual ~tail_argument();
 
 			static boost::shared_ptr< argument< T > > make( const std::string& name );
 			static boost::shared_ptr< argument< T > > make( const std::string& name,

@@ -129,20 +129,6 @@ namespace cmd_parser {
 		                            + name + "'");
 	}
 
-	void
-	command::complete( const tokeniter& start, const tokeniter& end,
-	                   std::list< std::string >& alternatives ) const
-	{
-		tokeniter args( start );
-
-		++args;
-
-		std::list< _signature* >::const_iterator it;
-		for( it = signatures.begin(); it != signatures.end(); ++it ) {
-			(*it)->complete( args, end, alternatives );
-		}
-	}
-
 	bool
 	command::match_string( const std::string& name, const std::string& cmd ) const
 	{

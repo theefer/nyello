@@ -96,9 +96,6 @@ namespace cmd_parser {
 			R apply( const boost::function0< R >& callback,
 			         const tokeniter& start, const tokeniter& end ) const;
 
-			void complete( const tokeniter& start, const tokeniter& end,
-			               std::list< std::string >& alternatives ) const;
-
 		private:
 			friend class ::cmd_parser::signature0< R >;
 
@@ -117,9 +114,6 @@ namespace cmd_parser {
 
 			R apply( const boost::function1< R, A1 >& callback,
 			         const tokeniter& start, const tokeniter& end ) const;
-
-			void complete( const tokeniter& start, const tokeniter& end,
-			               std::list< std::string >& alternatives ) const;
 
 			const boost::shared_ptr< _argument >
 			get_value_arg() const
@@ -151,9 +145,6 @@ namespace cmd_parser {
 			R apply( const boost::function2< R, A1, A2 >& callback,
 			         const tokeniter& start, const tokeniter& end ) const;
 
-			void complete( const tokeniter& start, const tokeniter& end,
-			               std::list< std::string >& alternatives ) const;
-
 			const boost::shared_ptr< _argument >
 			get_value_arg() const
 			{ return value_arg; }
@@ -184,9 +175,6 @@ namespace cmd_parser {
 
 			R apply( const boost::function3< R, A1, A2, A3 >& callback,
 			         const tokeniter& start, const tokeniter& end ) const;
-
-			void complete( const tokeniter& start, const tokeniter& end,
-			               std::list< std::string >& alternatives ) const;
 
 			const boost::shared_ptr< _argument >
 			get_value_arg() const
@@ -250,30 +238,6 @@ namespace cmd_parser {
 
 		// End of recursion, call the function
 		return callback();
-	}
-
-	template< typename R >
-	void
-	sig_args0< R >::complete( const tokeniter& start, const tokeniter& end,
-	                          std::list< std::string >& alternatives ) const
-	{
-		tokeniter pos( start );
-
-		// Match all keywords
-		std::list< boost::shared_ptr< kw_argument > >::const_iterator it;
-		for( it = keywords.begin(); it != keywords.end(); ++it ) {
-			// End of arguments, completion on current keyword argument
-			if( pos == end ) {
-				(*it)->complete( alternatives );
-				return;
-			}
-			// Signature mismatch, give up for this signature
-			// FIXME: propose as alternative if incomplete match?
-			else if( !(*it)->match( pos, end ) ) {
-				return;
-			}
-		}
-
 	}
 
 
@@ -341,46 +305,6 @@ namespace cmd_parser {
 
 		// Recurse in next_args
 		return next_args.apply( boost::bind( callback, value ), pos, end );
-	}
-
-	template< typename R, typename A1 >
-	void
-	sig_args1< R, A1 >::complete( const tokeniter& start, const tokeniter& end,
-	                              std::list< std::string >& alternatives ) const
-	{
-		tokeniter pos( start );
-
-		// Missing the argument object!
-		if( !value_arg ) {
-			throw incomplete_signature_error("incomplete signature, missing argument definition!");
-		}
-
-		// Match all keywords
-		std::list< boost::shared_ptr< kw_argument > >::const_iterator it;
-		for( it = keywords.begin(); it != keywords.end(); ++it ) {
-			// End of arguments, completion on current keyword argument
-			if( pos == end ) {
-				(*it)->complete( alternatives );
-				return;
-			}
-			// Signature mismatch, give up for this signature
-			// FIXME: propose as alternative if incomplete match?
-			else if( !(*it)->match( pos, end ) ) {
-				return;
-			}
-		}
-
-		// End of argument list, completion on value argument
-		if( pos == end ) {
-			value_arg->complete( alternatives );
-			return;
-		}
-
-		// Extract value to skip the tokens and continue
-		value_arg->extract( pos, end );
-
-		// Recurse in next_args
-		next_args.complete( pos, end, alternatives );
 	}
 
 
@@ -451,46 +375,6 @@ namespace cmd_parser {
 		return next_args.apply( boost::bind( callback, value, _1 ), pos, end );
 	}
 
-	template< typename R, typename A1, typename A2 >
-	void
-	sig_args2< R, A1, A2 >::complete( const tokeniter& start, const tokeniter& end,
-	                                  std::list< std::string >& alternatives ) const
-	{
-		tokeniter pos( start );
-
-		// Missing the argument object!
-		if( !value_arg ) {
-			throw incomplete_signature_error("incomplete signature, missing argument definition!");
-		}
-
-		// Match all keywords
-		std::list< boost::shared_ptr< kw_argument > >::const_iterator it;
-		for( it = keywords.begin(); it != keywords.end(); ++it ) {
-			// End of arguments, completion on current keyword argument
-			if( pos == end ) {
-				(*it)->complete( alternatives );
-				return;
-			}
-			// Signature mismatch, give up for this signature
-			// FIXME: propose as alternative if incomplete match?
-			else if( !(*it)->match( pos, end ) ) {
-				return;
-			}
-		}
-
-		// End of argument list, completion on value argument
-		if( pos == end ) {
-			value_arg->complete( alternatives );
-			return;
-		}
-
-		// Extract value to skip the tokens and continue
-		value_arg->extract( pos, end );
-
-		// Recurse in next_args
-		next_args.complete( pos, end, alternatives );
-	}
-
 
 
 	template< typename R, typename A1, typename A2, typename A3 >
@@ -559,46 +443,6 @@ namespace cmd_parser {
 
 		// Recurse in next_args
 		return next_args.apply( boost::bind( callback, value, _1, _2 ), pos, end );
-	}
-
-	template< typename R, typename A1, typename A2, typename A3 >
-	void
-	sig_args3< R, A1, A2, A3 >::complete( const tokeniter& start, const tokeniter& end,
-	                                      std::list< std::string >& alternatives ) const
-	{
-		tokeniter pos( start );
-
-		// Missing the argument object!
-		if( !value_arg ) {
-			throw incomplete_signature_error("incomplete signature, missing argument definition!");
-		}
-
-		// Match all keywords
-		std::list< boost::shared_ptr< kw_argument > >::const_iterator it;
-		for( it = keywords.begin(); it != keywords.end(); ++it ) {
-			// End of arguments, completion on current keyword argument
-			if( pos == end ) {
-				(*it)->complete( alternatives );
-				return;
-			}
-			// Signature mismatch, give up for this signature
-			// FIXME: propose as alternative if incomplete match?
-			else if( !(*it)->match( pos, end ) ) {
-				return;
-			}
-		}
-
-		// End of argument list, completion on value argument
-		if( pos == end ) {
-			value_arg->complete( alternatives );
-			return;
-		}
-
-		// Extract value to skip the tokens and continue
-		value_arg->extract( pos, end );
-
-		// Recurse in next_args
-		next_args.complete( pos, end, alternatives );
 	}
 
 }

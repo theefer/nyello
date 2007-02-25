@@ -50,22 +50,6 @@ namespace cmd_parser {
 		cmd.run( tok.begin(), tok.end() );
 	}
 
-	// FIXME: handle smart completion (incomplete tokens)
-	void
-	interpreter::complete( const std::string& input,
-	                       std::list< std::string >& alternatives ) const
-	{
-		if( input.size() == 0 ) {
-			appendCommandNames( alternatives );
-		}
-		else {
-			boost::char_separator<char> sep( " " );
-			tokenizer tok( input, sep );
-			const command& cmd( find_command( tok ) );
-			cmd.complete( tok.begin(), tok.end(), alternatives );
-		}
-	}
-
 	void
 	interpreter::help( std::ostream& os ) const
 	{
@@ -118,15 +102,5 @@ namespace cmd_parser {
 		}
 
 		throw command_not_found_error("no matching command");
-	}
-
-	void
-	interpreter::appendCommandNames( std::list< std::string >& l ) const
-	{
-		std::list< command* >::const_iterator it;
-		for( it = commands.begin(); it != commands.end(); ++it ) {
-			l.push_back( (*it)->get_name() );
-			// FIXME: push aliases too?
-		}
 	}
 }
